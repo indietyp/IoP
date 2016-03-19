@@ -1,0 +1,88 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1404\cocoasubrtf130
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww10800\viewh8400\viewkind0
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
+
+\f0\b\fs26 \cf0 send
+\b0\fs24 \
+1 byte  , init\
+
+\fs22 	0x01 - init
+\fs24 \
+1 byte  , mode\
+	
+\fs22 0x01 - alive\
+	0x02 - send\
+	0x03 - register\
+
+\fs24 7 bytes, network\
+	alive
+\fs22 \
+		0x00 - ask\
+			0x01 - ask\
+			0x02 - ALIVE\
+		0x00 \
+		0x00\
+		0x00 - timestamp [network byte order]\
+		0x00 - timestamp\
+		0x00 - timestamp\
+		0x00 - timestamp\
+	
+\fs24 send\
+
+\fs22 		0x00 - sensor\
+			0x01 = temperature\
+			0x02 = humidity\
+			0x03 = light\
+			0x04 = moisture\
+		0x00 - value [network byte order]\
+		0x00 - value\
+		0x00 - timestamp [network byte order]\
+		0x00 - timestamp\
+		0x00 - timestamp\
+		0x00 - timestamp\
+
+\fs24 	send response
+\fs22 \
+		SUCESS/FAIL\
+
+\fs24 	register\
+		
+\fs22 0x01 - new device\
+		0x00 \
+		0x00\
+		0x00 - timestamp [network byte order]\
+		0x00 - timestamp\
+		0x00 - timestamp\
+		0x00 - timestamp\
+
+\fs24 	register response
+\fs22 \
+		LOCAL IP + PORT\
+\
+\
+
+\b ORDER\
+register\
+
+\b0 new - RP03\
+RP03 - 
+\b MULTICAST
+\b0  | I\'92m new! Help me!\
+RP01 + RP02 - 
+\b SEND OKAY AND LOCAL ADDRESS 
+\b0 | Hey okay! Here is my address\
+RP03 - 
+\b INSERT INTO MONGO COLLECTION 
+\b0 | Okay! Sending now DATA IN DATABASE! Checking if I had everyone!\
+RP03 - 
+\b SENDING SIGNAL 
+\b0 | Here I\'92m finished!\
+RP01 + RP02 - 
+\b OKAY, CHECKING DB AND SENDING \ul OKAY\ulnone  OR \ul RETRY
+\b0 \ulnone  | I\'92m the police! It\'92s okay! Or Retry it! \
+\
+
+\b \
+}

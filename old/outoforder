@@ -1,0 +1,21 @@
+# SEND EVERYONE MULTICAST AND GET VALUES
+# ONLY HOW IS ALIVE
+
+db.Plant.update_one(
+{'ip': '192.168.178.35'},
+{
+    "$set": {
+      'type': 'default',
+      'location': 'default',
+      'name': 'paul',
+      'abbreviation': 'p',
+      'role': 'master',
+      'alive': True,
+      'localhost': False
+      # MS
+      # 'parent': '192.168.178.35' | not set, only in mail
+      # 'modules': FULL, SPARE, BARE | not set, only in mail
+      # MS gets other values from parent node
+    }
+}
+)
