@@ -1,5 +1,5 @@
 from pymongo import MongoClient
-from server import Sender
+from sender import Sender
 
 client = MongoClient()
 db = client.pot

@@ -172,7 +172,7 @@ def response_daemon():
         localClient.close()
 
 if __name__ == "__main__":
-  daemon = Daemonize(app='response_daemon', pid='/tmp/response_daemon.pid', action='response_daemon')
+  daemon = Daemonize(app='response_daemon', pid='/tmp/response_daemon.pid', action=response_daemon)
   if len(sys.argv) == 2:
           if 'start' == sys.argv[1]:
                   daemon.start()
