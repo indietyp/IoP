@@ -1,0 +1,37 @@
+INIT - 1 BYTE
+  001 [MASTER <-> MASTER]
+  002 [MASTER --> SLAVE]
+
+MODE - 1 BYTE
+  001 [ALIVE]
+    MODE - 1 BYTE
+      001 [ASK]
+        2 BYTES - currently no function (0)
+      002 [ALIVE]
+        4 BYTES - Internet Protocol Address
+  002 [SEND]
+    (NOT INCLUDED IN MASTER <-> MASTER)
+    MODE - 1 BYTE
+      001 [REQUEST]
+      002 [SEND]
+    SENSOR - 1 BYTE
+      001 [TEMPERATURE]
+      002 [HUMIDITY]
+      003 [LIGHT]
+      004 [MOISTURE]
+  003 [REGISTER]
+    MODE - 1 BYTE
+      001 [MULTICAST]
+      002 [SEND]
+        1 BYTE - STATUS
+        001 [NO DOCUMENT IN DATABASE]
+        002 [DOCUMENT IN DATABASE]
+      003 [SIGNAL]
+      004 [CHECK]
+        1 BYTE - STATUS
+        001 [CREATED AND INSERTED]
+        211 [ONLY CREATED]
+        212 [NOTHING HAPPEND :/]
+    254 [SUCCESS]
+    255 [FAIL]
+
