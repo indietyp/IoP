@@ -34,4 +34,4 @@ if moisture != 0:
 
   generalMoisture = generalStatus(plantAbbreviation, 'm', moisture)
   generalMoisture.insert()
-
+  generalMoisture.set()
