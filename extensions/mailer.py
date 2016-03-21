@@ -24,7 +24,7 @@ class PlantMailer:
         end = True
       i += 1
 
-    if times % 8 == 0:
+    if times % self.db.Plant.find_one({'localhost': True})['interval'] == 0:
       status = True if times != 0 else False
     else:
       status = False if times != 1 else True
