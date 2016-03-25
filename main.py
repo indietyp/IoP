@@ -6,6 +6,9 @@ import datetime
 from flask import Flask
 from pymongo import MongoClient
 from bson import ObjectId
+
+# huge thanks to Gary Maynard, who gave me great advise about the REST-API
+
 app = Flask(__name__)
 
 client = MongoClient(connect=False)
@@ -20,14 +23,15 @@ def index():
 @app.route('/sensor/<sensor>/<int:timestamp>')
 def sensor(sensor,timestamp):
   # SEARCHING FOR LATEST RECORDS
+  plant = db.Plant.find_one({'localhost': True})
   results = []
   if timestamp != None:
-    query = {'_id': {'$gt': ObjectId(format(timestamp, 'x') + '0000000000000000')}, 's': sensor}
+    query = {'_id': {'$gt': ObjectId(format(timestamp, 'x') + '0000000000000000')}, 'p': plant['abbreviation'], 's': sensor[0:1]}
   else:
     if sensor == None:
-      query = {}
+      query = {'p': plant['abbreviation']}
     else:
-      query = {'s': sensor}
+      query = {'p': plant['abbreviation'], 's': sensor[0:1]}
 
   for x in db.SensorData.find(query):
     results.append(x)
@@ -44,7 +48,7 @@ def plant(plant):
     query = {}
 
   for x in db.Plant.find(query):
-    # x.pop('_id') (_id is needed for verification)
+    # x.pop('_id') (_id is needed for verification? probably not, because timestamp of creation - could change? idk)
     x['created_at'] = x['created_at'].timestamp()
     results.append(x)
 
@@ -110,5 +114,3 @@ class JSONEncoder(json.JSONEncoder):
 
 if __name__ == '__main__':
     app.run(debug= True)
-
-# thanks to Gary Maynard, who helped me a lot to create this REST-API
