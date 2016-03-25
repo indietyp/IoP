@@ -8,7 +8,7 @@ from pymongo import MongoClient
 from bson import ObjectId
 app = Flask(__name__)
 
-client = MongoClient('bilalmahmoud.de')
+client = MongoClient(connect=False)
 db = client.pot
 
 @app.route('/')
