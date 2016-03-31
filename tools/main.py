@@ -50,17 +50,17 @@ class Tools:
 
     meshPlants = self.db.Plant.find({"localhost": {"$ne": True}})
     if meshPlants != None:
-      for meshPlant in meshPlants:
-        tmpClient = MongoClient(meshPlant['ip'])
-        tmpDB = tmpClient.pot
+      #for meshPlant in meshPlants:
+      #  tmpClient = MongoClient(meshPlant['ip'])
+      #  tmpDB = tmpClient.pot
 
-        tmpDB.SensorData.insert_one (
-          {
-          'p': plant,
-          's': sensor,
-          'v': value
-          }
-        )
+      #  tmpDB.SensorData.insert_one (
+      #    {
+      #    'p': plant,
+      #    's': sensor,
+      #    'v': value
+      #    }
+      #  )
 
     self.db.SensorData.insert_one (
       {

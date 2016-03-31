@@ -22,15 +22,9 @@ humidity, temperature = Adafruit_DHT.read_retry(sensor, pin)
 
 #print 'test'
 if humidity is not None and temperature is not None:
-<<<<<<< HEAD
   # only in database
-  #print humidity
-  #print temperature
-=======
-
   print humidity
   print temperature
->>>>>>> c4737b167aa2c12ad100a17a59d8d07019e45929
 
   # INSERT IN DATABASE
   toolChain = Tools(db, plantAbbreviation)

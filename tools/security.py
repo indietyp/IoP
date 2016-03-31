@@ -7,7 +7,7 @@ class KeyChain:
     self.db = client.pot
 
   def create(self, application, name):
-    message = encrypt(name)
+    message = self.encrypt(name)
     self.db.KeyChain.insert_one({'application': application, 'message': message})
 
   def read(self, application):
@@ -24,8 +24,8 @@ class KeyChain:
     key = Fernet.generate_key()
 
     algo = Fernet(key)
-    encrypted = algo.encrypt(bytes(name, encoding= 'ascii'))
+    encrypted = algo.encrypt(bytes(message))
 
     return [key, encrypted]
 
-keyChain.create('mailer', 'x97y3bY89@')
+KeyChain().create('mailer', 'x97y3bY89@')

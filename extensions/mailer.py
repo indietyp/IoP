@@ -49,7 +49,7 @@ class PlantMailer:
                   'transport.port': 465,
                   'transport.tls': 'ssl',
                   'transport.username': 'potmailer.daemon@gmail.com',
-                  'transport.password': keyChain.read('mailer'), #'x97y3bY89@',
+                  'transport.password': KeyChain().read('mailer'), #'x97y3bY89@',
                   'manager': {}
               })
       mailer.start()
