@@ -60,8 +60,6 @@ class generalStatus():
     toolChain = Tools(self.db, self.plant)
     gpioPins = toolChain.getPins('gpio')
 
-    gpioPins = [5, 6, 13]
-
     GPIO.setwarnings(False)
     GPIO.setmode(GPIO.BCM)
 
@@ -70,14 +68,14 @@ class generalStatus():
 
 
     #with leds['p']['gpio'] as led:
-    GPIO.output(13, True)
-    # GPIO.output(leds['p']['gpio']['green'], False)
-    # GPIO.output(leds['p']['gpio']['yellow'], False)
-    # GPIO.output(leds['p']['gpio']['red'], False)
+    #GPIO.output(13, True)
+    GPIO.output(int(leds['p']['gpio']['green']), False)
+    GPIO.output(int(leds['p']['gpio']['yellow']), False)
+    GPIO.output(int(leds['p']['gpio']['red']), False)
 
-    # GPIO.output(leds['p']['gpio']['green'], green)
-    # GPIO.output(leds['p']['gpio']['yellow'], yellow)
-    # GPIO.output(leds['p']['gpio']['red'], red)
+    GPIO.output(int(leds['p']['gpio']['green']), green)
+    GPIO.output(int(leds['p']['gpio']['yellow']), yellow)
+    GPIO.output(int(leds['p']['gpio']['red']), red)
 
     def full(self):
       self.insert()

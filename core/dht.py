@@ -44,5 +44,6 @@ if humidity is not None and temperature is not None:
 
   generalHumidity = generalStatus('m', 'h', round(humidity,2))
   generalHumidity.insert()
+  generalHumidity.set()
 else:
   sys.exit(1)

@@ -41,4 +41,4 @@ if moisture != 0:
   # INSERT IN GENERAL LEDS
   generalMoisture = generalStatus(plantAbbreviation, 'm', moisture)
   generalMoisture.insert()
-
+  generalMoisture.set()

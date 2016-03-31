@@ -79,4 +79,4 @@ mailer.send()
 
 generalLight = generalStatus(plantAbbreviation, 'l', round(lux,2))
 generalLight.insert()
-
+generalLight.set()

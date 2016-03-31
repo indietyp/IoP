@@ -36,12 +36,12 @@ class Tools:
          for key, pin in pins['p'][pinType].items():
           if isinstance(pin, list):
             for pinInList in pin:
-              pinsDone.append(pinInList)
+              pinsDone.append(int(pinInList))
           else:
-            pinsDone.append(pin)
+            pinsDone.append(int(pin))
         elif isinstance( pins['p'][pinType], list):
           for pin in pins['p'][pinType]:
-            pinsDone.append(pin)
+            pinsDone.append(int(pin))
 
     return pinsDone
 
