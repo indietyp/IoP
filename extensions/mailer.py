@@ -2,6 +2,7 @@ from marrow.mailer import Message, Mailer
 from pymongo import MongoClient
 import pymongo
 from ..tools.main import Tools
+from ..tools.security import KeyChain
 
 class PlantMailer:
   def __init__(self, plant, sensor):
@@ -40,6 +41,7 @@ class PlantMailer:
       responsiblePerson = self.db.ResponsiblePerson.find_one({"person": self.plant['responsible']})
       sensorName = self.db.SensorInformation.find_one({"a": self.sensor})['gT']
       optimalRange = toolChain.getOptions(self.sensor)['green']
+      keyChain = KeyChain()
 
       mailer = Mailer({
                   'transport.use': 'smtp',
@@ -47,7 +49,7 @@ class PlantMailer:
                   'transport.port': 465,
                   'transport.tls': 'ssl',
                   'transport.username': 'potmailer.daemon@gmail.com',
-                  'transport.password': 'x97y3bY89@',
+                  'transport.password': keyChain.read('mailer'), #'x97y3bY89@',
                   'manager': {}
               })
       mailer.start()
