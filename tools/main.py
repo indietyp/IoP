@@ -1,4 +1,10 @@
 from pymongo import MongoClient
+from bson import ObjectId
+
+import urllib2
+import json
+import datetime
+import time
 
 class Tools:
   def __init__(self, db, plant):
@@ -70,20 +76,30 @@ class Tools:
       }
     )
 
-  def getSensor(self, sensor):
+  def getSensor(self, sensor, value):
 
+    plant = self.db.Plant.find_one({'localhost': True})['abbreviation']
     meshPlants = self.db.Plant.find({"localhost": {'$ne': True}})
 
     if meshPlants != None:
       for plant in meshPlants:
-        lastentry = self.db.SensorData.find_one({'s': sensor[0:1], 'p': plant['abbreviation']}, sort=[("_id", pymongo.DESCENDING)])
-        timestamp = round(lastentry['_id'].generation_time.timestamp())
+        lastentry = self.db.SensorData.find_one({'s': sensor[0:1], 'p': plant['abbreviation']}, sort=[("_id", pymongo.DESCENDING)]
+        timestamp = round((lastentry['_id'].generation_time.replace(tzinfo=None) - datetime.datetime(1970, 1, 1)).total_seconds())
+        timestamp = int(timestamp)
         timestamp += 1
 
-        with urllib.request.urlopen('http://' + plant['ip']+ ':2211/sensor/' + sensor + '/' + str(timestamp)) as response:
-           rawJSON = response.read()
-           print field
-           for field in json.loads(rawJSON):
-            field['_id'] = ObjectId(field['_id'])
-            db.SensorData.insert_one(field)
+        response = urllib2.urlopen('http://' + plant['ip']+ ':2211/sensor/' + sensor + '/' + str(timestamp))
+        rawJSON = response.read()
+        print rawJSON
+        for field in json.loads(rawJSON):
+          print field
+          field['_id'] = ObjectId(field['_id'])
+          db.SensorData.insert_one(field)
 
+    self.db.SensorData.insert_one (
+      {
+      'p': plant,
+      's': sensor,
+      'v': value
+      }
+     )
