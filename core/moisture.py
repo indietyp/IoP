@@ -13,6 +13,7 @@ db = client.pot
 
 plantAbbreviation = db.Plant.find_one({'localhost': True})['abbreviation']
 
+# READ SENSOR 10 TIMES
 m = []
 for i in range(0,10):
     m.append(mcp3008().read_pct(5))
@@ -20,18 +21,24 @@ for i in range(0,10):
 
 moisture = sum(m) / float(len(m))
 if moisture != 0:
+
+  # INSERT INTO DATABASE
   toolChain = Tools(db, plantAbbreviation)
   toolChain.insertSensor('m', round(moisture, 2))
 
+  # ACTIVATE MAILER
   mailer = PlantMailer(plantAbbreviation, 'm')
   mailer.send()
 
+  # INSERT IN 'led_bar'
   ledBar = StatusBar(plantAbbreviation, moisture)
   ledBar.setStatus()
 
+  # INSERT IN WATERPUMP
   waterPump = WaterPumpChecker(plantAbbreviation)
   waterPump.set()
 
+  # INSERT IN GENERAL LEDS
   generalMoisture = generalStatus(plantAbbreviation, 'm', moisture)
   generalMoisture.insert()
 

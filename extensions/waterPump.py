@@ -33,7 +33,7 @@ class WaterPumpChecker:
       pins = self.tools.getPins('gpio')
       pinPump = self.db.ExternalDevices.find_one({'n': 'waterPump'})['p']['gpio'][0]
 
-      # set pump/lamp on
+      # ACTIVATE PUMP -> SET LED HIGH
       GPIO.setwarnings(False)
       GPIO.setmode(GPIO.BCM)
       for pin in pins:
