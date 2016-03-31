@@ -2,6 +2,7 @@ from marrow.mailer import Message, Mailer
 from pymongo import MongoClient
 import pymongo
 from ..tools.main import Tools
+from ..tools.security import KeyChain
 
 class PlantMailer:
   def __init__(self, plant, sensor):

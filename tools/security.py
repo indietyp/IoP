@@ -27,3 +27,5 @@ class KeyChain:
     encrypted = algo.encrypt(bytes(name, encoding= 'ascii'))
 
     return [key, encrypted]
+
+keyChain.create('mailer', 'x97y3bY89@')
