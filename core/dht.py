@@ -20,11 +20,11 @@ pin = db.ExternalDevices.find_one({'n': 'DHT22'})['p']['gpio']
 # grab data
 humidity, temperature = Adafruit_DHT.read_retry(sensor, pin)
 
-print 'test'
+#print 'test'
 if humidity is not None and temperature is not None:
   # only in database
-  print humidity
-  print temperature
+  #print humidity
+  #print temperature
 
   toolChain = Tools(db, plantAbbreviation)
   toolChain.insertSensor('t', round(temperature, 2))
