@@ -1,26 +1,30 @@
 extends 'main.jade'
 
 block content
-  .ui.segment
-    h1.ui.header Basic Information
-    .ui.grid
-      .two.column.row.relaxed
-        .column(style='margin-bottom:2%')
-          .ui.fluid.left.icon.input
-            input(type='text', placeholder='Name')
-            i.tag.icon
-        .column
-          .ui.fluid.left.icon.input
-            input(type='text', placeholder='Location')
-            i.home.icon
-        .column
-          .ui.fluid.left.icon.input
-            input(type='text', placeholder='Type')
-            i.leaf.icon
-        .column
-          .ui.fluid.left.icon.input
-            input(type='file', placeholder='Location')
-            i.file.image.outline.icon
+  .wrapper(style='display: flex;align-items:center;flex-direction:row;margin-top:2.5%;')
+    .ui.segment(style='width:70%')
+      h1.ui.header Basic Information
+      .ui.grid
+        .two.column.row.relaxed
+          .column(style='margin-bottom:2%')
+            .ui.fluid.left.icon.input
+              input(type='text', placeholder='Name')
+              i.tag.icon
+          .column
+            .ui.fluid.left.icon.input
+              input(type='text', placeholder='Location')
+              i.home.icon
+          .column
+            .ui.fluid.left.icon.input
+              input(type='text', placeholder='Type')
+              i.leaf.icon
+          .column
+            .ui.fluid.left.icon.input
+              input(type='file', placeholder='Location')
+              i.file.image.outline.icon
+    .spacer(style='flex-grow:1')
+    .ui.segment.circular
+      img.ui.medium.circular.image(src='https://source.unsplash.com/category/nature/400x400')
 
   .wrapper(style='display: flex;align-items:baseline;flex-direction:row;margin-top:2.5%;')
     .spacer(style='flex-grow:0.2')
@@ -179,3 +183,86 @@ block content
               input(type='text', placeholder='andreas.marbach@web.de', readonly='')
               i.user.icon
           .ui.basic.button.fluid.green Submit
+
+  //- .wrapper(style='display: flex;align-items:baseline;flex-direction:row;margin-top:2.5%;')
+  .ui.segment
+    h1.ui.header Notification Settings
+    p gonna be continued! JS and stuff!
+    .ui.slider.checkbox
+            input(type='checkbox', name='newsletter')
+            label use customized message?
+    .ui.slider.checkbox
+            input(type='checkbox', name='newsletter')
+            label cluster messages?
+    .preset_message
+      .ui.form
+        .field
+          label Preset
+          .ui.selection.dropdown
+              input(type='hidden', name='person')
+              i.dropdown.icon
+              .default.text Preset
+              .menu
+                .item(data-value='1') EN
+                .item(data-value='0') DE
+        script(type='text/javascript').
+          $('.ui.selection.dropdown')
+            .dropdown()
+          ;
+    .custom_message
+      .ui.form
+        .field
+          label Heading
+          .ui.fluid.input(style='margin-bottom:2.5%')
+            input(type='text', placeholder='Heading')
+        .field
+          label Content
+          p for your customized message you can use these tags to insert custom data
+          .usecases(style='margin-bottom:1%')
+            .ui.label.basic.violet [name]
+            .ui.label.basic.violet [current]
+            .ui.label.basic.violet [ideal_max]
+            .ui.label.basic.violet [ideal_min]
+            .ui.label.basic.violet [warning_max]
+            .ui.label.basic.violet [warning_min]
+            .ui.label.basic.violet [date]
+            .ui.label.basic.violet [eu_time]
+            .ui.label.basic.violet [us_time]
+            .ui.label.basic.violet [firstname]
+            .ui.label.basic.violet [lastname]
+          textarea
+    .interval
+      p sensor notification interval (hours)
+      #flat-slider-general-interval(style='margin-top: 24px;margin-bottom:24px')
+        .spacer(style='flex-grow:0.5')
+      script(type='text/javascript').
+        $("#flat-slider-general-interval")
+            .slider({
+                max: 12,
+                min: 1,
+                range: 'min',
+                value: 2
+            })
+            .slider("pips", {
+                first: "pip",
+                last: "pip"
+            })
+            .slider("float");
+    .interval
+      p connection lost notification interval (minutes)
+      #flat-slider-dead-interval(style='margin-top: 24px;margin-bottom:24px')
+        .spacer(style='flex-grow:0.5')
+      script(type='text/javascript').
+        $("#flat-slider-dead-interval")
+            .slider({
+                max: 120,
+                min: 5,
+                range: 'min',
+                value: 10,
+                step: 5
+            })
+            .slider("pips", {
+                first: "pip",
+                last: "pip"
+            })
+            .slider("float");
