@@ -1,0 +1,181 @@
+extends 'main.jade'
+
+block content
+  .ui.segment
+    h1.ui.header Basic Information
+    .ui.grid
+      .two.column.row.relaxed
+        .column(style='margin-bottom:2%')
+          .ui.fluid.left.icon.input
+            input(type='text', placeholder='Name')
+            i.tag.icon
+        .column
+          .ui.fluid.left.icon.input
+            input(type='text', placeholder='Location')
+            i.home.icon
+        .column
+          .ui.fluid.left.icon.input
+            input(type='text', placeholder='Type')
+            i.leaf.icon
+        .column
+          .ui.fluid.left.icon.input
+            input(type='file', placeholder='Location')
+            i.file.image.outline.icon
+
+  .wrapper(style='display: flex;align-items:baseline;flex-direction:row;margin-top:2.5%;')
+    .spacer(style='flex-grow:0.2')
+    .ui.card
+      .content
+        .header Temperature
+        .meta interval settings
+        .wrapper(style='display: flex;align-items:center;flex-direction:column;margin-top:5%')
+          .spacer(style='flex-grow:0.5')
+          #flat-slider-vertical-temperature(style='margin-top: 24px;margin-bottom:24px')
+            .spacer(style='flex-grow:0.5')
+      .extra.content
+        .ui.two.buttons
+          .ui.basic.button.fluid.green Apply
+          .ui.basic.button.fluid.red Reset
+      script(type='text/javascript').
+        $("#flat-slider-vertical-temperature")
+            .slider({
+                max: 25,
+                min: -20,
+                values: [0, 10, 15, 20],
+                orientation: "vertical"
+            })
+            .slider("pips", {
+                first: "pip",
+                last: "pip"
+            })
+            .slider("float");
+
+    .spacer(style='flex-grow:0.2')
+    .ui.card
+      .content
+        .header Humidity
+        .meta interval settings
+        .wrapper(style='display: flex;align-items:center;flex-direction:column;margin-top:5%')
+          .spacer(style='flex-grow:0.5')
+          #flat-slider-vertical-humidity(style='margin-top: 24px;margin-bottom:24px')
+            .spacer(style='flex-grow:0.5')
+      .extra.content
+        .ui.two.buttons
+          .ui.basic.button.fluid.green Apply
+          .ui.basic.button.fluid.red Reset
+      script(type='text/javascript').
+        $("#flat-slider-vertical-humidity")
+            .slider({
+                max: 100,
+                min: 0,
+                values: [0, 10, 15, 20],
+                orientation: "vertical"
+            })
+            .slider("pips", {
+                first: "pip",
+                last: "pip"
+            })
+            .slider("float");
+    .spacer(style='flex-grow:0.2')
+    .ui.card
+      .content
+        .header Moisture
+        .meta interval settings
+        .wrapper(style='display: flex;align-items:center;flex-direction:column;margin-top:5%')
+          .spacer(style='flex-grow:0.5')
+          #flat-slider-vertical-moisture(style='margin-top: 24px;margin-bottom:24px')
+            .spacer(style='flex-grow:0.5')
+      .extra.content
+        .ui.two.buttons
+          .ui.basic.button.fluid.green Apply
+          .ui.basic.button.fluid.red Reset
+      script(type='text/javascript').
+        $("#flat-slider-vertical-moisture")
+            .slider({
+                max: 100,
+                min: 0,
+                values: [0, 10, 15, 20],
+                orientation: "vertical"
+            })
+            .slider("pips", {
+                first: "pip",
+                last: "pip"
+            })
+            .slider("float");
+    .spacer(style='flex-grow:0.2')
+    .ui.card
+      .content
+        .header Light
+        .meta interval settings
+        .wrapper(style='display: flex;align-items:center;flex-direction:column;margin-top:5%')
+          .spacer(style='flex-grow:0.5')
+          #flat-slider-vertical-light(style='margin-top: 24px;margin-bottom:24px')
+            .spacer(style='flex-grow:0.5')
+      .extra.content
+        .ui.two.buttons
+          .ui.basic.button.fluid.green Apply
+          .ui.basic.button.fluid.red Reset
+      script(type='text/javascript').
+        $("#flat-slider-vertical-light")
+            .slider({
+                max: 50,
+                min: 0,
+                values: [0, 10, 15, 20],
+                orientation: "vertical"
+            })
+            .slider("pips", {
+                first: "pip",
+                last: "pip"
+            })
+            .slider("float");
+    .spacer(style='flex-grow:0.2')
+  .ui.segment(style='width:100%')
+    hi.ui.header Symbiose! Select - if no result create?
+    .ui.two.column.middle.aligned.very.relaxed.stackable.grid
+      .column
+        .ui.form
+          .ui.shape(style='width:100%')
+            .sides
+              .side.active
+                .field
+                  label Name
+                  .ui.left.icon.input
+                      input(type='text',placeholder='Name')
+                      i.user.icon
+                .field
+                  label EMail
+                  .ui.left.icon.input
+                      input(type='text',placeholder='EMail')
+                      i.user.icon
+                .ui.basic.button.fluid.green >> Next >>
+              .side
+                .preview.img-wrapper
+                .file-upload-wrapper
+                  input(type='file', name='file', class='file-upload-native', accept='image/*')
+                  input(type='text', disabled='', placeholder='ui input upload image', class='file-upload-text')
+      script(type='text/javascript').
+        $( ".ui.basic.button.fluid.green" ).click(function() {
+           $('.shape').shape('flip left');
+        });
+      .ui.vertical.divider Or
+      .column
+        .ui.form
+          .field
+            label Name
+            .ui.selection.dropdown
+                input(type='hidden', name='person')
+                i.dropdown.icon
+                .default.text Responsible Person
+                .menu
+                  .item(data-value='1') Andreas Marbach
+                  .item(data-value='0') Matthias Töpler
+          script(type='text/javascript').
+            $('.ui.selection.dropdown')
+              .dropdown()
+            ;
+          .field
+            label EMail
+            .ui.left.icon.input
+              input(type='text', placeholder='andreas.marbach@web.de', readonly='')
+              i.user.icon
+          .ui.basic.button.fluid.green Submit

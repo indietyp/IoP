@@ -1,0 +1,111 @@
+body:before  {
+  content: "";
+   position: fixed;
+   top: 0;
+   left: 0;
+   right: 0;
+   bottom: 0;
+   z-index: -1;
+
+   display: block;
+   background-image: url('https://source.unsplash.com/category/nature');
+   background-size:cover;
+   width: 100%;
+   height: 100%;
+
+   -webkit-filter: blur(10px);
+   -moz-filter: blur(10px);
+   -o-filter: blur(10px);
+   -ms-filter: blur(10px);
+   filter: blur(10px);
+}
+
+.doughnutSummary {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  color: #000000;
+  text-align: center;
+  /* text-shadow: 0 -1px 0 #111; */
+  cursor: default;
+  font-family:  Lato;
+}
+.doughnutSummaryTitle {
+  position: absolute;
+  top: 20%;
+  width: 100%;
+  margin-top: -27%;
+  font-size: 28px;
+  letter-spacing: .06em;
+  font-family:  Lato;
+}
+.doughnutSummaryNumber {
+  position: absolute;
+  top: 51%;
+  width: 100%;
+  margin-top: -15%;
+  font-size: 55px;
+}
+/* .chart path:hover { opacity: 0.65; } */
+
+.preview {
+    display: block;
+    width: 100px;
+    height: 100px;
+    margin: 20px auto;
+    border: 2px solid rgb(33, 122, 105);
+    border-radius: 50%;
+    overflow: hidden;
+}
+
+.file-upload-wrapper {
+    position: relative;
+    z-index: 5;
+    display: block;
+    width: 250px;
+    height: 30px;
+    margin: 5px auto;
+    border-right: 2px dotted rgb(33, 122, 105);
+    border-bottom: 2px dotted rgb(33, 122, 105);
+    border-left: 2px dotted rgb(33, 122, 105);
+}
+
+.file-upload-native,
+.file-upload-text {
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+}
+
+input[type="file"]::-webkit-file-upload-button {
+    cursor: pointer;
+}
+
+.file-upload-native:focus,
+.file-upload-text:focus {
+    outline: none;
+}
+
+.file-upload-text {
+    z-index: 10;
+    padding: 5px 15px 8px;
+    overflow: hidden;
+    font-size: 14px;
+    line-height: 1.4;
+    cursor: pointer;
+    text-align: center;
+    letter-spacing: 1px;
+    text-overflow: ellipsis;
+    color: rgb(144, 162, 148);
+    border: 0;
+    background-color: transparent;
+}
+
+.file-upload-native {
+    z-index: 15;
+    opacity: 0;
+}

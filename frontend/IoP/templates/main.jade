@@ -1,0 +1,63 @@
+doctype html
+html
+  head
+    title Internet of Plants (PoT v2)
+    link(rel='stylesheet',href='{{url_for("static", filename="semantic.min.css")}}')
+    link(rel='stylesheet',href='{{url_for("static", filename="jquery-ui.min.css")}}')
+    link(rel='stylesheet',href='{{url_for("static", filename="jquery-ui-slider-pips.css")}}')
+    link(rel='stylesheet',href='{{url_for("static", filename="sidebar.min.css")}}')
+    link(rel='stylesheet',href='{{url_for("static", filename="icon.min.css")}}')
+    link(rel='stylesheet',href='{{url_for("static", filename="slider.min.css")}}')
+    link(rel='stylesheet',href='{{url_for("static", filename="dropdown.min.css")}}')
+    link(rel='stylesheet',href='{{url_for("static", filename="doughnut.css")}}')
+    script(src='{{url_for("static", filename="jquery.min.js")}}')
+    script(src='{{url_for("static", filename="imageUploader.js")}}')
+    script(src='{{url_for("static", filename="jquery-ui.min.js")}}')
+    script(src='{{url_for("static", filename="semantic.min.js")}}')
+    script(src='{{url_for("static", filename="dropdown2.js")}}')
+    script(src='{{url_for("static", filename="sidebar.min.js")}}')
+    script(src='{{url_for("static", filename="chart.js")}}')
+    script(src='{{url_for("static", filename="doughnut.js")}}')
+    script(src='{{url_for("static", filename="jquery-ui-slider-pips.js")}}')
+
+    //- <script src="https://code.jquery.com/ui/1.11.1/jquery-ui.js"></script>
+    //- <link rel="stylesheet" href="https://code.jquery.com/ui/1.10.4/themes/flick/jquery-ui.css">
+    //- <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.3/jquery.min.js"></script>
+
+  body
+    .ui.vertical.inverted.sticky.menu.fixed.top(style='z-index:1;left: 0px; width: 250px; height:100%; margin-top: 0px;')
+        .item
+          .ui.header.inverted
+            | Plants
+          a.item
+            | Marta
+            i.meh.icon(style='font-size:1.5em;margin-top:-0.1em')
+        a.item
+          | Add Plant
+          i.plus.icon
+
+    .pusher(style='margin-left:270px;margin-right:10px')
+      .ui.segment(style="padding-bottom:0")
+        .information(style="display: flex;align-items:baseline")
+          h1.ui.header Internet of Plants
+          .spacer(style='flex-grow:1')
+          h1.ui.header Marta
+          .ui.menu.secondary
+            a.item
+              i.setting.icon(style='font-size:2em')
+        .ui.five.item.tabular.pointing.menu
+          a.item.active
+              | overview
+          a.item
+              | temperature
+          a.item
+              | humidity
+          a.item
+              | moisture
+          a.item
+              | light
+
+      block content
+
+
+
