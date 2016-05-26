@@ -1,0 +1,84 @@
+ 
+Traceback (most recent call last):
+  File "/usr/lib/python2.7/runpy.py", line 151, in _run_module_as_main
+    mod_name, loader, code, fname = _get_module_details(mod_name)
+  File "/usr/lib/python2.7/runpy.py", line 113, in _get_module_details
+    code = loader.get_code(mod_name)
+  File "/usr/lib/python2.7/pkgutil.py", line 283, in get_code
+    self.code = compile(source, self.filename, 'exec')
+  File "/home/pi/sensor_scripts/core/dht.py", line 25
+    <<<<<<< HEAD
+     ^
+IndentationError: expected an indented block
+Traceback (most recent call last):
+  File "/usr/lib/python2.7/runpy.py", line 162, in _run_module_as_main
+    "__main__", fname, loader, pkg_name)
+  File "/usr/lib/python2.7/runpy.py", line 72, in _run_code
+    exec code in run_globals
+  File "/home/pi/sensor_scripts/core/moisture.py", line 6, in <module>
+    from ..extensions.mailer import PlantMailer
+  File "sensor_scripts/extensions/mailer.py", line 5, in <module>
+    from ..tools.security import KeyChain
+  File "sensor_scripts/tools/security.py", line 2, in <module>
+    from cryptography.fernet import Fernet
+ImportError: No module named cryptography.fernet
+Traceback (most recent call last):
+  File "/usr/lib/python2.7/runpy.py", line 162, in _run_module_as_main
+    "__main__", fname, loader, pkg_name)
+  File "/usr/lib/python2.7/runpy.py", line 72, in _run_code
+    exec code in run_globals
+  File "/home/pi/sensor_scripts/core/tsl2561.py", line 5, in <module>
+    from ..extensions.mailer import PlantMailer
+  File "sensor_scripts/extensions/mailer.py", line 5, in <module>
+    from ..tools.security import KeyChain
+  File "sensor_scripts/tools/security.py", line 2, in <module>
+    from cryptography.fernet import Fernet
+ImportError: No module named cryptography.fernet
+Traceback (most recent call last):
+  File "/usr/lib/python2.7/runpy.py", line 151, in _run_module_as_main
+    mod_name, loader, code, fname = _get_module_details(mod_name)
+  File "/usr/lib/python2.7/runpy.py", line 113, in _get_module_details
+    code = loader.get_code(mod_name)
+  File "/usr/lib/python2.7/pkgutil.py", line 283, in get_code
+    self.code = compile(source, self.filename, 'exec')
+  File "/home/pi/sensor_scripts/core/dht.py", line 25
+    <<<<<<< HEAD
+     ^
+IndentationError: expected an indented block
+Traceback (most recent call last):
+  File "/usr/lib/python2.7/runpy.py", line 162, in _run_module_as_main
+    "__main__", fname, loader, pkg_name)
+  File "/usr/lib/python2.7/runpy.py", line 72, in _run_code
+    exec code in run_globals
+  File "/home/pi/sensor_scripts/core/tsl2561.py", line 5, in <module>
+    from ..extensions.mailer import PlantMailer
+  File "sensor_scripts/extensions/mailer.py", line 5, in <module>
+    from ..tools.security import KeyChain
+  File "sensor_scripts/tools/security.py", line 2, in <module>
+    from cryptography.fernet import Fernet
+ImportError: No module named cryptography.fernet
+Traceback (most recent call last):
+  File "/usr/lib/python2.7/runpy.py", line 162, in _run_module_as_main
+    "__main__", fname, loader, pkg_name)
+  File "/usr/lib/python2.7/runpy.py", line 72, in _run_code
+    exec code in run_globals
+  File "/home/pi/sensor_scripts/core/moisture.py", line 6, in <module>
+    from ..extensions.mailer import PlantMailer
+  File "sensor_scripts/extensions/mailer.py", line 5, in <module>
+    from ..tools.security import KeyChain
+  File "sensor_scripts/tools/security.py", line 2, in <module>
+    from cryptography.fernet import Fernet
+ImportError: No module named cryptography.fernet
+Traceback (most recent call last):
+  File "/usr/lib/python2.7/runpy.py", line 151, in _run_module_as_main
+    mod_name, loader, code, fname = _get_module_details(mod_name)
+  File "/usr/lib/python2.7/runpy.py", line 113, in _get_module_details
+    code = loader.get_code(mod_name)
+  File "/usr/lib/python2.7/pkgutil.py", line 283, in get_code
+    self.code = compile(source, self.filename, 'exec')
+  File "/home/pi/sensor_scripts/core/dht.py", line 25
+    <<<<<<< HEAD
+     ^
+IndentationError: expected an indented block
+44.4000015259
+22.0
