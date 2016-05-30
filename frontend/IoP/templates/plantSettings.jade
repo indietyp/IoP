@@ -22,6 +22,9 @@ block content
             .ui.fluid.left.icon.input
               input(type='file', placeholder='Location')
               i.file.image.outline.icon
+      .ui.two.buttons(style='margin-top:2%')
+            .ui.basic.button.fluid.green Apply
+            .ui.basic.button.fluid.red Reset
     .spacer(style='flex-grow:1')
     .ui.segment.circular
       img.ui.medium.circular.image(src='https://source.unsplash.com/category/nature/400x400')
@@ -182,7 +185,9 @@ block content
             .ui.left.icon.input
               input(type='text', placeholder='andreas.marbach@web.de', readonly='')
               i.user.icon
-          .ui.basic.button.fluid.green Submit
+          .ui.two.buttons
+            .ui.basic.button.fluid.green Apply
+            .ui.basic.button.fluid.red Reset
 
   //- .wrapper(style='display: flex;align-items:baseline;flex-direction:row;margin-top:2.5%;')
   .ui.segment
@@ -230,9 +235,11 @@ block content
             .ui.label.basic.violet [us_time]
             .ui.label.basic.violet [firstname]
             .ui.label.basic.violet [lastname]
+            .ui.label.basic.green [for]
+            .ui.label.basic.green [for_end]
           textarea
-    .interval
-      p sensor notification interval (hours)
+    .interval(style='margin-top:5%')
+      p(style='margin-bottom:3%') sensor notification interval (hours)
       #flat-slider-general-interval(style='margin-top: 24px;margin-bottom:24px')
         .spacer(style='flex-grow:0.5')
       script(type='text/javascript').
@@ -248,8 +255,8 @@ block content
                 last: "pip"
             })
             .slider("float");
-    .interval
-      p connection lost notification interval (minutes)
+    .interval(style='margin-top:5%')
+      p(style='margin-bottom:3%') connection lost notification interval (minutes)
       #flat-slider-dead-interval(style='margin-top: 24px;margin-bottom:24px')
         .spacer(style='flex-grow:0.5')
       script(type='text/javascript').
@@ -266,3 +273,6 @@ block content
                 last: "pip"
             })
             .slider("float");
+    .ui.two.buttons(style='margin-top:5%')
+          .ui.basic.button.fluid.green Apply
+          .ui.basic.button.fluid.red Reset
