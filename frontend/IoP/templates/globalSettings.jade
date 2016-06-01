@@ -1,0 +1,111 @@
+extends 'main.jade'
+
+block content
+  .ui.segment
+    h1.ui.header Choose your wizard
+    .meta the wizard is getting all administrative emails
+     .ui.form
+          .field
+            label Name
+            .ui.selection.dropdown
+                input(type='hidden', name='person')
+                i.dropdown.icon
+                .default.text Responsible Person
+                .menu
+                  .item(data-value='1') Andreas Marbach
+                  .item(data-value='0') Matthias Töpler
+  script(type='text/javascript').
+            $('.ui.selection.dropdown')
+              .dropdown()
+            ;
+  .ui.segment
+    h1.ui.header message presets
+    .ui.form
+       .field
+         label preset
+         .ui.selection.dropdown
+             input(type='hidden', name='person')
+             i.dropdown.icon
+             .default.text preset
+             .menu
+               .item(data-value='2') DE
+               .item(data-value='1') EN
+               .item(data-value='0')
+                i.add.icon
+                | create new
+       .field
+         label name
+         .ui.fluid.input(style='margin-bottom:2.5%')
+           input(type='text', placeholder='name')
+        .field
+          label heading
+          .ui.fluid.input(style='margin-bottom:2.5%')
+            input(type='text', placeholder='heading')
+        .field
+         label content
+         p for your preset message you can use these tags to insert custom data
+         .usecases(style='margin-bottom:1%')
+           .ui.label.basic.violet [name]
+           .ui.label.basic.violet [current]
+           .ui.label.basic.violet [ideal_max]
+           .ui.label.basic.violet [ideal_min]
+           .ui.label.basic.violet [warning_max]
+           .ui.label.basic.violet [warning_min]
+           .ui.label.basic.violet [date]
+           .ui.label.basic.violet [eu_time]
+           .ui.label.basic.violet [us_time]
+           .ui.label.basic.violet [firstname]
+           .ui.label.basic.violet [lastname]
+         textarea
+  script(type='text/javascript').
+            $('.ui.selection.dropdown')
+              .dropdown()
+            ;
+  .ui.segment
+    h1.ui.header night time
+
+  .ui.segment
+    h1.ui.header people managment
+    .ui.middle.aligned.divided.list
+      .item
+        .right.floated.content
+          .ui.small.basic.icon.buttons
+            button.ui.button
+              .ui.radio.checkbox
+                input(type='radio' name='wizard')
+                label
+                  i.wizard.icon
+            button.ui.button(onclick="$('.ui.accordion').accordion('toggle', 0);")
+              i.edit.icon
+            button.ui.button
+              i.remove.icon
+        img.ui.avatar.image(src='https://source.unsplash.com/category/nature')
+        .content Andreas Marbach
+        .ui.accordion
+          .title
+          .content
+            .ui.input.fluid
+              input(type='text' placeholder='Name')
+        script(type='text/javascript').
+          $('.ui.accordion')
+            .accordion()
+          ;
+      .item
+        .right.floated.content
+          .ui.small.basic.icon.buttons
+            button.ui.button
+              .ui.radio.checkbox
+                input(type='radio' name='wizard')
+                label
+                  i.wizard.icon
+            button.ui.button
+              i.edit.icon
+            button.ui.button
+              i.remove.icon
+        img.ui.avatar.image(src='https://source.unsplash.com/random')
+        .content Matthis Töpler
+
+
+
+  .ui.segment
+    h1.ui.header storage settings

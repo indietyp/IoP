@@ -16,3 +16,7 @@ def overviewTest():
 @app.route('/plant/settings')
 def plantSettingsTest():
     return render_template('plantSettings.jade')
+
+@app.route('/global/settings')
+def globalSettingsTest():
+    return render_template('globalSettings.jade')
