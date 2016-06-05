@@ -2,22 +2,57 @@ extends 'main.jade'
 
 block content
   .ui.segment
-    h1.ui.header Choose your wizard
-    .meta the wizard is getting all administrative emails
-     .ui.form
-          .field
-            label Name
-            .ui.selection.dropdown
-                input(type='hidden', name='person')
-                i.dropdown.icon
-                .default.text Responsible Person
-                .menu
-                  .item(data-value='1') Andreas Marbach
-                  .item(data-value='0') Matthias Töpler
-  script(type='text/javascript').
-            $('.ui.selection.dropdown')
-              .dropdown()
-            ;
+    h1.ui.header people managment
+    .ui.middle.aligned.divided.list
+      .item
+        .right.floated.content
+          .ui.small.basic.icon.buttons
+            button.ui.button
+              .ui.radio.checkbox
+                input(type='radio' name='wizard')
+                label
+                  i.wizard.icon
+            button.ui.button(onclick="$('.ui.accordion').accordion('toggle', 0);")
+              i.edit.icon
+            button.ui.button
+              i.remove.icon
+        img.ui.avatar.image(src='https://source.unsplash.com/category/nature')
+        .content Andreas Marbach
+        .ui.accordion
+          .title(style='height:0;padding:0')
+          .content(style='margin-top:1%')
+            .ui.grid
+              .two.column.row.relaxed
+                .column(style='margin-bottom:1%')
+                  .ui.fluid.left.icon.input
+                    input(type='text', placeholder='Name')
+                    i.tag.icon
+                .column
+                  .ui.fluid.left.icon.input
+                    input(type='text', placeholder='EMail')
+                    i.home.icon
+            .ui.two.buttons
+                  .ui.basic.button.fluid.green Apply
+                  .ui.basic.button.fluid.red Reset
+        script(type='text/javascript').
+          $('.ui.accordion')
+            .accordion()
+          ;
+      .item
+        .right.floated.content
+          .ui.small.basic.icon.buttons
+            button.ui.button
+              .ui.radio.checkbox
+                input(type='radio' name='wizard')
+                label
+                  i.wizard.icon
+            button.ui.button
+              i.edit.icon
+            button.ui.button
+              i.remove.icon
+        img.ui.avatar.image(src='https://source.unsplash.com/random')
+        .content Matthis Töpler
+
   .ui.segment
     h1.ui.header message presets
     .ui.form
@@ -57,55 +92,96 @@ block content
            .ui.label.basic.violet [firstname]
            .ui.label.basic.violet [lastname]
          textarea
+        .ui.two.buttons(style='margin-top:1%')
+              .ui.basic.button.fluid.green Apply
+              .ui.basic.button.fluid.red Reset
+
   script(type='text/javascript').
             $('.ui.selection.dropdown')
               .dropdown()
             ;
   .ui.segment
-    h1.ui.header night time
-
-  .ui.segment
-    h1.ui.header people managment
-    .ui.middle.aligned.divided.list
-      .item
-        .right.floated.content
-          .ui.small.basic.icon.buttons
-            button.ui.button
-              .ui.radio.checkbox
-                input(type='radio' name='wizard')
-                label
-                  i.wizard.icon
-            button.ui.button(onclick="$('.ui.accordion').accordion('toggle', 0);")
-              i.edit.icon
-            button.ui.button
-              i.remove.icon
-        img.ui.avatar.image(src='https://source.unsplash.com/category/nature')
-        .content Andreas Marbach
-        .ui.accordion
-          .title
-          .content
-            .ui.input.fluid
-              input(type='text' placeholder='Name')
-        script(type='text/javascript').
-          $('.ui.accordion')
-            .accordion()
-          ;
-      .item
-        .right.floated.content
-          .ui.small.basic.icon.buttons
-            button.ui.button
-              .ui.radio.checkbox
-                input(type='radio' name='wizard')
-                label
-                  i.wizard.icon
-            button.ui.button
-              i.edit.icon
-            button.ui.button
-              i.remove.icon
-        img.ui.avatar.image(src='https://source.unsplash.com/random')
-        .content Matthis Töpler
-
-
+    h1.ui.header day/night time
+    .ui.slider.checkbox
+      input(type='checkbox', name='cycle')
+      label active day/night cycle?
+    p select the time the device is <b> online </b>
+    #flat-slider-time-interval(style='margin-top: 24px')
+    script(type='text/javascript').
+      $("#flat-slider-time-interval")
+          .slider({
+              max: 24,
+              min: 0,
+              range: true,
+              values: [2,12]
+          })
+          .slider("pips", {
+              first: "pip",
+              last: "pip"
+          })
+    .spacer(style='margin-top:5%')
+    .ui.form
+      .inline.fields
+        label what should be deactivated when offline?
+        .field
+          .ui.checkbox
+            input(type='checkbox', name='cycle')
+            label Display
+        .field
+          .ui.checkbox
+            input(type='checkbox', name='cycle')
+            label led-bar
+        .field
+          .ui.checkbox
+            input(type='checkbox', name='cycle')
+            label general leds
+        .field
+          .ui.checkbox
+            input(type='checkbox', name='cycle')
+            label email notification
+    .ui.two.buttons
+      .ui.basic.button.fluid.green Apply
+      .ui.basic.button.fluid.red Reset
 
   .ui.segment
     h1.ui.header storage settings
+    p how long should the data be sensor data be saved?
+    #flat-slider-timer-interval(style='margin-top: 24px')
+    .spacer(style='margin-top:7.5%')
+    p#output You selected - plants
+    #flat-slider-plants-interval(style='margin-top: 24px')
+    script(type='text/javascript').
+      $("#flat-slider-timer-interval")
+          .slider({
+            max: 13,
+            min: 1,
+            range: 'min',
+            value: 2
+          })
+          .slider("pips", {
+            first: "pip",
+            last: 'label',
+            labels: {'last': '&infin;', 'first': '1'}
+          })
+      $("#flat-slider-plants-interval")
+        .slider({
+          max: 100,
+          min: 1,
+          range: 'min',
+          value: 2
+        })
+        .slider("pips", {
+          first: "pip",
+          last: "pip"
+        })
+        .on("slidechange", function(e,ui) {
+          var text='';
+          if (ui.value == 1) { text = 'plant'; } else { text = 'plants'; }
+          $("#output").text( "You selected " + ui.value + " " + text);
+        })
+        .on("slide", function(e,ui) {
+          var text='';
+          if (ui.value == 1) { text = 'plant'; } else { text = 'plants'; }
+          $("#output").text( "You selected " + ui.value + " " + text);
+        });
+

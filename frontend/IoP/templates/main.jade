@@ -16,6 +16,7 @@ html
     script(src='{{url_for("static", filename="jquery-ui.min.js")}}')
     script(src='{{url_for("static", filename="semantic.min.js")}}')
     script(src='{{url_for("static", filename="checkbox.min.js")}}')
+    script(src='{{url_for("static", filename="js/main.js")}}')
     script(src='{{url_for("static", filename="dropdown2.js")}}')
     script(src='{{url_for("static", filename="sidebar.min.js")}}')
     script(src='{{url_for("static", filename="chart.js")}}')
@@ -31,12 +32,30 @@ html
         .item
           .ui.header.inverted
             | Plants
-          a.item
+          a.item(data-html="<div class='header'>Übersicht!</div><div class='content'><div style='display:flex;align-items:center'><svg style='margin-right:10px' height='20' width='20'><circle cx='10' cy='10' r='8' fill='#21ba45'></circle></svg>humidity<div style='flex-grow:1' /></div><div style='display:flex;align-items:center'> <svg style='margin-right:10px' height='20' width='20'><circle cx='10' cy='10' r='8' fill='#fbbd08'></circle></svg> temperature, light <div style='flex-grow:1' /></div><div style='display:flex;align-items:center'><svg style='margin-right:10px' height='20' width='20'><circle cx='10' cy='10' r='8' fill='#db2828'></circle></svg> moisture<div style='flex-grow:1' /></div></div>")
+            //- eigentlich right side! idk why it dodn't do this
+            //- svg(height='20' width='20')
+            //-   circle(cx='10', cy='10', r='10', fill='#db2828')
             | Marta
-            i.meh.icon(style='font-size:1.5em;margin-top:-0.1em')
+            i.icon(style='margin-bottom:1em')
+              img(src='http://emojione.com/wp-content/uploads/assets/emojis/1f610.svg' style='width:24px')
+            //- i.  meh.icon(style='font-size:1.5em;margin-top:-0.1em'
+          a.item(data-content="Add users to your feed")
+            | Paul
+            i.icon(style='margin-bottom:1em')
+              img(src='http://emojione.com/wp-content/uploads/assets/emojis/1f618.svg' style='width:24px')
+            //- i.  meh.icon(style='font-size:1.5em;margin-top:-0.1em')
         a.item
           | Add Plant
           i.plus.icon
+    script(type='text/javascript').
+      $('a.item')
+        .popup({
+          position : 'right center',
+          title    : 'Übersicht!',
+          content  : 'My favorite dog would like other dogs as much as themselves'
+        })
+      ;
 
     .pusher(style='margin-left:270px;margin-right:10px')
       .ui.segment(style="padding-bottom:0")
@@ -47,19 +66,21 @@ html
           .ui.menu.secondary
             a.item
               i.setting.icon(style='font-size:2em')
-        .ui.five.item.tabular.pointing.menu
-          a.item.active
+        .ui.five.item.tabular.pointing.menu.mainMenu
+          a.item.overview(onClick='getOverview();')
               | overview
-          a.item
+          a.item.temperature(onClick='getSensor(\'temperature\');')
               | temperature
-          a.item
+          a.item.humidity(onClick='getSensor(\'humidity\');')
               | humidity
-          a.item
+          a.item.moisture(onClick='getSensor(\'moisture\');')
               | moisture
-          a.item
+          a.item.light(onClick='getSensor(\'light\');')
               | light
-
-      block content
+      script(type='text/javascript').
+        $(document).ready(function() {initSetTab("#{content['current']}")});
+      section.mainContent
+        block content
 
 
 
