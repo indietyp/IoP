@@ -46,6 +46,11 @@ body:before  {
   margin-top: -15%;
   font-size: 55px;
 }
+
+.chart {
+  height: 290px;
+  width: 290px;
+}
 /* .chart path:hover { opacity: 0.65; } */
 
 .preview {

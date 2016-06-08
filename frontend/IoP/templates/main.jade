@@ -10,7 +10,7 @@ html
     link(rel='stylesheet',href='{{url_for("static", filename="icon.min.css")}}')
     link(rel='stylesheet',href='{{url_for("static", filename="slider.min.css")}}')
     link(rel='stylesheet',href='{{url_for("static", filename="dropdown.min.css")}}')
-    link(rel='stylesheet',href='{{url_for("static", filename="doughnut.css")}}')
+    //- link(rel='stylesheet',href='{{url_for("static", filename="doughnut.css")}}')
     script(src='{{url_for("static", filename="jquery.min.js")}}')
     script(src='{{url_for("static", filename="imageUploader.js")}}')
     script(src='{{url_for("static", filename="jquery-ui.min.js")}}')
@@ -21,61 +21,66 @@ html
     script(src='{{url_for("static", filename="sidebar.min.js")}}')
     script(src='{{url_for("static", filename="chart.js")}}')
     script(src='{{url_for("static", filename="doughnut.js")}}')
+    script(src='{{url_for("static", filename="js/lodash.custom.min.js")}}')
     script(src='{{url_for("static", filename="jquery-ui-slider-pips.js")}}')
 
-    //- <script src="https://code.jquery.com/ui/1.11.1/jquery-ui.js"></script>
-    //- <link rel="stylesheet" href="https://code.jquery.com/ui/1.10.4/themes/flick/jquery-ui.css">
-    //- <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.3/jquery.min.js"></script>
+    link(rel='stylesheet',href='{{url_for("static", filename="css/main.css")}}')
 
   body
-    .ui.vertical.inverted.sticky.menu.fixed.top(style='z-index:1;left: 0px; width: 250px; height:100%; margin-top: 0px;')
-        .item
-          .ui.header.inverted
-            | Plants
-          a.item(data-html="<div class='header'>Übersicht!</div><div class='content'><div style='display:flex;align-items:center'><svg style='margin-right:10px' height='20' width='20'><circle cx='10' cy='10' r='8' fill='#21ba45'></circle></svg>humidity<div style='flex-grow:1' /></div><div style='display:flex;align-items:center'> <svg style='margin-right:10px' height='20' width='20'><circle cx='10' cy='10' r='8' fill='#fbbd08'></circle></svg> temperature, light <div style='flex-grow:1' /></div><div style='display:flex;align-items:center'><svg style='margin-right:10px' height='20' width='20'><circle cx='10' cy='10' r='8' fill='#db2828'></circle></svg> moisture<div style='flex-grow:1' /></div></div>")
-            //- eigentlich right side! idk why it dodn't do this
-            //- svg(height='20' width='20')
-            //-   circle(cx='10', cy='10', r='10', fill='#db2828')
-            | Marta
-            i.icon(style='margin-bottom:1em')
-              img(src='http://emojione.com/wp-content/uploads/assets/emojis/1f610.svg' style='width:24px')
-            //- i.  meh.icon(style='font-size:1.5em;margin-top:-0.1em'
-          a.item(data-content="Add users to your feed")
-            | Paul
-            i.icon(style='margin-bottom:1em')
-              img(src='http://emojione.com/wp-content/uploads/assets/emojis/1f618.svg' style='width:24px')
-            //- i.  meh.icon(style='font-size:1.5em;margin-top:-0.1em')
-        a.item
-          | Add Plant
-          i.plus.icon
+    .ui.vertical.inverted.sticky.menu.fixed.top.iopsidebar
+      .item
+        .ui.header.inverted
+          | Plants
+        a.item.plant.marta(data-html="<div class='header'>Übersicht!</div><div class='content'><div style='display:flex;align-items:center'><svg style='margin-right:10px' height='20' width='20'><circle cx='10' cy='10' r='8' fill='#21ba45'></circle></svg>humidity<div style='flex-grow:1' /></div><div style='display:flex;align-items:center'> <svg style='margin-right:10px' height='20' width='20'><circle cx='10' cy='10' r='8' fill='#fbbd08'></circle></svg> temperature, light <div style='flex-grow:1' /></div><div style='display:flex;align-items:center'><svg style='margin-right:10px' height='20' width='20'><circle cx='10' cy='10' r='8' fill='#db2828'></circle></svg> moisture<div style='flex-grow:1' /></div></div>" onClick='goToPlant(this)')
+          | Marta
+          i.icon
+            img(src='http://emojione.com/wp-content/uploads/assets/emojis/1f610.svg' style='width:24px')
+        a.item.plant.paul(data-content="Add users to your feed" onClick='goToPlant(this)')
+          | Paul
+          i.icon
+            img(src='http://emojione.com/wp-content/uploads/assets/emojis/1f618.svg' style='width:24px')
+
+      a.item
+        | Add Plant
+        i.plus.icon
+
+      .spacer(style='flex-grow:1')
+
+      a.item
+        | Manage Plants
+        i.server.icon
+      a.item.global_settings
+        | Global Settings
+        i.options.icon
+
     script(type='text/javascript').
-      $('a.item')
+      $('a.item.plant')
         .popup({
           position : 'right center',
-          title    : 'Übersicht!',
-          content  : 'My favorite dog would like other dogs as much as themselves'
+          title    : 'Übersicht!'
         })
       ;
 
-    .pusher(style='margin-left:270px;margin-right:10px')
-      .ui.segment(style="padding-bottom:0")
-        .information(style="display: flex;align-items:baseline")
+    .pusher
+      .ui.segment.iopheader
+        .information
           h1.ui.header Internet of Plants
-          .spacer(style='flex-grow:1')
-          h1.ui.header Marta
-          .ui.menu.secondary
-            a.item
-              i.setting.icon(style='font-size:2em')
+          .spacer
+          h1.ui.header.plant_header= content['current_active'].capitalize()
+          - var button_style = 'display:none' if content['type'] != 'plant' else 'display:inherit'
+          .ui.menu.secondary(style=button_style)
+            a.horizontally.fitted.item(onClick='getPlantSettings()')
+              i.setting.icon
         .ui.five.item.tabular.pointing.menu.mainMenu
           a.item.overview(onClick='getOverview();')
               | overview
-          a.item.temperature(onClick='getSensor(\'temperature\');')
+          a.item.temperature(onClick='getSensor(this);')
               | temperature
-          a.item.humidity(onClick='getSensor(\'humidity\');')
+          a.item.humidity(onClick='getSensor(this);')
               | humidity
-          a.item.moisture(onClick='getSensor(\'moisture\');')
+          a.item.moisture(onClick='getSensor(this);')
               | moisture
-          a.item.light(onClick='getSensor(\'light\');')
+          a.item.light(onClick='getSensor(this);')
               | light
       script(type='text/javascript').
         $(document).ready(function() {initSetTab("#{content['current']}")});

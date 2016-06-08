@@ -1,0 +1,83 @@
+
+body:before  {
+  content: "";
+   position: fixed;
+   top: 0;
+   left: 0;
+   right: 0;
+   bottom: 0;
+   z-index: -1;
+
+   display: block;
+   background-image: url('https://source.unsplash.com/category/nature');
+   background-size:cover;
+   width: 100%;
+   height: 100%;
+
+   -webkit-filter: blur(10px);
+   -moz-filter: blur(10px);
+   -o-filter: blur(10px);
+   -ms-filter: blur(10px);
+   filter: blur(10px);
+}
+
+body > .pusher {
+  margin-left: 270px;
+  margin-right: 15px;
+  > .iopheader {
+    padding-bottom: 0;
+    > .information {
+      display: flex;
+      align-items: baseline;
+      > .spacer {
+        flex-grow:1;
+      }
+      > .menu > a.item > i {
+        font-size:2em !important;
+        margin-left:12px !important;
+        margin-right:12px !important;
+      }
+    }
+  }
+}
+
+div.iopsidebar {
+  display: flex !important;
+  z-index: 1 !important;
+  left: 0 !important;
+  width: 250px !important;
+  height: 100% !important;
+  margin-top: 0 !important;
+}
+
+a.item.plant > i.icon {
+  margin-bottom: 1em !important;
+}
+.chart {
+  margin: 0 auto;
+  width: 290px;
+  height: 290px;
+  position: relative;
+}
+.doughnutSummary {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  text-align: center;
+  cursor: default;
+}
+.doughnutSummaryTitle {
+  position: absolute;
+  top: 25%;
+  width: 100%;
+  // text-transform: uppercase;
+  font-size: 22px;
+  letter-spacing: .06em;
+}
+.doughnutSummaryNumber {
+  position: absolute;
+  top: 50%;
+  width: 100%;
+  margin-top: -15%;
+  font-size: 55px;
+}

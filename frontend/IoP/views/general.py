@@ -29,4 +29,4 @@ def plantSettingsTest():
 @app.route('/global/settings')
 def globalSettingsTest():
   content = {}
-  return render_template('globalSettings.jade')
+  return render_template('general/settings.jade', content={'current_active': 'Global Settings', 'type': 'setting'})

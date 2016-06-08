@@ -1,3 +1,22 @@
+getCurrentPlant = () ->
+  request = $.ajax
+    url: '/get/current/plant',
+    method: 'POST',
+    # not as good as you might think!
+    # pls find other solution, thank you!
+    async: false
+    data: {}
+
+  request.done (msg) ->
+    return
+
+  request.fail (jqXHR, textStatus) ->
+    $('section.mainContent').html('Request failed:' + textStatus);
+    return
+  return request.responseText
+
+# JQUERY!!!!!!!!!!!
+# CLICK EVENT!
 getOverview = () ->
   request = $.ajax
     url: '/get/plant/overview',
@@ -6,7 +25,7 @@ getOverview = () ->
 
   request.done (msg) ->
     $('section.mainContent').html(msg);
-    window.history.pushState({}, '', '/plant/marta/overview');
+    window.history.pushState({}, '', '/plant/' + getCurrentPlant() + '/overview');
     return
 
   request.fail (jqXHR, textStatus) ->
@@ -15,7 +34,12 @@ getOverview = () ->
   return
 window.getOverview = getOverview
 
-getSensor = (sensor) ->
+
+# JQUERY!!!!!!!!!!!
+# CLICK EVENT!
+getSensor = (that) ->
+  sensor =  $(that).attr('class').split(' ')[1]
+
   request = $.ajax
     url: '/get/plant/sensor',
     method: 'POST'
@@ -29,11 +53,15 @@ getSensor = (sensor) ->
     $('section.mainContent').html('Request failed:' + textStatus);
     return
 
-  window.history.pushState({}, '', '/plant/marta/' + sensor);
+  window.history.pushState({}, '', '/plant/' +  getCurrentPlant()  + '/' + sensor);
   return
 window.getSensor = getSensor
 
-goToPlant = (plant) ->
+# JQUERY!!!!!!!!!!!
+# CLICK EVENT!
+goToPlant = (that) ->
+  plant =  $(that).attr('class').split(' ')[2]
+
   request = $.ajax
     url: '/get/plant/overview',
     method: 'POST'
@@ -42,12 +70,38 @@ goToPlant = (plant) ->
   request.done (msg) ->
     $('section.mainContent').html(msg);
     window.history.pushState({}, '', '/plant/' + plant + '/overview');
+    $('div.menu.mainMenu a').parent().children('.active').removeClass 'active'
+    $('div.menu.mainMenu a.overview').addClass 'active'
+    $('div.pusher div.ui.segment div.information h1.ui.header.plant_header').html _.capitalize(plant)
+    $('div.iopheader div.ui.menu.secondary').css('display', 'inherit')
     return
 
   request.fail (jqXHR, textStatus) ->
     $('section.mainContent').html('Request failed:' + textStatus);
     return
   return
+window.goToPlant = goToPlant
+
+# JQUERY!!!!!!!!!!!
+# CLICK EVENT!
+getPlantSettings = () ->
+  request = $.ajax
+    url: '/get/plant/settings',
+    method: 'POST'
+    data: {}
+
+  request.done (msg) ->
+    $('section.mainContent').html(msg);
+    $('div.menu.mainMenu a').parent().children('.active').removeClass 'active'
+    return
+
+  request.fail (jqXHR, textStatus) ->
+    $('section.mainContent').html('Request failed:' + textStatus);
+    return
+
+  window.history.pushState({}, '', '/plant/' +  getCurrentPlant()  + '/settings');
+  return
+window.getPlantSettings = getPlantSettings
 
 initSetTab = (tabName) ->
   $('div.menu.mainMenu').children('.' + tabName).addClass 'active'
@@ -58,5 +112,27 @@ $ ->
   $('div.menu.mainMenu a').click (e) ->
     $(this).parent().children('.active').removeClass 'active'
     $(this).addClass 'active'
+    return
+
+  $('a.item.global_settings').click (e) ->
+    request = $.ajax
+      url: '/get/general/settings',
+      method: 'POST'
+      data: {}
+
+    request.done (msg) ->
+      $('section.mainContent').html(msg);
+      window.history.pushState({}, '', '/global/settings');
+      $('div.menu.mainMenu a').parent().children('.active').removeClass 'active'
+      # $('div.menu.mainMenu a.overview').addClass 'active'
+      $('div.pusher div.ui.segment div.information h1.ui.header.plant_header').html _.capitalize('Global Settings')
+      $('div.iopheader div.ui.menu.secondary').css('display', 'none')
+      return
+
+    request.fail (jqXHR, textStatus) ->
+      $('section.mainContent').html('Request failed:' + textStatus);
+      return
+
+    window.history.pushState({}, '', '/global/settings');
     return
   return

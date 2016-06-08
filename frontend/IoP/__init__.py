@@ -9,3 +9,4 @@ app.secret_key = 'uyfo2346tr3r3urey8f138r9pfr1vy3ofydv'
 import IoP.views.general
 import IoP.views.plants
 import IoP.views.get.plants
+import IoP.views.get.general

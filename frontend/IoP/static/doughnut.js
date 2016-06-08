@@ -27,7 +27,7 @@
         edgeOffset : 10,//offset from edge of $this
         percentageInnerCutout : 75,
         animation : true,
-        animationSteps : 90,
+        animationSteps : 45,
         animationEasing : "easeInOutExpo",
         animateRotate : true,
         tipOffsetX: -8,
