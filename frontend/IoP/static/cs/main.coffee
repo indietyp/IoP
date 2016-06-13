@@ -46,7 +46,34 @@ getSensor = (that) ->
     data: {sensor: sensor}
 
   request.done (msg) ->
-    $('section.mainContent').html(msg);
+    # $('section.mainContent').fadeOut('fast').delay(100).html(msg).fadeIn('slow');
+    # $('section.mainContent').fadeOut('slow').html(msg).delay(50).show()
+    $('section.mainContent').html(msg)
+    # sensordata = $.ajax
+    #   url: '/get/plant/sensor/dataset',
+    #   method: 'POST'
+    #   data: {}
+
+    # sensordata.done (sensordatamsg) ->
+    #   sensordataset = []
+    #   # console.log sensordatamsg
+    #   for data in JSON.parse(sensordatamsg)
+    #     # console.log data
+    #     sensordataset.push [new Date(data['dt'] * 1000), data['v']]
+
+    #   smoothPlotter.smoothing = 0.33;
+    #   g = new Dygraph(document.getElementById("graph"),
+    #    sensordataset,
+    #    {
+    #     labels: [sensor, sensor],
+    #     plotter: smoothPlotter,
+    #     legend: 'always',
+    #     animatedZooms: true,
+    #     # title: 'dygraphs chart template'
+    #    });
+    #   # window.sensordataset = sensordataset
+
+    #   return
     return
 
   request.fail (jqXHR, textStatus) ->
@@ -134,5 +161,29 @@ $ ->
       return
 
     window.history.pushState({}, '', '/global/settings');
+    return
+
+  $('a.item.plant').click (e) ->
+    plant =  $(this).attr('class').split(' ')[2]
+
+    request = $.ajax
+      url: '/get/plant/overview',
+      method: 'POST'
+      data: {plant: plant}
+
+    request.done (msg) ->
+      $('section.mainContent').fadeOut 'slow', () ->
+        $('section.mainContent').html(msg).fadeIn('slow');
+        return
+      window.history.pushState({}, '', '/plant/' + plant + '/overview');
+      $('div.menu.mainMenu a').parent().children('.active').removeClass 'active'
+      $('div.menu.mainMenu a.overview').addClass 'active'
+      $('div.pusher div.ui.segment div.information h1.ui.header.plant_header').html _.capitalize(plant)
+      $('div.iopheader div.ui.menu.secondary').css('display', 'inherit')
+      return
+
+    request.fail (jqXHR, textStatus) ->
+      $('section.mainContent').html('Request failed:' + textStatus);
+      return
     return
   return

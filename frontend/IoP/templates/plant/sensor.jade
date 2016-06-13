@@ -51,18 +51,31 @@ block content
             });
     .spacer(style='flex-grow:0.25')
 
-  .ui.card(style='width:100%;height :100%;margin-bottom:15px')
-    canvas#sensorLineChart(height=100)
+  .ui.segment
+    #graph(style='width:100%; height:350px')
+      - var randomizer = ['data needs to be polished', 'some bits escaped, we\'re trying to catch them', 'cleaning data pipes!', 'it\'s not a bug, it\'s a feature!', 'your connection is to slow..', 'shaving beards', 'loading more than 1000 datasets, could you please be impressed... thank you', 'killing some bugs', 'trying to discuss if 1+1 is really 2 or rather 10', 'MARTA IS EVERYWHERE!']
+      .ui.active.inverted.dimmer
+        .ui.text.loader= 'please wait... ' + content['random'].choice(randomizer)
     script(type='text/javascript').
-      var ctx = document.getElementById("sensorLineChart");
-      var myLineChart = new Chart(ctx, {
-          type: 'line',
-          data: {
-              labels: ["Red", "Blue", "Yellow", "Green", "Purple", "Orange"],
-              datasets: [{
-                  label: '# of Votes',
-                  data: [12, 19, 3, 5, 2, 3]
-              }]
-          },
+      //- ADD LOCAL STORAGE, thank you!
+      sensordata = $.ajax({
+        url: '/get/plant/sensor/dataset',
+        method: 'POST',
+        data: {}
       });
-
+      sensordata.done(function(sensordatamsg) {
+        var data, g, i, len, ref, sensordataset;
+        sensordataset = [];
+        ref = JSON.parse(sensordatamsg);
+        for (i = 0, len = ref.length; i < len; i++) {
+          data = ref[i];
+          sensordataset.push([new Date(data['dt'] * 1000), data['v']]);
+        }
+        smoothPlotter.smoothing = 0.33;
+        g = new Dygraph(document.getElementById("graph"), sensordataset, {
+          labels: ["time", "#{content['current']}"],
+          plotter: smoothPlotter,
+          legend: 'always',
+          animatedZooms: true
+        });
+      });

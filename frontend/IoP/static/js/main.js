@@ -130,6 +130,30 @@
       });
       window.history.pushState({}, '', '/global/settings');
     });
+    $('a.item.plant').click(function(e) {
+      var plant, request;
+      plant = $(this).attr('class').split(' ')[2];
+      request = $.ajax({
+        url: '/get/plant/overview',
+        method: 'POST',
+        data: {
+          plant: plant
+        }
+      });
+      request.done(function(msg) {
+        $('section.mainContent').fadeOut('slow', function() {
+          $('section.mainContent').html(msg).fadeIn('slow');
+        });
+        window.history.pushState({}, '', '/plant/' + plant + '/overview');
+        $('div.menu.mainMenu a').parent().children('.active').removeClass('active');
+        $('div.menu.mainMenu a.overview').addClass('active');
+        $('div.pusher div.ui.segment div.information h1.ui.header.plant_header').html(_.capitalize(plant));
+        $('div.iopheader div.ui.menu.secondary').css('display', 'inherit');
+      });
+      request.fail(function(jqXHR, textStatus) {
+        $('section.mainContent').html('Request failed:' + textStatus);
+      });
+    });
   });
 
 }).call(this);

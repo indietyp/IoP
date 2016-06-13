@@ -28,13 +28,13 @@ block content
             .meta PPS&trade;
             .uptime.column(style="display: flex;align-items:center;flex-direction:row;padding-left:0;padding-right:0")
               i.tag.icon(style='font-size:1.5em;margin-top:.5em')
-              p(style='margin-top:5px') marta
+              p(style='margin-top:5px')= content['current_active'].capitalize()
             .birthday.column(style="display: flex;align-items:center;flex-direction:row;padding-left:0;padding-right:0")
               i.birthday.icon(style='font-size:1.5em;margin-top:.5em')
-              p(style='margin-top:5px') 29/12/2015
+              p(style='margin-top:5px')= content['created_at'].strftime('%d.%m %Y')
             .home.column(style="display: flex;align-items:center;flex-direction:row;padding-left:0;padding-right:0")
               i.home.icon(style='font-size:1.5em;margin-top:.5em')
-              p(style='margin-top:5px') a better place then before
+              p(style='margin-top:5px')= content['location']
           .extra.content nice name dude!
     .spacer(style='flex-grow:0.25')
     .collum-wrapper(style='display: flex;align-items:center;flex-direction:column;padding-left:0;padding-right:0')
@@ -48,7 +48,7 @@ block content
                 p(style='margin-top:5px') 90%
               .survived.column(style="display: flex;align-items:center;flex-direction:column;padding-left:0;padding-right:0")
                 i.power.icon.green(style='font-size:1.5em;margin-top:.5em')
-                p(style='margin-top:5px') 90,5 days
+                p(style='margin-top:5px')= content['survived'] + ' days'
           .extra.content Your internet is really connected
 
       .ui.card.purple
@@ -57,13 +57,17 @@ block content
             .meta has the best job ever!
             .user.column(style="display: flex;align-items:center;flex-direction:row;padding-left:0;padding-right:0")
               i.user.icon(style='font-size:1.5em;margin-top:.5em')
-              p(style='margin-top:5px') Bilal Mahmoud
+              p(style='margin-top:5px')= content['responsible']['username']
             .email.column(style="display: flex;align-items:center;flex-direction:row;padding-left:0;padding-right:0")
               i.mail.icon(style='font-size:1.5em;margin-top:.5em')
-              p(style='margin-top:5px') bilalmahmoud@posteo.de
+              p(style='margin-top:5px')= content['responsible']['email']
             .wizard.column(style="display: flex;align-items:center;flex-direction:row;padding-left:0;padding-right:0")
               i.wizard.icon(style='font-size:1.5em;margin-top:.5em')
-              p(style='margin-top:5px') nope
+              p(style='margin-top:5px')
+                if content['responsible']['wizard'] == true
+                  | yeah!
+                else
+                  | nope
               //- wizard == admin, but noe he is called wizard
               //- WIZARD = ADMIN
               //- SPY = best caretaker
