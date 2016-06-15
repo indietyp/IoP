@@ -9,7 +9,48 @@
  *
  */
 ;(function($, undefined) {
-  $.fn.drawDoughnutChart = function(data, options) {
+  $.fn.drawDoughnutChart = function(value, max_min_range, ranges, options) {
+    if (value >= ranges['yellow']['min'] && value <= ranges['yellow']['max']) {
+      pie_color_segment = '#fbbd08'
+      if (value >= ranges['green']['min'] && value <= ranges['green']['max']) {
+        pie_color_segment = '#21ba45'
+      }
+    } else {
+      pie_color_segment = '#db2828'
+    }
+    if (value < 0) {
+      limiter = Math.abs(max_min_range['min']) - Math.abs(value);
+      if (Math.abs(value) >= Math.abs(max_min_range['min'])) {
+        limiter = 0.1;
+      }
+      data = [
+        {
+          title: "--",
+          value: Math.abs(limiter),
+          color: "#000000"
+        }, {
+          title: "--",
+          value: Math.abs(value),
+          color: pie_color_segment
+        }
+      ];
+    } else {
+      limiter = max_min_range['max'] - value;
+      if (value >= max_min_range['max']) {
+        limiter = 0.1;
+      }
+      data = [
+        {
+          title: "--",
+          value: value,
+          color: pie_color_segment
+        }, {
+          title: "--",
+          value: limiter,
+          color: "#000000"
+        }
+      ];
+    }
     var $this = this,
       W = $this.width(),
       H = $this.height(),
@@ -204,7 +245,7 @@
       $summaryNumber
         .css({opacity: animationDecimal})
         // .text((segmentTotal * animationDecimal).toFixed(1));
-        .text((data[0].value * animationDecimal).toFixed(1));
+        .text((value * animationDecimal).toFixed(1));
     }
     function animateFrame(cnt, drawData) {
       var easeAdjustedAnimationPercent =(settings.animation)? CapValue(easingFunction(cnt), null, 0) : 1;

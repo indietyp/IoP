@@ -1,4 +1,4 @@
-from IoP import app, init_overview
+from IoP import app, init_overview, init_sensor
 from flask import render_template, session, request
 import sys, urllib.request, random
 
@@ -28,7 +28,9 @@ def getSensorDataset():
 def getSensor():
   sensor = request.form['sensor']
   session['sensor'] = sensor
-  return render_template('plant/sensor.jade', content={'get': False, 'current': sensor, 'random': random})
+  content = {'get': False, 'current': sensor, 'random': random}
+  content.update(init_sensor())
+  return render_template('plant/sensor.jade', content=content)
 
 @app.route('/get/current/plant', methods=['POST'])
 def getCurrentPlant():

@@ -10,44 +10,48 @@ block content
           .header Gesamt
           .ui.three.column.grid
             .high.column(style="display: flex;align-items:center;flex-direction:column;padding-left:0;padding-right:0")
-              .meta 1. Mai 2016
+              .meta= content['ever_data']['high']['t']
               i.chevron.up.icon.green
-              p(style='margin-top:5px') 29°C
+              p(style='margin-top:5px')= content['ever_data']['high']['v']|string + content['sensor_unit']|string
             .difference.column(style="display: flex;align-items:center;flex-direction:column;padding-left:0;padding-right:0")
               .spacer(style="opacity:0") t
               i.resize.horizontal.icon
-              p(style='margin-top:5px') 6°C
+              p(style='margin-top:5px')= content['ever_data']['difference']|string
+              //- content['sensor_unit']|string
             .low.column(style="display: flex;align-items:center;flex-direction:column;padding-left:0;padding-right:0")
-              .meta 2. Juli 2015
+              .meta= content['ever_data']['low']['t']
               i.chevron.down.icon.red
-              p(style='margin-top:5px') 19°C
+              p(style='margin-top:5px')= content['ever_data']['low']['v']|string + content['sensor_unit']|string
       .spacer(style='flex-grow:1')
       .ui.card.green
-        .content.green
-          .header Heute
+        .content
+          .header= content['recent_data']['date']
           .ui.three.column.grid
             .high.column(style="display: flex;align-items:center;flex-direction:column;padding-left:0;padding-right:0")
-              .meta 14:20
+              .meta= content['recent_data']['high']['t']
               i.chevron.up.icon.green
-              p(style='margin-top:5px') 29°C
+              p(style='margin-top:5px')= content['recent_data']['high']['v']|string + content['sensor_unit']|string
             .difference.column(style="display: flex;align-items:center;flex-direction:column;padding-left:0;padding-right:0")
               .spacer(style="opacity:0") t
               i.resize.horizontal.icon
-              p(style='margin-top:5px') 14°C
+              p(style='margin-top:5px')= content['recent_data']['difference']|string
+              //- content['sensor_unit']|string
             .low.column(style="display: flex;align-items:center;flex-direction:column;padding-left:0;padding-right:0")
-              .meta 13:12
+              .meta= content['recent_data']['low']['t']
               i.chevron.down.icon.red
-              p(style='margin-top:5px') 19°C
+              p(style='margin-top:5px')= content['recent_data']['low']['v']|string + content['sensor_unit']|string
     .spacer(style='flex-grow:0.5')
     .ui.segment.circular
       .doughnutInformation(style='height:290px;width:290px')
         #doughnutChart.chart
+        //- needs to be finished! (add data -> range! and so on! and modify js library todo so)
         script(type='text/javascript').
             $(function(){
-              $("#doughnutChart").drawDoughnutChart([
-                { title: "Tokyo",         value : 12,  color: "#2C3E50" },
-                { title: "Tokyo",         value : 38,  color: "#000000" },
-              ]);
+              //- $("#doughnutChart").drawDoughnutChart([
+              //-   { title: "Tokyo",         value : 12,  color: "#2C3E50" },
+              //-   { title: "Tokyo",         value : 38,  color: "#000000" },
+              //- ]);
+              $("#doughnutChart").drawDoughnutChart(#{content['current_data']['v']}, !{content['sensor_range']}, !{content['sensor_color_ranges']});
             });
     .spacer(style='flex-grow:0.25')
 

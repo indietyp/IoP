@@ -1,4 +1,4 @@
-from IoP import app, init, init_overview
+from IoP import app, init, init_overview, init_sensor
 from flask import render_template, session
 import random
 
@@ -25,6 +25,7 @@ def sensorData(plant, sensor):
   session['sensor'] = sensor
 
   content = init()
+  content.update(init_sensor())
   content.update({'current': sensor, 'get': True, 'current_active': plant, 'type': 'plant', 'random': random})
   return render_template('plant/sensor.jade', content=content)
 

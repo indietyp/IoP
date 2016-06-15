@@ -1,0 +1,9 @@
+# UPDATE
+# PLANT:
+# - NAME
+# - RESPONSIBLE
+# - RANGE
+# -- GREEN
+# -- YELLOW
+# - LOCATION
+# - TYPE
