@@ -13,13 +13,13 @@ block content
             .ui.three.column.grid
               .smile.column(style="display: flex;align-items:center;flex-direction:column;padding-left:0;padding-right:0")
                 i.smile.icon.green(style='font-size:1.5em;margin-top:.5em')
-                p(style='margin-top:5px') 50%
+                p(style='margin-top:5px')= content['average_percent']['green'][0]|string + '%'
               .meh.column(style="display: flex;align-items:center;flex-direction:column;padding-left:0;padding-right:0")
                 i.meh.icon.yellow(style='font-size:1.5em;margin-top:.5em')
-                p(style='margin-top:5px') 40%
+                p(style='margin-top:5px')= content['average_percent']['yellow'][0]|string + '%'
               .frown.column(style="display: flex;align-items:center;flex-direction:column;padding-left:0;padding-right:0")
                 i.frown.icon.red(style='font-size:1.5em;margin-top:.5em')
-                p(style='margin-top:5px') 10%
+                p(style='margin-top:5px')= content['average_percent']['red'][0]|string + '%'
           .extra.content 50% green... wanna kill your plant?
 
       .ui.card.purple
@@ -45,7 +45,7 @@ block content
             .ui.two.column.grid
               .uptime.column(style="display: flex;align-items:center;flex-direction:column;padding-left:0;padding-right:0")
                 i.wifi.icon.green(style='font-size:1.5em;margin-top:.5em')
-                p(style='margin-top:5px') 90%
+                p(style='margin-top:5px')= content['average_online']['online'][0]|string + '%'
               .survived.column(style="display: flex;align-items:center;flex-direction:column;padding-left:0;padding-right:0")
                 i.power.icon.green(style='font-size:1.5em;margin-top:.5em')
                 p(style='margin-top:5px')= content['survived'] + ' days'

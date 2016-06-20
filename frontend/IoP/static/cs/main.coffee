@@ -15,125 +15,44 @@ getCurrentPlant = () ->
     return
   return request.responseText
 
-# JQUERY!!!!!!!!!!!
-# CLICK EVENT!
-getOverview = () ->
-  request = $.ajax
-    url: '/get/plant/overview',
-    method: 'POST'
-    data: {}
+initLineGraph = (graphName) ->
+  # ADD LOCAL STORAGE
+  sensordata = $.ajax
+   url: '/get/plant/sensor/dataset',
+   method: 'POST'
+   data: {}
 
-  request.done (msg) ->
-    $('section.mainContent').html(msg);
-    window.history.pushState({}, '', '/plant/' + getCurrentPlant() + '/overview');
-    return
+  sensordata.done (sensordatamsg) ->
+    sensordataset = []
+    # console.log sensordatamsg
+    for data in JSON.parse(sensordatamsg)
+     # console.log data
+      sensordataset.push [new Date(data['dt'] * 1000), data['v']]
 
-  request.fail (jqXHR, textStatus) ->
-    $('section.mainContent').html('Request failed:' + textStatus);
-    return
-  return
-window.getOverview = getOverview
+    smoothPlotter.smoothing = 0.33;
+    g = new Dygraph(document.getElementById("graph"),
+     sensordataset,
+     {
+      labels: ['time', graphName],
+      plotter: smoothPlotter,
+      legend: 'always',
+      animatedZooms: true,
+      # title: 'dygraphs chart template'
+     });
+    # window.sensordataset = sensordataset
 
-
-# JQUERY!!!!!!!!!!!
-# CLICK EVENT!
-getSensor = (that) ->
-  sensor =  $(that).attr('class').split(' ')[1]
-
-  request = $.ajax
-    url: '/get/plant/sensor',
-    method: 'POST'
-    data: {sensor: sensor}
-
-  request.done (msg) ->
-    # $('section.mainContent').fadeOut('fast').delay(100).html(msg).fadeIn('slow');
-    # $('section.mainContent').fadeOut('slow').html(msg).delay(50).show()
-    $('section.mainContent').html(msg)
-    # sensordata = $.ajax
-    #   url: '/get/plant/sensor/dataset',
-    #   method: 'POST'
-    #   data: {}
-
-    # sensordata.done (sensordatamsg) ->
-    #   sensordataset = []
-    #   # console.log sensordatamsg
-    #   for data in JSON.parse(sensordatamsg)
-    #     # console.log data
-    #     sensordataset.push [new Date(data['dt'] * 1000), data['v']]
-
-    #   smoothPlotter.smoothing = 0.33;
-    #   g = new Dygraph(document.getElementById("graph"),
-    #    sensordataset,
-    #    {
-    #     labels: [sensor, sensor],
-    #     plotter: smoothPlotter,
-    #     legend: 'always',
-    #     animatedZooms: true,
-    #     # title: 'dygraphs chart template'
-    #    });
-    #   # window.sensordataset = sensordataset
-
-    #   return
-    return
-
-  request.fail (jqXHR, textStatus) ->
-    $('section.mainContent').html('Request failed:' + textStatus);
-    return
-
-  window.history.pushState({}, '', '/plant/' +  getCurrentPlant()  + '/' + sensor);
-  return
-window.getSensor = getSensor
-
-# JQUERY!!!!!!!!!!!
-# CLICK EVENT!
-goToPlant = (that) ->
-  plant =  $(that).attr('class').split(' ')[2]
-
-  request = $.ajax
-    url: '/get/plant/overview',
-    method: 'POST'
-    data: {plant: plant}
-
-  request.done (msg) ->
-    $('section.mainContent').html(msg);
-    window.history.pushState({}, '', '/plant/' + plant + '/overview');
-    $('div.menu.mainMenu a').parent().children('.active').removeClass 'active'
-    $('div.menu.mainMenu a.overview').addClass 'active'
-    $('div.pusher div.ui.segment div.information h1.ui.header.plant_header').html _.capitalize(plant)
-    $('div.iopheader div.ui.menu.secondary').css('display', 'inherit')
-    return
-
-  request.fail (jqXHR, textStatus) ->
-    $('section.mainContent').html('Request failed:' + textStatus);
-    return
-  return
-window.goToPlant = goToPlant
-
-# JQUERY!!!!!!!!!!!
-# CLICK EVENT!
-getPlantSettings = () ->
-  request = $.ajax
-    url: '/get/plant/settings',
-    method: 'POST'
-    data: {}
-
-  request.done (msg) ->
-    $('section.mainContent').html(msg);
-    $('div.menu.mainMenu a').parent().children('.active').removeClass 'active'
-    return
-
-  request.fail (jqXHR, textStatus) ->
-    $('section.mainContent').html('Request failed:' + textStatus);
-    return
-
-  window.history.pushState({}, '', '/plant/' +  getCurrentPlant()  + '/settings');
-  return
-window.getPlantSettings = getPlantSettings
+   return
+window.initLineGraph = initLineGraph
 
 initSetTab = (tabName) ->
   $('div.menu.mainMenu').children('.' + tabName).addClass 'active'
   return
 window.initSetTab = initSetTab
+
+# sg_nsps == settings get - non specific plant stuff
+sg_nsps = () ->
+  return
+
 
 $ ->
   $('div.menu.mainMenu a').click (e) ->
@@ -163,6 +82,27 @@ $ ->
     window.history.pushState({}, '', '/global/settings');
     return
 
+  $('a.item.plant_settings').click (e) ->
+    request = $.ajax
+      url: '/get/plant/settings',
+      method: 'POST'
+      data: {}
+
+    request.done (msg) ->
+      $('section.mainContent').html(msg);
+      $('div.menu.mainMenu a').parent().children('.active').removeClass 'active'
+
+      # sg_nsps == settings get - non specific plant stuff
+      sg_nsps()
+      return
+
+    request.fail (jqXHR, textStatus) ->
+      $('section.mainContent').html('Request failed:' + textStatus);
+      return
+
+    window.history.pushState({}, '', '/plant/' +  getCurrentPlant()  + '/settings');
+    return
+
   $('a.item.plant').click (e) ->
     plant =  $(this).attr('class').split(' ')[2]
 
@@ -186,4 +126,40 @@ $ ->
       $('section.mainContent').html('Request failed:' + textStatus);
       return
     return
+
+  $('a.item.sensor').click (e) ->
+    sensor =  $(this).attr('class').split(' ')[2]
+
+    request = $.ajax
+      url: '/get/plant/sensor',
+      method: 'POST'
+      data: {sensor: sensor}
+
+    request.done (msg) ->
+      $('section.mainContent').html(msg)
+      return
+
+    request.fail (jqXHR, textStatus) ->
+      $('section.mainContent').html('Request failed:' + textStatus);
+      return
+
+    window.history.pushState({}, '', '/plant/' +  getCurrentPlant()  + '/' + sensor);
+    return
+
+  $('a.item.overview').click (e) ->
+    request = $.ajax
+      url: '/get/plant/overview',
+      method: 'POST'
+      data: {}
+
+    request.done (msg) ->
+      $('section.mainContent').html(msg);
+      window.history.pushState({}, '', '/plant/' + getCurrentPlant() + '/overview');
+      return
+
+    request.fail (jqXHR, textStatus) ->
+      $('section.mainContent').html('Request failed:' + textStatus);
+      return
+    return
   return
+

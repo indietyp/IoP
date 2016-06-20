@@ -78,18 +78,18 @@ html
           h1.ui.header.plant_header= content['current_active'].capitalize()
           - var button_style = 'display:none' if content['type'] != 'plant' else 'display:inherit'
           .ui.menu.secondary(style=button_style)
-            a.horizontally.fitted.item(onClick='getPlantSettings()')
+            a.horizontally.fitted.item.plant_settings
               i.setting.icon
         .ui.five.item.tabular.pointing.menu.mainMenu
-          a.item.overview(onClick='getOverview();')
+          a.item.overview
               | overview
-          a.item.temperature(onClick='getSensor(this);')
+          a.item.sensor.temperature
               | temperature
-          a.item.humidity(onClick='getSensor(this);')
+          a.item.sensor.humidity
               | humidity
-          a.item.moisture(onClick='getSensor(this);')
+          a.item.sensor.moisture
               | moisture
-          a.item.light(onClick='getSensor(this);')
+          a.item.sensor.light
               | light
       script(type='text/javascript').
         $(document).ready(function() {initSetTab("#{content['current']}")});

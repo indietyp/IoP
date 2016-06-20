@@ -138,6 +138,36 @@ def get_sensor_range(sensor):
 def get_sensor_unit(sensor):
   return json.dumps({'unit': db.Sensor.find_one({'t': sensor})['u']})
 
+@app.route('/get/plant/<plant>/status/average')
+def get_sensor_status_average_percent(plant):
+  plant = db.Plant.find_one({'name': plant})
+  average = {'red': 0, 'yellow': 0, 'green': 0}
+  sensor_counter = 0
+  for key, item in plant['sensor_status'][1]['overall_counter'].items():
+    for key_s, item_s in average.items():
+      average[key_s] += item[key_s]
+    sensor_counter += 1
+
+  summary = 0
+  for key, item in average.items():
+    average[key] /= sensor_counter
+    summary += average[key]
+
+  print(summary, file=sys.stdout)
+  output = {}
+  for key, item in average.items():
+    output[key] = [round(item / summary * 100), item]
+
+  return json.dumps(output)
+
+@app.route('/get/plant/<plant>/status/online/')
+def get_sensor_staus_online(plant):
+  plant = db.Plant.find_one({'name': plant})
+  online = plant['online'][1]
+  offline = plant['offline'][1]
+  summary = online + offline
+  return json.dumps({'online': [round(online / summary * 100), online], 'offline': [round(offline / summary * 100), offline]})
+
 # @app.route('/get/plants/random')
 
 # @app.route('/get/plant/name') - ---
@@ -145,18 +175,18 @@ def get_sensor_unit(sensor):
 # @app.route('/get/plant/location') - done
 # @app.route('/get/plant/sensor/data') - done
 # @app.route('/get/plant/sensor/data/forecast')
-# @app.route('/get/plant/sensor/data/current') -- donw
-# @app.route('/get/plant/sensor/<sensor>/high/today')
-# @app.route('/get/plant/sensor/<sensor>/difference/today')
-# @app.route('/get/plant/sensor/<sensor>/low/today')
+# @app.route('/get/plant/sensor/data/current') -- done
+# @app.route('/get/plant/sensor/<sensor>/high/today') - done (modified)
+# @app.route('/get/plant/sensor/<sensor>/difference/today') - ---
+# @app.route('/get/plant/sensor/<sensor>/low/today') - done (modified)
 
-# @app.route('/get/plant/sensor/<sensor>/high/ever')
-# @app.route('/get/plant/sensor/<sensor>/difference/ever')
-# @app.route('/get/plant/sensor/<sensor>/low/ever')
+# @app.route('/get/plant/sensor/<sensor>/high/ever') - done
+# @app.route('/get/plant/sensor/<sensor>/difference/ever') - ---
+# @app.route('/get/plant/sensor/<sensor>/low/ever') - done
 
-# @app.route('/get/plant/sensors/overall')
+# @app.route('/get/plant/sensors/overall') - done (path modified)
 # @app.route('/get/plant/online') # TRUE if online FALSE if online time!
-# @app.route('/get/plant/responsible')
+# @app.route('/get/plant/responsible') - done
 
-# @app.route('/get/responsible/<responsible>/wizard') # get TRUE or FALSE
+# @app.route('/get/responsible/<responsible>/wizard') # get TRUE or FALSE - done
 # @app.route('/get/responsible/wizard')

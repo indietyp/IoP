@@ -61,25 +61,27 @@ block content
       .ui.active.inverted.dimmer
         .ui.text.loader= 'please wait... ' + content['random'].choice(randomizer)
     script(type='text/javascript').
+      $(document).ready(function() {initLineGraph("#{content['current']}")});
       //- ADD LOCAL STORAGE, thank you!
-      sensordata = $.ajax({
-        url: '/get/plant/sensor/dataset',
-        method: 'POST',
-        data: {}
-      });
-      sensordata.done(function(sensordatamsg) {
-        var data, g, i, len, ref, sensordataset;
-        sensordataset = [];
-        ref = JSON.parse(sensordatamsg);
-        for (i = 0, len = ref.length; i < len; i++) {
-          data = ref[i];
-          sensordataset.push([new Date(data['dt'] * 1000), data['v']]);
-        }
-        smoothPlotter.smoothing = 0.33;
-        g = new Dygraph(document.getElementById("graph"), sensordataset, {
-          labels: ["time", "#{content['current']}"],
-          plotter: smoothPlotter,
-          legend: 'always',
-          animatedZooms: true
-        });
-      });
+      //- initSensorGraph("#{content['current']}")
+      //- sensordata = $.ajax({
+      //-   url: '/get/plant/sensor/dataset',
+      //-   method: 'POST',
+      //-   data: {}
+      //- });
+      //- sensordata.done(function(sensordatamsg) {
+      //-   var data, g, i, len, ref, sensordataset;
+      //-   sensordataset = [];
+      //-   ref = JSON.parse(sensordatamsg);
+      //-   for (i = 0, len = ref.length; i < len; i++) {
+      //-     data = ref[i];
+      //-     sensordataset.push([new Date(data['dt'] * 1000), data['v']]);
+      //-   }
+      //-   smoothPlotter.smoothing = 0.33;
+      //-   g = new Dygraph(document.getElementById("graph"), sensordataset, {
+      //-     labels: ["time", "#{content['current']}"],
+      //-     plotter: smoothPlotter,
+      //-     legend: 'always',
+      //-     animatedZooms: true
+      //-   });
+      //- });

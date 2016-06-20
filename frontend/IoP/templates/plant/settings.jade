@@ -8,20 +8,22 @@ block content
       .ui.grid
         .two.column.row.relaxed
           .column(style='margin-bottom:2%')
-            .ui.fluid.left.icon.input
+            //- nsps == non specific plant stuff
+            .ui.fluid.left.icon.input#__nsps_name
+              //- need to be downcased in backend! (value name)
               input(type='text', placeholder='Name')
               i.tag.icon
           .column
-            .ui.fluid.left.icon.input
+            .ui.fluid.left.icon.input#__nsps_location
               input(type='text', placeholder='Location')
               i.home.icon
           .column
-            .ui.fluid.left.icon.input
+            .ui.fluid.left.icon.input#__nsps_type
               input(type='text', placeholder='Type')
               i.leaf.icon
           .column
-            .ui.fluid.left.icon.input
-              input(type='file', placeholder='Location')
+            .ui.fluid.left.icon.input#__nsps_image
+              input(type='file', placeholder='Image')
               i.file.image.outline.icon
       .ui.two.buttons(style='margin-top:2%')
             .ui.basic.button.fluid.green Apply

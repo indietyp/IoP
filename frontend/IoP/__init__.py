@@ -31,7 +31,14 @@ def init_overview():
   # get responsible stuff!
   with urllib.request.urlopen('http://127.0.0.1:2902/get/plant/' + session['plant'] + '/responsible') as response:
     responsible = json.loads(response.read().decode('utf8'))
-  return {'created_at': created_at, 'location': location, 'survived': str(survived), 'responsible': responsible}
+
+  with urllib.request.urlopen('http://127.0.0.1:2902/get/plant/' + session['plant'] + '/status/average') as response:
+    average_percent = json.loads(response.read().decode('utf8'))
+
+  with urllib.request.urlopen('http://127.0.0.1:2902/get/plant/' + session['plant'] + '/status/online') as response:
+    average_online = json.loads(response.read().decode('utf8'))
+
+  return {'created_at': created_at, 'location': location, 'survived': str(survived), 'responsible': responsible, 'average_percent': average_percent, 'average_online': average_online}
 
 def init_sensor():
   # if recent data is far back, then time is getting really slow -> ~ 2 months == 4 seconds, ~ 3 days == 0.5 seconds
@@ -49,7 +56,7 @@ def init_sensor():
     if datetime.date.fromtimestamp(today_high_data['t']) == datetime.date.today():
       recent_date = 'Today'
     else:
-      recent_date = datetime.date.fromtimestamp(today_high_data['t']).strftime('%-d. %b %Y')
+      recent_date = datetime.date.fromtimestamp(today_high_data['t']).strftime('%d. %b %Y')
     today_high_data['t'] = datetime.datetime.fromtimestamp(today_high_data['t']).strftime('%H:%M')
 
   with urllib.request.urlopen('http://127.0.0.1:2902/get/plant/' + session['plant'] + '/sensor/' + session['sensor'] + '/low/today/yes') as response:
@@ -61,12 +68,12 @@ def init_sensor():
   # get ever data
   with urllib.request.urlopen('http://127.0.0.1:2902/get/plant/' + session['plant'] + '/sensor/' + session['sensor'] + '/high/ever') as response:
     ever_high_data = json.loads(response.read().decode('utf8'))
-    ever_high_data['t'] = datetime.datetime.fromtimestamp(ever_high_data['t']).strftime('%-d. %b %Y')
+    ever_high_data['t'] = datetime.datetime.fromtimestamp(ever_high_data['t']).strftime('%d. %b %Y')
 
 
   with urllib.request.urlopen('http://127.0.0.1:2902/get/plant/' + session['plant'] + '/sensor/' + session['sensor'] + '/low/ever') as response:
     ever_low_data = json.loads(response.read().decode('utf8'))
-    ever_low_data['t'] = datetime.datetime.fromtimestamp(ever_low_data['t']).strftime('%-d. %b %Y')
+    ever_low_data['t'] = datetime.datetime.fromtimestamp(ever_low_data['t']).strftime('%d. %b %Y')
 
   ever_difference = round(ever_high_data['v'] - ever_low_data['v'], 1)
 

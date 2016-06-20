@@ -122,9 +122,200 @@ db = client.iop
 #     }
 #     )
 
+# result = db.Plant.update_one(
+#   {'name': 'paul'},
+#   {'$set':{'responsible_id': 1}}
+#   )
+
+# print(result.modified_count)
+
+# LIGHT = RED
+# EXISTS RED?
+#   NO
+#   EXISTS YELLOW?
+#     YES
+# INSERT LIGHT
+#   REMOVE OLD, INSERT NEW
+# CHECKUP -> CHANGE
+#   YELLOW NOW RED ->
+#     reset counter to 0
+#     counter++
+# LIGHT RED COUNTER++
+
 result = db.Plant.update_one(
   {'name': 'paul'},
-  {'$set':{'responsible_id': 1}}
+  {
+    '$unset': {
+      'alive': 0
+    },
+    '$set': {
+      'offline': [0, 12],
+      'online': [6, 24],
+      'sensor_status': [{
+        "yellow" : ["light", "humidity", "temperature"],
+        "red" : [],
+        "green" : ["moisture"]
+      }, {
+        'current_counter': 12,
+        'overall_counter': {
+          'light': {
+            'green': 0,
+            'yellow': 2,
+            'red': 7
+          },
+          'temperature': {
+            'green': 0,
+            'yellow': 2,
+            'red': 7
+          },
+          'humidity': {
+            'green': 0,
+            'yellow': 2,
+            'red': 7
+          },
+          'moisture': {
+            'green': 0,
+            'yellow': 2,
+            'red': 7
+          }
+        }
+      }]
+    }
+  }
   )
+# ranges = db.Plant.find_one()['sensor_settings']
+# s_id = ''
+# for rang in ranges:
+#   s_id = rang['settings'] if rang['sensor_id'] == 0 else s_id
+# # print(s_id)
 
-print(result.modified_count)
+# yellow_counter = 0
+# green_counter = 0
+# red_counter = 0
+# for document in db.SensorData.find({'p': 0, 's':0}):
+#   if document['v'] >= s_id['yellow']['min'] and document['v'] <= s_id['yellow']['max']:
+#     if document['v'] >= s_id['green']['min'] and document['v'] <= s_id['green']['max']:
+#       green_counter+=1
+#     else:
+#       yellow_counter+=1
+#   else:
+#     red_counter+=1
+#   pass
+
+# print('TEMPERATURE')
+# print('RED: ' + str(red_counter))
+# print('YELLOW: ' + str(yellow_counter))
+# print('GREEN: ' + str(green_counter))
+
+# s_id = ''
+# for rang in ranges:
+#   s_id = rang['settings'] if rang['sensor_id'] == 1 else s_id
+# # print(s_id)
+
+# yellow_counter = 0
+# green_counter = 0
+# red_counter = 0
+# for document in db.SensorData.find({'p': 0, 's':1}):
+#   if document['v'] >= s_id['yellow']['min'] and document['v'] <= s_id['yellow']['max']:
+#     if document['v'] >= s_id['green']['min'] and document['v'] <= s_id['green']['max']:
+#       green_counter+=1
+#     else:
+#       yellow_counter+=1
+#   else:
+#     red_counter+=1
+#   pass
+
+# print('HUMIDITY')
+# print('RED: ' + str(red_counter))
+# print('YELLOW: ' + str(yellow_counter))
+# print('GREEN: ' + str(green_counter))
+
+# s_id = ''
+# for rang in ranges:
+#   s_id = rang['settings'] if rang['sensor_id'] == 2 else s_id
+# # print(s_id)
+
+# yellow_counter = 0
+# green_counter = 0
+# red_counter = 0
+# for document in db.SensorData.find({'p': 0, 's':2}):
+#   if document['v'] >= s_id['yellow']['min'] and document['v'] <= s_id['yellow']['max']:
+#     if document['v'] >= s_id['green']['min'] and document['v'] <= s_id['green']['max']:
+#       green_counter+=1
+#     else:
+#       yellow_counter+=1
+#   else:
+#     red_counter+=1
+#   pass
+
+# print('LIGHT')
+# print('RED: ' + str(red_counter))
+# print('YELLOW: ' + str(yellow_counter))
+# print('GREEN: ' + str(green_counter))
+
+# s_id = ''
+# for rang in ranges:
+#   s_id = rang['settings'] if rang['sensor_id'] == 3 else s_id
+# # print(s_id)
+
+# yellow_counter = 0
+# green_counter = 0
+# red_counter = 0
+# for document in db.SensorData.find({'p': 0, 's':3}):
+#   if document['v'] >= s_id['yellow']['min'] and document['v'] <= s_id['yellow']['max']:
+#     if document['v'] >= s_id['green']['min'] and document['v'] <= s_id['green']['max']:
+#       green_counter+=1
+#     else:
+#       yellow_counter+=1
+#   else:
+#     red_counter+=1
+#   pass
+
+# print('MOISTURE')
+# print('RED: ' + str(red_counter))
+# print('YELLOW: ' + str(yellow_counter))
+# print('GREEN: ' + str(green_counter))
+
+# print(result.modified_count)
+
+result = db.Plant.update_one(
+  {'name': 'marta'},
+  {
+    '$unset': {
+      'alive': 0
+    },
+    '$set': {
+      'offline': [0, 12],
+      'online': [6, 24],
+      'sensor_status': [{
+        "yellow" : ["light", "humidity", "temperature"],
+        "red" : [],
+        "green" : ["moisture"]
+      }, {
+        'current_counter': 12,
+        'overall_counter': {
+          'light': {
+            'green': 450,
+            'yellow': 2286,
+            'red': 450
+          },
+          'temperature': {
+            'green': 43,
+            'yellow': 304,
+            'red': 651
+          },
+          'humidity': {
+            'green': 430,
+            'yellow': 478,
+            'red': 87
+          },
+          'moisture': {
+            'green': 429,
+            'yellow': 556,
+            'red': 1806
+          }
+        }
+      }]
+    }
+  }
+  )
