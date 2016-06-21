@@ -1,6 +1,6 @@
 from IoP import app, init_overview, init_sensor
 from flask import render_template, session, request
-import sys, urllib.request, random
+import sys, urllib.request, urllib.parse, random, json
 
 @app.route('/get/plant/overview', methods=['POST'])
 def getPlant():
@@ -36,6 +36,72 @@ def getSensor():
 def getCurrentPlant():
   return session['plant']
 
+@app.route('/get/plant/settings/data/non_specific', methods=['POST'])
+def getPlantSettingsDataNonSpecific():
+  plant = session['plant']
+
+  with urllib.request.urlopen('http://localhost:2902/get/plant/' + plant +'/type') as response:
+    plant_type = json.loads(response.read().decode('utf8'))['data']
+  with urllib.request.urlopen('http://localhost:2902/get/plant/' + plant +'/location') as response:
+    plant_location = json.loads(response.read().decode('utf8'))['data']
+
+  return json.dumps({'type': plant_type, 'name': session['plant'], 'location': plant_location})
+
+@app.route('/get/sensor/range', methods=['POST'])
+def getSensorRange():
+  with urllib.request.urlopen('http://127.0.0.1:2902/get/sensor/' + request.form['sensor'] + '/range') as response:
+    sensor_range = json.loads(response.read().decode('utf8'))
+  return json.dumps({'range': sensor_range, 'sensor': request.form['sensor']})
+
+@app.route('/get/plant/settings/data/sensor_ranges', methods=['POST'])
+def getPlantSettingsDataSensorRange():
+  plant = session['plant']
+
+  with urllib.request.urlopen('http://localhost:2902/get/plant/' + plant +'/sensors/range') as response:
+    sensor_range = json.loads(response.read().decode('utf8'))
+  return json.dumps(sensor_range)
+
 @app.route('/get/plant/settings', methods=['POST'])
 def getPlantSettings():
   return render_template('plant/settings.jade', content={'get': False, 'current': 'settings'})
+
+@app.route('/get/plant/responsible', methods=['POST'])
+def getPlantResponsible():
+  plant = session['plant']
+
+  with urllib.request.urlopen('http://localhost:2902/get/plant/' + plant +'/responsible') as response:
+    responsible = json.loads(response.read().decode('utf8'))
+  return json.dumps(responsible)
+
+@app.route('/get/responsibles', methods=['POST'])
+def getResponsibles():
+  with urllib.request.urlopen('http://localhost:2902/get/responsible/persons') as response:
+    data = json.loads(response.read().decode('utf8'))
+  return json.dumps(data)
+
+@app.route('/update/plant/settings/non_specific', methods=['POST'])
+def updateNonSpecific():
+  plant = session['plant']
+  info = 'no change'
+
+  if request.form['name'] != session['plant']:
+    data = urllib.parse.urlencode({'new': request.form['name']}).encode('ascii')
+    req = urllib.request.Request('http://localhost:2902/update/plant/' + plant + '/name', data)
+    with urllib.request.urlopen(req) as response:
+      data = json.loads(response.read().decode('utf8'))
+
+    plant = request.form['name']
+    info = 'change'
+
+
+  data = urllib.parse.urlencode({'new': request.form['type']}).encode('ascii')
+  req = urllib.request.Request('http://localhost:2902/update/plant/' + plant + '/type', data)
+  with urllib.request.urlopen(req) as response:
+    data = json.loads(response.read().decode('utf8'))
+
+  data = urllib.parse.urlencode({'new': request.form['location']}).encode('ascii')
+  req = urllib.request.Request('http://localhost:2902/update/plant/' + plant + '/location', data)
+  with urllib.request.urlopen(req) as response:
+    data = json.loads(response.read().decode('utf8'))
+
+  return json.dumps({'info': info, 'plant': plant})

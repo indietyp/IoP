@@ -3,7 +3,7 @@ if content['get']
 
 block content
   .wrapper(style='display: flex;align-items:center;flex-direction:row;margin-top:2.5%;')
-    .ui.segment(style='width:70%')
+    .ui.segment(style='width:70%;display:none')#__nsps_segment
       h1.ui.header Basic Information
       .ui.grid
         .two.column.row.relaxed
@@ -26,15 +26,15 @@ block content
               input(type='file', placeholder='Image')
               i.file.image.outline.icon
       .ui.two.buttons(style='margin-top:2%')
-            .ui.basic.button.fluid.green Apply
-            .ui.basic.button.fluid.red Reset
+            .ui.basic.button.fluid.green(onclick='sg_nsps_submit(this)') Apply
+            .ui.basic.button.fluid.red(onclick='sg_nsps_reset(this)') Reset
     .spacer(style='flex-grow:1')
     .ui.segment.circular
       img.ui.medium.circular.image(src='https://source.unsplash.com/category/nature/400x400')
 
-  .wrapper(style='display: flex;align-items:baseline;flex-direction:row;margin-top:2.5%;')
+  .wrapper(style='display: flex;align-items:baseline;flex-direction:row;margin-top:2.5%')
     .spacer(style='flex-grow:0.2')
-    .ui.card
+    .ui.card.range_temperature.__ssps_segment(style='display:none;')
       .content
         .header Temperature
         .meta interval settings
@@ -46,22 +46,9 @@ block content
         .ui.two.buttons
           .ui.basic.button.fluid.green Apply
           .ui.basic.button.fluid.red Reset
-      script(type='text/javascript').
-        $("#flat-slider-vertical-temperature")
-            .slider({
-                max: 25,
-                min: -20,
-                values: [0, 10, 15, 20],
-                orientation: "vertical"
-            })
-            .slider("pips", {
-                first: "pip",
-                last: "pip"
-            })
-            .slider("float");
 
     .spacer(style='flex-grow:0.2')
-    .ui.card
+    .ui.card.range_humidity.__ssps_segment(style='display:none;')
       .content
         .header Humidity
         .meta interval settings
@@ -73,21 +60,9 @@ block content
         .ui.two.buttons
           .ui.basic.button.fluid.green Apply
           .ui.basic.button.fluid.red Reset
-      script(type='text/javascript').
-        $("#flat-slider-vertical-humidity")
-            .slider({
-                max: 100,
-                min: 0,
-                values: [0, 10, 15, 20],
-                orientation: "vertical"
-            })
-            .slider("pips", {
-                first: "pip",
-                last: "pip"
-            })
-            .slider("float");
+
     .spacer(style='flex-grow:0.2')
-    .ui.card
+    .ui.card.range_moisture.__ssps_segment(style='display:none;')
       .content
         .header Moisture
         .meta interval settings
@@ -99,21 +74,9 @@ block content
         .ui.two.buttons
           .ui.basic.button.fluid.green Apply
           .ui.basic.button.fluid.red Reset
-      script(type='text/javascript').
-        $("#flat-slider-vertical-moisture")
-            .slider({
-                max: 100,
-                min: 0,
-                values: [0, 10, 15, 20],
-                orientation: "vertical"
-            })
-            .slider("pips", {
-                first: "pip",
-                last: "pip"
-            })
-            .slider("float");
+
     .spacer(style='flex-grow:0.2')
-    .ui.card
+    .ui.card.range_light.__ssps_segment(style='display:none;')
       .content
         .header Light
         .meta interval settings
@@ -125,21 +88,9 @@ block content
         .ui.two.buttons
           .ui.basic.button.fluid.green Apply
           .ui.basic.button.fluid.red Reset
-      script(type='text/javascript').
-        $("#flat-slider-vertical-light")
-            .slider({
-                max: 50,
-                min: 0,
-                values: [0, 10, 15, 20],
-                orientation: "vertical"
-            })
-            .slider("pips", {
-                first: "pip",
-                last: "pip"
-            })
-            .slider("float");
+
     .spacer(style='flex-grow:0.2')
-  .ui.segment(style='width:100%')
+  .ui.segment#__rsps_segment(style='width:100%;display:none')
     hi.ui.header Symbiose! Select - if no result create?
     .ui.two.column.middle.aligned.very.relaxed.stackable.grid
       .column
@@ -164,33 +115,30 @@ block content
                   input(type='file', name='file', class='file-upload-native', accept='image/*')
                   input(type='text', disabled='', placeholder='ui input upload image', class='file-upload-text')
       script(type='text/javascript').
-        $( ".ui.basic.button.fluid.green" ).click(function() {
-           $('.shape').shape('flip left');
-        });
+        //- $( ".ui.basic.button.fluid.green" ).click(function() {
+        //-    $('.shape').shape('flip left');
+        //- });
       .ui.vertical.divider Or
       .column
         .ui.form
           .field
-            label Name
-            .ui.selection.dropdown
-                input(type='hidden', name='person')
-                i.dropdown.icon
-                .default.text Responsible Person
-                .menu
-                  .item(data-value='1') Andreas Marbach
-                  .item(data-value='0') Matthias Töpler
+            label Person
+            select.ui.dropdown#select(onChange='sg_rsps_change(this)')
+              //- option(value='andreas.marbach@web.de') Andreas Marbach
+              //- option(value='Penispumpen') Matthias Töpler
+
           script(type='text/javascript').
-            $('.ui.selection.dropdown')
-              .dropdown()
-            ;
+            //- $('#select').dropdown('set selected', 'Penispumpen');
+
+
           .field
             label EMail
             .ui.left.icon.input
-              input(type='text', placeholder='andreas.marbach@web.de', readonly='')
+              input#__rsps_input(type='text', placeholder='andreas.marbach@web.de', readonly='')
               i.user.icon
           .ui.two.buttons
             .ui.basic.button.fluid.green Apply
-            .ui.basic.button.fluid.red Reset
+            .ui.basic.button.fluid.red(onClick='sg_rsps_reset(this)') Reset
 
   //- .wrapper(style='display: flex;align-items:baseline;flex-direction:row;margin-top:2.5%;')
   .ui.segment
@@ -279,3 +227,6 @@ block content
     .ui.two.buttons(style='margin-top:5%')
           .ui.basic.button.fluid.green Apply
           .ui.basic.button.fluid.red Reset
+
+  script(type='text/javascript').
+    $(document).ready(function() {sg_nsps();sg_ssps();sg_rsps();});

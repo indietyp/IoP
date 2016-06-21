@@ -44,19 +44,21 @@ class Sender:
     data = self.get()
     if data[0] == 255:
       ALIVE = False
+      return False
     else:
       ALIVE = True
+      return True
 
-    dbClient = MongoClient()
-    db = dbClient.pot
-    db.Plant.update_one(
-    {'ip': recipient},
-    {
-        "$set": {
-          'alive': ALIVE
-        }
-    }
-    )
+    # dbClient = MongoClient()
+    # db = dbClient.pot
+    # db.Plant.update_one(
+    # {'ip': recipient},
+    # {
+    #     "$set": {
+    #       'alive': ALIVE
+    #     }
+    # }
+    # )
 
   def REGISTER(self, name):
     # 244.x.x.x MULTICAST ADDRESS SPACE

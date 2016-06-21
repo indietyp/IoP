@@ -8,6 +8,7 @@ app.secret_key = 'n2u2ienei3rJDSAUo2jaid3KFOsnwof123'
 # db = client['iop']
 
 import IoP.views.get
+import IoP.views.update
 
 # if __name__ == '__main__':
 

@@ -51,8 +51,148 @@ window.initSetTab = initSetTab
 
 # sg_nsps == settings get - non specific plant stuff
 sg_nsps = () ->
-  return
+  request = $.ajax
+    url: '/get/plant/settings/data/non_specific',
+    method: 'POST'
+    data: {}
 
+  request.done (msg) ->
+    msg = JSON.parse msg
+    $('#__nsps_name input').val msg['name']
+    $('#__nsps_type input').val msg['type']
+    $('#__nsps_location input').val msg['location']
+
+    $('#__nsps_segment').fadeIn 'slow';
+    return
+  return
+window.sg_nsps = sg_nsps
+
+sg_nsps_reset = (that) ->
+  $(that).addClass 'disabled'
+  $(that).addClass 'loading'
+  sg_nsps()
+  $( document ).ajaxComplete () ->
+    $(that).removeClass 'disabled'
+    $(that).removeClass 'loading'
+  return
+window.sg_nsps_reset = sg_nsps_reset
+
+sg_nsps_submit = (that) ->
+  $(that).addClass 'disabled'
+  $(that).addClass 'loading'
+
+  request = $.ajax
+    url: '/update/plant/settings/non_specific',
+    method: 'POST'
+    data: {'name': $('#__nsps_name input').val(), 'location': $('#__nsps_location input').val(), 'type': $('#__nsps_type input').val()}
+
+  request.done (msg) ->
+    msg = JSON.parse msg
+    $(that).removeClass 'disabled'
+    $(that).removeClass 'loading'
+
+    if msg['info'] == 'change'
+      window.location = '/plant/' + msg['plant'] + '/overview'
+
+window.sg_nsps_submit = sg_nsps_submit
+
+# sg_ssps == settings get - sensor specific plant stuff
+sg_ssps = () ->
+  request = $.ajax
+    url: '/get/plant/settings/data/sensor_ranges',
+    method: 'POST'
+    data: {}
+
+  request.done (msg) ->
+    msg = JSON.parse msg
+
+    for item in msg
+      settings = item['settings']
+      range_request = $.ajax
+        url: '/get/sensor/range',
+        method: 'POST'
+        data: {'sensor': item['sensor']}
+        async: false
+
+      range_request.done (range) ->
+        data = JSON.parse(range)
+        range = data['range']
+        sensor = data['sensor']
+        current_settings = []
+        current_settings.push settings['yellow']['min']
+        current_settings.push settings['green']['min']
+        current_settings.push settings['green']['max']
+        current_settings.push settings['yellow']['max']
+
+        $("#flat-slider-vertical-" + sensor)
+            .slider({
+                max: range['max'],
+                min: range['min'],
+                values: current_settings,
+                orientation: "vertical"
+            })
+            .slider("pips", {
+                first: "pip",
+                last: "pip"
+            })
+            .slider("float");
+    $('.__ssps_segment').fadeIn 'slow'
+    return
+  return
+window.sg_ssps = sg_ssps
+
+# settings get - responsible specific plant stuff
+sg_rsps = () ->
+  request = $.ajax
+    url: '/get/responsibles',
+    method: 'POST'
+    data: {}
+
+  request.done (msg) ->
+    msg = JSON.parse msg
+
+    for person in msg
+      $('#select').append('<option value="' + person['email'] + '">' + person['name'] + '</option>')
+
+    current = $.ajax
+      url: '/get/plant/responsible',
+      method: 'POST'
+      data: {}
+
+    current.done (msg) ->
+      msg = JSON.parse(msg)
+      $('#select').dropdown('set selected', msg['email']);
+      $('#__rsps_input').val(msg['email'])
+      $('#__rsps_segment').fadeIn 'slow'
+      return
+  return
+window.sg_rsps = sg_rsps
+
+sg_rsps_change = (that) ->
+  console.log $(that).val()
+  $('#__rsps_input').val($(that).val())
+  return
+window.sg_rsps_change = sg_rsps_change
+
+# sg_rsps_submit = (that) ->
+
+
+sg_rsps_reset = (that) ->
+  $(that).addClass 'disabled'
+  $(that).addClass 'loading'
+  current = $.ajax
+    url: '/get/plant/responsible',
+    method: 'POST'
+    data: {}
+
+  current.done (msg) ->
+    msg = JSON.parse(msg)
+    $('#select').dropdown('set selected', msg['email']);
+    $('#__rsps_input').val(msg['email'])
+    $(that).removeClass 'disabled'
+    $(that).removeClass 'loading'
+    return
+window.sg_rsps_reset = sg_rsps_reset
 
 $ ->
   $('div.menu.mainMenu a').click (e) ->
@@ -93,7 +233,7 @@ $ ->
       $('div.menu.mainMenu a').parent().children('.active').removeClass 'active'
 
       # sg_nsps == settings get - non specific plant stuff
-      sg_nsps()
+      # sg_nsps()
       return
 
     request.fail (jqXHR, textStatus) ->
@@ -162,4 +302,3 @@ $ ->
       return
     return
   return
-

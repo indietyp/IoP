@@ -19,6 +19,14 @@ def get_plants_name():
 def get_created_at(plant):
   return json.dumps(db.Plant.find_one({'name': plant})['created_at'], default=json_util.default)
 
+@app.route('/get/plant/<plant>/type')
+def get_plant_type(plant):
+  return json.dumps({'data': db.Plant.find_one({'name': plant})['type']})
+
+@app.route('/get/plant/<plant>/location')
+def get_plant_location(plant):
+  return json.dumps({'data': db.Plant.find_one({'name': plant})['location']})
+
 @app.route('/get/plant/<plant>/current_status')
 def get_plant_status(plant):
   # 'status': 'green', 'counter': 2
@@ -167,6 +175,27 @@ def get_sensor_staus_online(plant):
   offline = plant['offline'][1]
   summary = online + offline
   return json.dumps({'online': [round(online / summary * 100), online], 'offline': [round(offline / summary * 100), offline]})
+
+@app.route('/get/plant/<plant>/sensors/range')
+def get_plant_sensors_range(plant):
+  ranges = db.Plant.find_one({'name': plant})['sensor_settings']
+
+  for item in ranges:
+    item['sensor'] = db.Sensor.find_one({'s_id': item['sensor_id']})['t']
+    del item['sensor_id']
+
+  return json.dumps(ranges)
+
+@app.route('/get/responsible/persons')
+def get_responsible_persons():
+  people = db.ResponsiblePerson.find()
+
+  output = []
+  for person in people:
+    output.append({'name': person['username'], 'email': person['email'], 'wizard': person['wizard']})
+
+  return json.dumps(output)
+
 
 # @app.route('/get/plants/random')
 
