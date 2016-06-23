@@ -10,7 +10,6 @@ block content
           .column(style='margin-bottom:2%')
             //- nsps == non specific plant stuff
             .ui.fluid.left.icon.input#__nsps_name
-              //- need to be downcased in backend! (value name)
               input(type='text', placeholder='Name')
               i.tag.icon
           .column
@@ -44,8 +43,8 @@ block content
             .spacer(style='flex-grow:0.5')
       .extra.content
         .ui.two.buttons
-          .ui.basic.button.fluid.green Apply
-          .ui.basic.button.fluid.red Reset
+          .ui.basic.button.fluid.green(onClick='sg_ssps_submit(this)') Apply
+          .ui.basic.button.fluid.red(onClick='sg_ssps_reset(this)') Reset
 
     .spacer(style='flex-grow:0.2')
     .ui.card.range_humidity.__ssps_segment(style='display:none;')
@@ -58,8 +57,8 @@ block content
             .spacer(style='flex-grow:0.5')
       .extra.content
         .ui.two.buttons
-          .ui.basic.button.fluid.green Apply
-          .ui.basic.button.fluid.red Reset
+          .ui.basic.button.fluid.green(onClick='sg_ssps_submit(this)') Apply
+          .ui.basic.button.fluid.red(onClick='sg_ssps_reset(this)') Reset
 
     .spacer(style='flex-grow:0.2')
     .ui.card.range_moisture.__ssps_segment(style='display:none;')
@@ -72,8 +71,8 @@ block content
             .spacer(style='flex-grow:0.5')
       .extra.content
         .ui.two.buttons
-          .ui.basic.button.fluid.green Apply
-          .ui.basic.button.fluid.red Reset
+          .ui.basic.button.fluid.green(onClick='sg_ssps_submit(this)') Apply
+          .ui.basic.button.fluid.red(onClick='sg_ssps_reset(this)') Reset
 
     .spacer(style='flex-grow:0.2')
     .ui.card.range_light.__ssps_segment(style='display:none;')
@@ -86,8 +85,8 @@ block content
             .spacer(style='flex-grow:0.5')
       .extra.content
         .ui.two.buttons
-          .ui.basic.button.fluid.green Apply
-          .ui.basic.button.fluid.red Reset
+          .ui.basic.button.fluid.green(onClick='sg_ssps_submit(this)') Apply
+          .ui.basic.button.fluid.red(onClick='sg_ssps_reset(this)') Reset
 
     .spacer(style='flex-grow:0.2')
   .ui.segment#__rsps_segment(style='width:100%;display:none')
@@ -137,7 +136,7 @@ block content
               input#__rsps_input(type='text', placeholder='andreas.marbach@web.de', readonly='')
               i.user.icon
           .ui.two.buttons
-            .ui.basic.button.fluid.green Apply
+            .ui.basic.button.fluid.green(onClick='sg_rsps_submit(this)') Apply
             .ui.basic.button.fluid.red(onClick='sg_rsps_reset(this)') Reset
 
   //- .wrapper(style='display: flex;align-items:baseline;flex-direction:row;margin-top:2.5%;')

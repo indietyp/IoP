@@ -79,6 +79,15 @@ def getResponsibles():
     data = json.loads(response.read().decode('utf8'))
   return json.dumps(data)
 
+@app.route('/get/plant/sensor/ranges', methods=['POST'])
+def getPlantSensorRanges():
+  plant = session['plant']
+  sensor = request.form['sensor']
+
+  with urllib.request.urlopen('http://localhost:2902/get/plant/' + plant + '/sensor/' + sensor + '/range') as response:
+    data = json.loads(response.read().decode('utf8'))
+  return json.dumps(data)
+
 @app.route('/update/plant/settings/non_specific', methods=['POST'])
 def updateNonSpecific():
   plant = session['plant']
@@ -105,3 +114,25 @@ def updateNonSpecific():
     data = json.loads(response.read().decode('utf8'))
 
   return json.dumps({'info': info, 'plant': plant})
+
+@app.route('/update/plant/ranges', methods=['POST'])
+def updateRanges():
+  plant = session['plant']
+
+  data = urllib.parse.urlencode({'sensor': request.form['sensor'], 'data[]': request.form.getlist('new[]')}, True).encode('ascii')
+  req = urllib.request.Request('http://localhost:2902/update/plant/' + plant + '/ranges', data)
+  with urllib.request.urlopen(req) as response:
+    data = json.loads(response.read().decode('utf8'))
+
+  return json.dumps({'info': 'success'})
+
+@app.route('/update/plant/responsible', methods=['POST'])
+def updatePlantResponsible():
+  plant = session['plant']
+
+  data = urllib.parse.urlencode({'email': request.form['email'], 'name': request.form['name']}).encode('ascii')
+  req = urllib.request.Request('http://localhost:2902/update/plant/' + plant + '/responsible', data)
+  with urllib.request.urlopen(req) as response:
+    data = json.loads(response.read().decode('utf8'))
+
+  return json.dumps({'info': 'success'})

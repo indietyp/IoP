@@ -141,6 +141,51 @@ sg_ssps = () ->
   return
 window.sg_ssps = sg_ssps
 
+sg_ssps_submit = (that) ->
+  $(that).addClass 'disabled'
+  $(that).addClass 'loading'
+
+  name = $(that).parent().parent().parent().attr('class').split(' ')['2'].split('_')[1]
+  values = $("#flat-slider-vertical-" + name).slider( "values" )
+  values = values.sort (a, b) -> return a - b
+  # console.log values
+  $("#flat-slider-vertical-" + name).slider( "values", values );
+
+  request = $.ajax
+    url: '/update/plant/ranges',
+    method: 'POST'
+    data: {'new': values, 'sensor': name}
+
+  request.done (msg) ->
+    # delay 100
+    $(that).removeClass 'disabled'
+    $(that).removeClass 'loading'
+  return
+window.sg_ssps_submit = sg_ssps_submit
+
+sg_ssps_reset = (that) ->
+  $(that).addClass 'disabled'
+  $(that).addClass 'loading'
+  name = $(that).parent().parent().parent().attr('class').split(' ')['2'].split('_')[1]
+  request = $.ajax
+    url: '/get/plant/sensor/ranges'
+    method: 'POST'
+    data: {'sensor': name}
+
+  request.done (msg) ->
+    msg = JSON.parse msg
+    values = []
+    values.push msg['yellow']['min']
+    values.push msg['green']['min']
+    values.push msg['green']['max']
+    values.push msg['yellow']['max']
+    $("#flat-slider-vertical-" + name).slider( "values", values );
+    $(that).removeClass 'disabled'
+    $(that).removeClass 'loading'
+    return
+  return
+window.sg_ssps_reset = sg_ssps_reset
+
 # settings get - responsible specific plant stuff
 sg_rsps = () ->
   request = $.ajax
@@ -169,13 +214,28 @@ sg_rsps = () ->
 window.sg_rsps = sg_rsps
 
 sg_rsps_change = (that) ->
-  console.log $(that).val()
   $('#__rsps_input').val($(that).val())
   return
 window.sg_rsps_change = sg_rsps_change
 
-# sg_rsps_submit = (that) ->
+# SUMBIT VAL + NAME AND COMPARE
+sg_rsps_submit = (that) ->
+  $(that).addClass 'disabled'
+  $(that).addClass 'loading'
+  name = $("#select option:selected").text();
+  email = $('#__rsps_input').val()
 
+  request = $.ajax
+    url: '/update/plant/responsible',
+    method: 'POST'
+    data: {'name': name, 'email': email}
+
+  request.done (msg) ->
+    $(that).removeClass 'disabled'
+    $(that).removeClass 'loading'
+    return
+  return
+window.sg_rsps_submit = sg_rsps_submit
 
 sg_rsps_reset = (that) ->
   $(that).addClass 'disabled'

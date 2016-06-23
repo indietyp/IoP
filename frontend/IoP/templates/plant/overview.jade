@@ -34,7 +34,7 @@ block content
               p(style='margin-top:5px')= content['created_at'].strftime('%d.%m %Y')
             .home.column(style="display: flex;align-items:center;flex-direction:row;padding-left:0;padding-right:0")
               i.home.icon(style='font-size:1.5em;margin-top:.5em')
-              p(style='margin-top:5px')= content['location']
+              p(style='margin-top:5px')= content['location']['data']
           .extra.content nice name dude!
     .spacer(style='flex-grow:0.25')
     .collum-wrapper(style='display: flex;align-items:center;flex-direction:column;padding-left:0;padding-right:0')

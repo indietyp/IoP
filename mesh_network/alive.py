@@ -10,5 +10,5 @@ tester = Sender()
 # for plant in plantsTested:
   # print(plant)
 now = datetime.datetime.now()
-print(tester.ALIVE('192.168.178.43'))
+print(tester.ALIVE('10.0.2.15'))
 print(datetime.datetime.now() - now)
