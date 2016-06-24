@@ -8,7 +8,7 @@ import pytz
 from sklearn import preprocessing
 from sklearn.cross_validation import train_test_split
 from sklearn.linear_model import ElasticNet
-from sklearn.svm import SVC
+from sklearn.linear_model import LinearRegression
 
 from bson import son
 from multiprocessing import Pool
@@ -28,11 +28,16 @@ def simple_as_fuck_despiker(dataFrame):
 
   return dataFrame
 
+def mape(ypred, ytrue):
+  """ returns the mean absolute percentage error """
+  idx = ytrue != 0.0
+  return 100*numpy.mean(numpy.abs(ypred[idx]-ytrue[idx])/ytrue[idx])
+
+
 def advanced_magic_regressor(dataFrame):
   columns = dataFrame.columns.tolist()
   columns = [c for c in columns if c not in ["s", "p", "_id"]]
   target = "v"
-  print columns
   dataFrame = simple_as_fuck_despiker(dataFrame)
 
   samplesCount = len(dataFrame.index)
@@ -42,11 +47,30 @@ def advanced_magic_regressor(dataFrame):
   numpy.set_printoptions(suppress=True)
   numpy.set_printoptions(precision=1)
 
+  line_chart = pygal.Line()
+  line_chart.title = 'predictions using machine learning'
+
+
   model = ElasticNet()
   model.fit(trainSet[columns], trainSet[target])
   predictions = model.predict(testSet[columns])
+  # print predictions
+  line_chart.add('Elastic Net - random',  predictions)
+  line_chart.add('testSet - random', testSet[target].as_matrix().flatten())
+  # print 'The error is %0.2f%%' % mape(predictions,trainSet[target])
 
-  print predictions
+  trainSet = dataFrame.head(n=samplesCount - 48)
+  testSet = dataFrame.loc[~dataFrame.index.isin(trainSet.index)]
+
+  model = ElasticNet()
+  model.fit(trainSet[columns], trainSet[target])
+  predictions = model.predict(testSet[columns])
+  # print predictions
+  line_chart.add('Elastic Net - time',  predictions)
+  line_chart.add('testSet - time', testSet[target].as_matrix().flatten())
+  # line_chart.x_labels = map(str, range(0, numpy.count_nonzero(predictionsElasticNet)))
+  # print 'The error is %0.2f%%' % mape(predictions,trainSet[target])
+  line_chart.render_to_file('test.svg')
 
 # SLOWER ~ 18sek
 def magic_data_framer(data):

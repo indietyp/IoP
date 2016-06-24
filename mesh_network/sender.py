@@ -26,7 +26,7 @@ class Sender:
     host = '127.0.0.1'
     port = 2311
     response.bind((host, port))
-    response.settimeout(16)
+    response.settimeout(1)
     try:
       receivedData = response.recvfrom(1024)
       data = array.array('B')
