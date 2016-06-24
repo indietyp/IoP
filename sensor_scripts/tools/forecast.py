@@ -8,6 +8,7 @@ import pytz
 from sklearn import preprocessing
 from sklearn.cross_validation import train_test_split
 from sklearn.linear_model import ElasticNet
+from sklearn.svm import SVC
 
 from bson import son
 from multiprocessing import Pool
@@ -38,12 +39,16 @@ def advanced_magic_regressor(dataFrame):
   trainSet = dataFrame.sample(n=samplesCount - 48, random_state=1)
   testSet = dataFrame.loc[~dataFrame.index.isin(trainSet.index)]
 
+  numpy.set_printoptions(suppress=True)
+  numpy.set_printoptions(precision=1)
+
   model = ElasticNet()
   model.fit(trainSet[columns], trainSet[target])
   predictions = model.predict(testSet[columns])
 
   print predictions
 
+# SLOWER ~ 18sek
 def magic_data_framer(data):
   dataFrame = None
   for sample in data:
@@ -53,6 +58,49 @@ def magic_data_framer(data):
       tmp_dataFrame = pandas.DataFrame(sample[1], index=[sample[0]])
       dataFrame = dataFrame.append(tmp_dataFrame)
   return dataFrame
+
+# FASTER! ~ 0.05sek
+def advanced_magic_data_framer(data):
+  dataFrame = pandas.DataFrame({'v': data[0], 'year': data[1].astype(int), 'month': data[2].astype(int), 'day': data[3].astype(int), 'hour': data[4].astype(int), 'minute':data[5].astype(int), 'weekday':data[6].astype(int)}, index=data[7].astype(int))
+  return dataFrame
+
+def advanced_complicated_data_formatting():
+  client = MongoClient('192.168.178.54')
+  db = client.iop
+
+  data = db.SensorData.find({'p': 1, 's':0}).sort([('_id', pymongo.ASCENDING)])
+
+  constructedArray = numpy.array([[],[],[],[],[],[],[],[]])
+  finishedData = None
+  i = 0
+
+  for sample in data:
+    d = sample['_id'].generation_time
+    # sample['value'] = sample['v']
+    # sample['hour'] = d.hour
+    # sample['minute'] = d.minute
+    # sample['weekday'] = d.weekday()
+    # sample['day'] = d.day
+    # sample['month'] = d.month
+    # sample['year'] = d.year
+    # sample['timestamp'] = (d - datetime.datetime(1970, 1, 1, tzinfo=pytz.utc)).total_seconds()
+
+    # if finishedData is None:
+      # finishedData = numpy.array([[i, sample]])
+    # else:
+      # finishedData = numpy.append(finishedData, [[i, sample]], axis=0)
+
+    constructedArray = numpy.append(constructedArray, [[sample['v']], [d.year], [d.month], [d.day], [d.hour], [d.minute], [d.weekday()], [i]], axis=1)
+    i += 1
+
+  finishedDataFrame = pandas.DataFrame()
+  stuff = numpy.array_split(constructedArray, 6, axis=1)
+  # print stuff
+  now = datetime.datetime.now()
+  pool = Pool(processes=6)
+  finishedDataFrame = finishedDataFrame.append(pool.map(advanced_magic_data_framer, stuff))
+  # print finishedDataFrame
+  advanced_magic_regressor(finishedDataFrame)
 
 def complicated_data_formatting():
   client = MongoClient('192.168.178.54')
@@ -87,4 +135,5 @@ def complicated_data_formatting():
   finishedDataFrame = finishedDataFrame.append(pool.map(magic_data_framer, stuff))
   advanced_magic_regressor(finishedDataFrame)
 
-complicated_data_formatting()
+# complicated_data_formatting()
+advanced_complicated_data_formatting()
