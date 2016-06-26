@@ -1,4 +1,0 @@
-I want to use GitHub to share my code open-source to the world, so that every person in the world, could access my work and make it better or take it and do something I never could imagine of.
-I also want to use private repositories, so that I can work on my, later released open-source public code, without that the possibility exists, that people see my unfinished code so that I'm able to safely work on this code and show it, people, I can fully trust for something like an evaluation.
-
-Coding is about learning and I want 
