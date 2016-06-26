@@ -1,3 +1,6 @@
+# TODO alive_script
+# as daemon -> also roudup and self
+
 from pymongo import MongoClient
 from sender import Sender
 import datetime

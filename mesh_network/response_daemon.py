@@ -1,3 +1,14 @@
+# TODO mesh_network
+# sender as daemon
+# notify
+#   -> new data
+#   -> ip on startup
+# register
+#   -> dicovery
+#     -> response if online or not
+# two sockets listen
+#   -> better performance
+
 import socket
 import time
 import sys

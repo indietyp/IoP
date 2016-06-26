@@ -1,3 +1,10 @@
+# FORECAST TODO
+# insert in database -> roundup by 30
+#   -> from last database-entry of sensor
+#   -> do 48 times
+#   -> for_time field + value + sensor + plant
+# every time executes -> deletes every old entry
+
 import datetime
 import pandas
 import numpy
@@ -41,36 +48,18 @@ def advanced_magic_regressor(dataFrame):
   dataFrame = simple_as_fuck_despiker(dataFrame)
 
   samplesCount = len(dataFrame.index)
-  trainSet = dataFrame.sample(n=samplesCount - 48, random_state=1)
-  testSet = dataFrame.loc[~dataFrame.index.isin(trainSet.index)]
-
-  numpy.set_printoptions(suppress=True)
-  numpy.set_printoptions(precision=1)
-
-  line_chart = pygal.Line()
-  line_chart.title = 'predictions using machine learning'
-
-
-  model = ElasticNet()
-  model.fit(trainSet[columns], trainSet[target])
-  predictions = model.predict(testSet[columns])
-  # print predictions
-  line_chart.add('Elastic Net - random',  predictions)
-  line_chart.add('testSet - random', testSet[target].as_matrix().flatten())
-  # print 'The error is %0.2f%%' % mape(predictions,trainSet[target])
-
   trainSet = dataFrame.head(n=samplesCount - 48)
   testSet = dataFrame.loc[~dataFrame.index.isin(trainSet.index)]
 
   model = ElasticNet()
   model.fit(trainSet[columns], trainSet[target])
   predictions = model.predict(testSet[columns])
-  # print predictions
-  line_chart.add('Elastic Net - time',  predictions)
-  line_chart.add('testSet - time', testSet[target].as_matrix().flatten())
-  # line_chart.x_labels = map(str, range(0, numpy.count_nonzero(predictionsElasticNet)))
-  # print 'The error is %0.2f%%' % mape(predictions,trainSet[target])
-  line_chart.render_to_file('test.svg')
+
+  client = MongoClient('192.168.178.54')
+  db = client.iop
+  current_time = db.SensorData.find_one({'s': sensor[0:1], 'p': plant['abbreviation']}, sort=[("_id", pymongo.DESCENDING)])['_id'].generation_time
+  if current_time.minute < 25:
+    pass
 
 # SLOWER ~ 18sek
 def magic_data_framer(data):
@@ -100,36 +89,20 @@ def advanced_complicated_data_formatting():
 
   for sample in data:
     d = sample['_id'].generation_time
-    # sample['value'] = sample['v']
-    # sample['hour'] = d.hour
-    # sample['minute'] = d.minute
-    # sample['weekday'] = d.weekday()
-    # sample['day'] = d.day
-    # sample['month'] = d.month
-    # sample['year'] = d.year
-    # sample['timestamp'] = (d - datetime.datetime(1970, 1, 1, tzinfo=pytz.utc)).total_seconds()
-
-    # if finishedData is None:
-      # finishedData = numpy.array([[i, sample]])
-    # else:
-      # finishedData = numpy.append(finishedData, [[i, sample]], axis=0)
 
     constructedArray = numpy.append(constructedArray, [[sample['v']], [d.year], [d.month], [d.day], [d.hour], [d.minute], [d.weekday()], [i]], axis=1)
     i += 1
 
   finishedDataFrame = pandas.DataFrame()
   stuff = numpy.array_split(constructedArray, 6, axis=1)
-  # print stuff
   now = datetime.datetime.now()
   pool = Pool(processes=6)
   finishedDataFrame = finishedDataFrame.append(pool.map(advanced_magic_data_framer, stuff))
-  # print finishedDataFrame
   advanced_magic_regressor(finishedDataFrame)
 
 def complicated_data_formatting():
   client = MongoClient('192.168.178.54')
   db = client.iop
-  # plant = db.Plant.find_one()['plant_id']
 
   data = db.SensorData.find({'p': 1, 's':0}).sort([('_id', pymongo.DESCENDING)])
 
@@ -138,13 +111,6 @@ def complicated_data_formatting():
 
   for sample in data:
     d = sample['_id'].generation_time
-    # sample['value'] = sample['v']
-    # sample['hour'] = d.hour
-    # sample['minute'] = d.minute
-    # sample['weekday'] = d.weekday()
-    # sample['day'] = d.day
-    # sample['month'] = d.month
-    # sample['year'] = d.year
     sample['timestamp'] = (d - datetime.datetime(1970, 1, 1, tzinfo=pytz.utc)).total_seconds()
 
     if finishedData is None:
