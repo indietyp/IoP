@@ -1,3 +1,8 @@
+# TODO
+# -> notify sensor
+#   -> activevate sender with notify of new entry
+#   -> rest_api
+
 from pymongo import MongoClient
 from bson import ObjectId
 
@@ -10,13 +15,14 @@ class Tools:
   def __init__(self, db, plant):
     self.db = db
     self.plant = plant
-  def getOptions(self, sensor):
+  def get_options(self, sensor):
     optimal = self.db.PlantConfig.find_one({"s": sensor,"a": self.plant['abbreviation']})['o']
     warning = self.db.PlantConfig.find_one({'s': sensor,"a": self.plant['abbreviation']})['w']
     danger = self.db.SensorType.find_one({"a": sensor})['r']
 
     return {'green': optimal, 'yellow': warning, 'red': danger}
-  def checkOptions(self, value, dataRange):
+
+  def check_options(self, value, dataRange):
     if dataRange['green']['min'] <= value <= dataRange['green']['max']:
       state = {'color': 'green', 'status': 'rlly no clue'}
 
@@ -32,7 +38,7 @@ class Tools:
 
     return state
 
-  def getPins(self, pinType):
+  def get_pins(self, pinType):
     pinsRAW = self.db.ExternalDevices.find()
     pinsDone = []
 
@@ -51,7 +57,17 @@ class Tools:
 
     return pinsDone
 
-  def insertSensor(self, sensor, value):
+  def change_detector(sensors, values):
+    for sensor in sensors:
+      index = sensors.index(sensor)
+      value = values[index]
+
+      if abs(self.db.SensorData.find_one({'s': sensor[0:1], 'p': plant['abbreviation']}, sort=[("_id", pymongo.DESCENDING)])['v'] - value) < 1:
+        return 1
+
+    return 0
+
+  def insert_sensor(self, sensor, value):
     plant = self.db.Plant.find_one({'localhost': True})['abbreviation']
 
     meshPlants = self.db.Plant.find({"localhost": {"$ne": True}})
@@ -76,7 +92,7 @@ class Tools:
       }
     )
 
-  def getSensor(self, sensor, value):
+  def get_sensor(self, sensor, value):
     plant = self.db.Plant.find_one({'localhost': True})['abbreviation']
     meshPlants = self.db.Plant.find({"localhost": {'$ne': True}})
 
@@ -100,3 +116,6 @@ class Tools:
       'v': value
       }
      )
+
+  def notify_sensor(self, sensors, values):
+    pass

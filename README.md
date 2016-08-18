@@ -1,3 +1,6 @@
+IMPORTANT
+add top dir (IoP) to the PYTHONPATH
+
 - [ ] Add slave mode
 - [ ] use esp8266 module
 - [ ] change registration to active in frontend

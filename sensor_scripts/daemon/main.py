@@ -1,49 +1,67 @@
-# get current time - done
-#   first time round up by 5 - done
-# pause until - done
-# execute 'dummy' scripts
-# get time + 5 - done
-# delete seconds + miliseconds, timerounder - done
+import sys
+import time
+from datetime import datetime, timedelta
+from settings.debug import DEBUG
 
-# 2 Databases
-#   detailed
-#   -> 100 records per sensor per plant
-#   normal
-# 5 min executer
-# if change < 1
-#   -> execute 30min
-#     -> reset counter of happend
-#   -> if no such change after counter == 6
-#     -> reset counter
+# from tools.debug import DebugInterrupt
+# loop
+#   --> current time
+#   --> current time + 5
+#   --> wait until
+#   --> --> execute 4 scripts (if 30 min use *args for trigger persitant)
+#   --> --> --> get data
+#   --> --> --> execute helper
+#   --> --> --> --> insert into database (mySQL - peewee)
+#   --> --> --> --> --> insert into 5 min
+#   --> --> --> --> --> check if 30 min or change of (in database - persistant_offset_trigger)
+#   --> --> --> --> --> if persistant == True (passed var - don't check)
+#   --> --> --> --> --> return if so
+#   --> --> --> --> send signal to mesh
+#   --> --> --> --> do hardware stuff (hardware id gets transmitted - saved in database)
+#   --> --> --> return status insertation
+#   --> --> --> status 1: triggered
+#   --> --> --> --> reset value to 0
+#   --> --> --> status 0: not triggered
+#   --> --> --> --> add value to + 5
 
-import pause
-import datetime
+five_minutes = 5 * 60
 
-def round_up(x, base=5):
-  return x + base if x % base == 0 else x + base - x % base
 
 def round_base(x, base=5):
-  return int(base * round(float(x)/base))
+  return int(base * round(float(x) / base))
 
-def time_overflow_correction(minute, hour):
-  return (minute, hour) if minute < 59 else (minute - 59, hour + 1)
 
-current_time = datetime.datetime.now()
+def next_execution_seconds():
+  # get current time
+  current_time = datetime.now()
 
-minute, hour = time_overflow_correction(current_time.minute, current_time.hour)
-minute = round_up(minute)
+  # get time in 5 min future for execution
+  future_datetime = current_time + timedelta(seconds=five_minutes)
 
-next_execution = datetime.datetime(current_time.year, current_time.month, current_time.day, hour, minute, 0)
+  # round number so that it's every time 5,10.. and not going to be 6,11...
+  minute = round_base(future_datetime.minute)
 
-print(next_execution)
-counter = 4
-while True:
-  counter = (counter + 1) if counter < 5 else 0
-  pause.until(next_execution)
+  # reconstruct executions time with new minutes
+  future_datetime = datetime(future_datetime.year, future_datetime.month, future_datetime.day, future_datetime.hour, minute, 0)
+  next_execution = future_datetime - current_time
 
-  current_time = datetime.datetime.now()
-  minute, hour = time_overflow_correction(current_time.minute + 5, current_time.hour)
-  minute = round_base(minute)
-  next_execution = datetime.datetime(current_time.year, current_time.month, current_time.day, hour, minute, 0)
+  return next_execution.seconds
 
-  print(next_execution)
+
+def main():
+  try:
+    while True:
+      sleep_seconds = next_execution_seconds()
+      print(sleep_seconds)
+
+      time.sleep(sleep_seconds)
+      # raise DebugInterrupt
+  except KeyboardInterrupt:
+    print('Bye!')
+    sys.exit()
+  except Exception as e:
+    main() if DEBUG is False else print(e)
+
+
+if __name__ == '__main__':
+  main()

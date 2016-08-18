@@ -1,49 +1,84 @@
 import sys
-import Adafruit_DHT
+import random
+# import Adafruit_DHT
 
-from pymongo import MongoClient
+# from pymongo import MongoClient
+from models.plant import Plant
+from models.sensor import Sensor
+from tools.sensor import ToolChainSensor
+# from tools.mail import ToolChainMailing
+# from ...tools.main import Tools
+# from ...tools.mailer import Mailer
+# from ..extensions.led.general import generalStatus
 
-from ...tools.main import Tools
-from ..extensions.mailer import PlantMailer
-from ..extensions.led.general import generalStatus
 
-class DHT22():
-  """docstring for DHT22"""
+class DHT22:
+  """readout for DHT22/11 sensor"""
+
   def __init__(self):
-    # super(DHT22, self).__init__()
-    # self.arg = arg
-    client = MongoClient
-    self.db = client.iop
+    pass
 
-  def get_data(self):
-    plant_id = self.db.Plant.find_one({'localhost': True})['plant_id']
+  # MODE 0 -> 5min -> no notification
+  # MODE 1 -> 30min -> notify + legacy DATABASE
+  def run(self):
+    # == needs to be there 'is' is not valid!
+    plant = Plant.select().where(Plant.localhost == True)[0]
 
     # PARSE PARAMETERS
-    rawSensor = self.db.Sensor.find_one({'t': 'temperature'})['m']
-    sensor = Adafruit_DHT.DHT22 if rawSensor == 'DHT22' else Adafruit_DHT11
-    pin = self.db.ExternalDevices.find_one({'n': 'DHT22'})['p']['gpio']
+    temperature = {'sensor': Sensor.select().where(Sensor.name == 'temperature')[0],
+                   'plant': plant}
+    humidity = {'sensor': Sensor.select().where(Sensor.name == 'humidity')[0],
+                'plant': plant}
 
+    if temperature['sensor'].model == humidity['sensor'].model:
+      pass
+      # sensor = Adafruit_DHT.DHT22 if temperature['semsor'].name == 'DHT22' else Adafruit_DHT11
+    pin = 18
+
+    humidity['value'], temperature['value'] = random.random() * 100, random.random() * 20 + 10
     # FETCH DATA FROM SENSOR
-    humidity, temperature = Adafruit_DHT.read_retry(sensor, pin)
+    # humidity, temperature = Adafruit_DHT.read_retry(sensor, pin)
 
     if humidity is not None and temperature is not None:
-      t_id = self.db.Sensor.find_one({'t': 'temperature'})['s_id']
-      h_id = self.db.Sensor.find_one({'t': 'humidity'})['s_id']
-      # INSERT IN DATABASE
-      tool_chain = Tools(self.db, plant_id)
-      tool_chain.insertSensor(t_id, round(temperature, 2))
-      tool_chain.insertSensor(h_id, round(humidity, 2))
+      print(str(temperature))
+      print(str(humidity))
+      # temperature = round(temperature, 2)
+      # humidity = round(humidity, 2)
 
-      # ACTIVATE MAILER
-      PlantMailer(plant_id, t_id).send()
-      PlantMailer(plant_id, h_id).send()
+      tools = ToolChainSensor()
 
-      # INSERT DATA IN GENERAL STATUS LEDS
-      general_status(plant_id, t_id, round(temperature,2)).insert()
-      general_status(plant_id, h_id, round(humidity,2)).insert().set()
+      print('temp ' + str(tools.insert_data(temperature)))
+      print('humi ' + str(tools.insert_data(humidity)))
 
-      return tool_chain.change_detector()
+      tools.set_hardware(temperature)
+      tools.set_hardware(humidity)
 
-    else:
-      return -1
-      # sys.exit(1)
+      # t_id = self.db.Sensor.find_one({'t': 'temperature'})['s_id']
+      # h_id = self.db.Sensor.find_one({'t': 'humidity'})['s_id']
+
+      # # INSERT IN DATABASE
+      # tool_chain = Tools(self.db, plant_id)
+      # tool_chain.notify_sensor([t_id, h_id], [temperature, humidity], mode)
+
+      # # ACTIVATE MAILER
+      # mailer = Mailer(self.db)
+      # mailer.plant(plant_id, [t_id, h_id])
+
+      # # INSERT DATA IN GENERAL STATUS LEDS
+      # general_status(plant_id, [t_id, h_id], [temperature, humidity]).insert().set()
+
+      # # IF == 1 insert also in legacy database else 100 records..
+      # return tool_chain.change_detector([t_id, h_id], [temperature, humidity])
+
+    # else:
+    #   return -1
+
+if __name__ == '__main__':
+  # DHT22().get_data()
+  import time
+  while True:
+    DHT22().run()
+    print('done')
+    time.sleep(.5)
+
+

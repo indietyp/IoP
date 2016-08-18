@@ -1,3 +1,6 @@
+# MOVE TO TOOLS
+# to tools class + administrative notices (codes)
+
 from marrow.mailer import Message, Mailer
 from pymongo import MongoClient
 import pymongo
