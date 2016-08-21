@@ -8,7 +8,7 @@ db = SqliteDatabase(DATABASE_NAME)
 
 class Sensor(Model):
   model       = CharField()
-  name        = CharField()
+  name        = CharField(unique=True)
   unit        = CharField()
 
   min_value   = FloatField()
@@ -33,27 +33,31 @@ class SensorData(Model):
     database  = db
 
 
-class SensorSatisfationLevel(Model):
-  name        = CharField()
+class SensorSatisfactionLevel(Model):
+  label        = CharField()
+  name_color   = CharField()
+  hex_color    = CharField(null=True)
 
   class Meta:
     database  = db
 
 
 class SensorStatus(Model):
+  """current sensor satisfaction level"""
   sensor      = ForeignKeyField(Sensor)
   plant       = ForeignKeyField(Plant)
 
-  level       = ForeignKeyField(SensorSatisfationLevel)
+  level       = ForeignKeyField(SensorSatisfactionLevel)
 
   class Meta:
     database  = db
 
 
 class SensorCount(Model):
+  """count how long satisfaction level - for comparison"""
   sensor      = ForeignKeyField(Sensor)
   plant       = ForeignKeyField(Plant)
-  level       = ForeignKeyField(SensorSatisfationLevel)
+  level       = ForeignKeyField(SensorSatisfactionLevel)
 
   count       = IntegerField()
 
@@ -62,9 +66,10 @@ class SensorCount(Model):
 
 
 class SensorSetting(Model):
+  """Satisfactionlevel min and max value"""
   sensor      = ForeignKeyField(Sensor)
   plant       = ForeignKeyField(Plant)
-  level       = ForeignKeyField(SensorSatisfationLevel)
+  level       = ForeignKeyField(SensorSatisfactionLevel)
 
   min_value   = FloatField()
   max_value   = FloatField()
@@ -73,8 +78,25 @@ class SensorSetting(Model):
     database  = db
 
 
+class SensorDangerMessage(Model):
+  plant       = ForeignKeyField(Plant)
+  sensor      = ForeignKeyField(Sensor)
+  level       = ForeignKeyField(SensorSatisfactionLevel)
+
+  message     = TextField()
+  value       = FloatField()
+
+  sent        = BooleanField(default=False)
+  created_at  = DateTimeField(default=datetime.datetime.now)
+
+  class Meta:
+    database  = db
+
+
 class SensorHardware(Model):
-  label       = CharField()
+  label           = CharField()
+  function        = CharField(default='generic')
+  last_execution  = DateTimeField(default=datetime.datetime.now, null=True)
 
   class Meta:
     database  = db

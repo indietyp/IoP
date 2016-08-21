@@ -9,15 +9,15 @@ class KeyChain(object):
 
   def decrypt(self, secret, message):
     algo = Fernet(secret)
-    decrypted = algo.decrypt(bytes(message, encoding='ascii'))
+    decrypted = algo.decrypt(bytes(message, encoding='utf-8'))
 
-    return decrypted
+    return decrypted.decode()
 
   def encrypt(self, message):
     key = Fernet.generate_key()
 
     algo = Fernet(key)
-    encrypted = algo.encrypt(bytes(message))
+    encrypted = algo.encrypt(bytes(message, encoding='utf-8'))
 
     return [key, encrypted]
 
@@ -25,8 +25,8 @@ class KeyChain(object):
 
 if __name__ == "__main__":
   notification_account = MailAccount.select()\
-                                       .where(MailAccount.daemon == True)[0]
+                                    .where(MailAccount.daemon == True)[0]
 
   crypt_pwd = notification_account.password
-  password = KeyChain.decrypt(crypt_pwd.secret, crypt_pwd.message)
+  password = KeyChain().decrypt(crypt_pwd.secret, crypt_pwd.message)
   print(password)

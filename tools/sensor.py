@@ -1,8 +1,10 @@
 from models.sensor import SensorData
 from models.sensor import Sensor
 from models.sensor import Plant
+from models.sensor import SensorHardwareConnector
 
 # from tools.mesh import ToolChainMeshSender
+from tools.hardware import ToolChainHardware
 
 
 class ToolChainSensor(object):
@@ -49,12 +51,12 @@ class ToolChainSensor(object):
                                .where(SensorData.sensor == sensor) \
                                .where(SensorData.plant == plant) \
                                .where(SensorData.persistant == False) \
-                               .order_by(SensorData.created_at.desc())
+                               .order_by(SensorData.created_at)
+                               # .order_by(SensorData.created_at.desc())
 
     overflow = non_persistant.count() - sensor.persistant_hold
-    print('offset' + str(sensor.persistant_hold))
     overflow = int(overflow)
-    # print('overflow: ' + str(overflow))
+
     if overflow > 0:
       for dataset in non_persistant[:overflow]:
         deleted += dataset.delete_instance()
@@ -93,11 +95,24 @@ class ToolChainSensor(object):
     sensor_db.persistant = persistant
     sensor_db.save()
 
-    print('deleted: ' + str(self.delete_non_persistant_overflow(data['sensor'], data['plant'])))
+    self.delete_non_persistant_overflow(data['sensor'], data['plant'])
 
     # CALL MESH SCRIPT FOR SYNCING!
+    # CALL modify_sensor_satisfaction MARKING
+    # --> is calling
+    # --> add_sensor_current_status
+
     # ToolChainMeshSender.notify_data(sensor_db)
     return persistant
 
   def set_hardware(self, data):
-    pass
+    # hardware = SensorHardware.select()
+
+    hardware = SensorHardwareConnector.select() \
+                                      .where(SensorHardwareConnector.sensor == data['sensor'])
+
+    hardware_toolchain = ToolChainHardware()
+    for piece in hardware:
+      exec('hardware_toolchain.{}()'.format(piece.hardware.function))
+
+    # get hardware -> call function (in database?)

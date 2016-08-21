@@ -1,106 +1,128 @@
+import re
+import datetime
 from collections import OrderedDict
-from pymongo import MongoClient
-import pymongo
-from ..driver.char_lcd import Adafruit_CharLCD
-from ..driver.mcp23017 import MCP230XX_GPIO
+from models.sensor import Sensor, SensorData, SensorHardware
+from models.plant import Plant
+# from pymongo import MongoClient
+# import pymongo
+# from sensor_scripts.driver.char_lcd import Adafruit_CharLCD
+# from sensor_scripts.driver.mcp23017 import MCP230XX_GPIO
 
 
 class Display:
   def __init__(self):
-    self.client = MongoClient()
-    self.db = self.client.pot
+    # name
+    # value
+    # unit
+    # raw
 
     self.data = {
-                  'sensor': OrderedDict([
-                    ('temperature', {
-                     'name': [],
-                     'value': [],
-                     'unit': []
-                    }),
-                    ('humidity', {
-                      'name': [],
-                      'value': [],
-                      'unit': []
-                    }),
-                    ('moisture', {
-                      'name': [],
-                      'value': [],
-                      'unit': []
-                    }),
+        'sensor': OrderedDict([
+            ('temperature', {}),
+            ('humidity', {}),
+            ('moisture', {}),
+            ('light', {})
+        ]),
+        'display': {
+            'length': 8,
+            'lines': 2,
+            'pins': {'pin_e': 11, 'pins_db': [12, 13, 14, 15], 'pin_rs': 10},
+            'text': ''
+        }
+    }
 
-                    ('light', {
-                      'name': [],
-                      'value': [],
-                      'unit': []
-                    })
-                  ]),
-                  'display': {
-                    'length': 0,
-                    'lines': 0,
-                    'pins': {},
-                    'text': ''
-                  }
-                }
   def calculate(self):
+    sensor_values = list(self.data['sensor'].values())
+
     for i in range(0, self.data['display']['lines']):
-      sensorDataList = []
+      display_list = []
 
-      sensorDataList = self.data['sensor'].values()[i]['name'][0:(self.data['display']['length'] - 5)]
-      sensorDataList = [ x.upper() for x in sensorDataList ]
-      sensorDataList += [" "," "]
-      sensorDataList += self.data['sensor'].values()[i]['value']
-      sensorDataList += self.data['sensor'].values()[i]['unit']
+      list_end = self.data['display']['length'] - 5
+      display_list = sensor_values[i]['name'][0:list_end]
 
-      if len(sensorDataList) < self.data['display']['length']:
-        rest = self.data['display']['length'] - len(sensorDataList)
-        for x in range(0,rest):
-          sensorDataList.insert(len(sensorDataList) - 5, ' ')
+      display_list = [char.upper() for char in display_list]
+      display_list += [" ", " "]
 
-      self.data['display']['text'] += ''.join(sensorDataList)
-      self.data['display']['text'] += '\n' if i != (self.data['display']['lines'] - 1) else ''
+      value = round(sensor_values[i]['value'], 0)
+      value = int(value)
+      display_list += str(value)
+      display_list += sensor_values[i]['unit']
+
+      if len(display_list) < self.data['display']['length']:
+        rest = self.data['display']['length'] - len(display_list)
+        for x in range(0, rest):
+          display_list.insert(len(display_list) - 5, ' ')
+
+      display_list.append(
+          '\n' if i != self.data['display']['lines'] - 1 else '')
+
+      self.data['display']['text'] += ''.join(display_list)
+
+    print(self.data['display']['text'])
+
+    return self
+
   def get(self):
-    self.data['sensor']['temperature']['name'] = list(self.db.SensorType.find_one({"a": "t"})['t'])
-    self.data['sensor']['moisture']['name'] = list(self.db.SensorType.find_one({"a": "m"})['t'])
-    self.data['sensor']['humidity']['name'] = list(self.db.SensorType.find_one({"a": "h"})['t'])
-    self.data['sensor']['light']['name'] = list(self.db.SensorType.find_one({"a": "l"})['t'])
+    sensors = self.data['sensor']
+    plant = Plant.select().where(Plant.localhost == True)[0]
 
-    self.data['sensor']['temperature']['value'] = list("{0:0=2d}".format(int(self.db.SensorData.find({'p': 'm', 's': 't'}).sort([('_id', pymongo.DESCENDING)])[0]['v'])))
-    self.data['sensor']['moisture']['value'] = list("{0:0=2d}".format(int(self.db.SensorData.find({'p': 'm', 's': 'm'}).sort([('_id', pymongo.DESCENDING)])[0]['v'])))
-    self.data['sensor']['humidity']['value'] = list("{0:0=2d}".format(int(self.db.SensorData.find({'p': 'm', 's': 'h'}).sort([('_id', pymongo.DESCENDING)])[0]['v'])))
-    self.data['sensor']['light']['value'] = list("{0:0=2d}".format(int(self.db.SensorData.find({'p': 'm', 's': 'l'}).sort([('_id', pymongo.DESCENDING)])[0]['v'])))
+    for sensor in sensors:
+      sensors[sensor]['raw'] = Sensor.get(Sensor.name == sensor)
 
-    self.data['sensor']['temperature']['unit'] = ['C']
-    self.data['sensor']['moisture']['unit'] = ['%']
-    self.data['sensor']['humidity']['unit'] = ['%']
-    self.data['sensor']['light']['unit'] = ['l']
+      sensors[sensor]['name'] = sensors[sensor]['raw'].name
 
-    self.data['display']['length'] = self.db.ExternalDevices.find_one({'n': 'display'})['a']['length']
-    self.data['display']['lines'] = self.db.ExternalDevices.find_one({'n': 'display'})['a']['lines']
+      unit = sensors[sensor]['raw'].unit
+      sensors[sensor]['unit'] = re.sub(r'(?!%)\W+', '', unit)[0]
+
+      order = SensorData.created_at.desc()
+      r_sen = sensors[sensor]['raw']
+      sensors[sensor]['value'] = SensorData.select()\
+                                           .where(SensorData.plant == plant)\
+                                           .where(SensorData.sensor == r_sen)\
+                                           .order_by(order)[0].value
+
+    self.data['sensor'] = sensors
+
+    return self
 
   def set(self):
-    bus = self.db.ExternalDevices.find_one({'n': 'mcp23017'})['a']['bus']
-    gpio_count = self.db.ExternalDevices.find_one({'n': 'mcp23017'})['a']['pins']
-    address = self.db.ExternalDevices.find_one({'n': 'mcp23017'})['p']['address']
+    execute = False
+    sensor = SensorHardware.get(label='display')
 
-    pins = self.db.ExternalDevices.find_one({'n': 'display'})['p']['mcp']
+    if sensor.last_execution is not None:
+      offset = datetime.datetime.now() - sensor.last_execution
+      if offset.seconds >= 30 * 60:
+        execute = True
+    else:
+      execute = True
 
-    self.get()
-    self.calculate()
+    if execute is True:
+      sensor.last_execution = datetime.datetime.now()
+      sensor.save()
 
-    # Create MCP230xx GPIO adapter.
-    mcp = MCP230XX_GPIO(bus, address, gpio_count)
+      print('Display set')
 
-    # Create LCD, passing in MCP GPIO adapter.
-    lcd = Adafruit_CharLCD(pin_rs=11, pin_e=10, pins_db=pins['pins_db'], GPIO=mcp)
-    # lcd = Adafruit_CharLCD(pin_rs=11, pin_e=10, pins_db=[12,13,14,15])
+      bus = 1
+      gpio_count = 16
+      address = 32
 
-    lcd.clear()
-    lcd.message(self.data['display']['text'])
-    #lcd.message('test')
+      self.get()
+      self.calculate()
+
+      # Create MCP230xx GPIO adapter.
+      mcp = MCP230XX_GPIO(bus, address, gpio_count)
+
+      # Create LCD, passing in MCP GPIO adapter.
+      # lcd = Adafruit_CharLCD(pin_rs=11, pin_e=10, pins_db=pins['pins_db'], GPIO=mcp)
+      lcd = Adafruit_CharLCD(pin_rs=11, pin_e=10, pins_db=[12,13,14,15])
+
+      lcd.clear()
+      lcd.message(self.data['display']['text'])
+
+    else:
+      print('Display not set')
 
     # print self.data['display']['text']
 if __name__ == "__main__":
-  tester = Display()
-  tester.set()
-
-
+  # Display().get().calculate()
+  Display().set()

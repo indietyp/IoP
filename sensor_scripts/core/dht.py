@@ -30,12 +30,18 @@ class DHT22:
     humidity = {'sensor': Sensor.select().where(Sensor.name == 'humidity')[0],
                 'plant': plant}
 
+    light = {'sensor': Sensor.select().where(Sensor.name == 'light')[0],
+             'plant': plant}
+    moisture = {'sensor': Sensor.select().where(Sensor.name == 'moisture')[0],
+                'plant': plant}
+
     if temperature['sensor'].model == humidity['sensor'].model:
       pass
       # sensor = Adafruit_DHT.DHT22 if temperature['semsor'].name == 'DHT22' else Adafruit_DHT11
     pin = 18
 
     humidity['value'], temperature['value'] = random.random() * 100, random.random() * 20 + 10
+    light['value'], moisture['value'] = random.random() * 100, random.random() * 100,
     # FETCH DATA FROM SENSOR
     # humidity, temperature = Adafruit_DHT.read_retry(sensor, pin)
 
@@ -49,6 +55,9 @@ class DHT22:
 
       print('temp ' + str(tools.insert_data(temperature)))
       print('humi ' + str(tools.insert_data(humidity)))
+
+      print('ligh ' + str(tools.insert_data(light)))
+      print('mois ' + str(tools.insert_data(moisture)))
 
       tools.set_hardware(temperature)
       tools.set_hardware(humidity)
@@ -75,10 +84,8 @@ class DHT22:
 
 if __name__ == '__main__':
   # DHT22().get_data()
-  import time
-  while True:
-    DHT22().run()
-    print('done')
-    time.sleep(.5)
-
-
+  # import time
+  # while True:
+  DHT22().run()
+  # print('done')
+  # time.sleep(.5)

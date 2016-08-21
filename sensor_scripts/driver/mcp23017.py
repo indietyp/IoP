@@ -20,7 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from i2c import Adafruit_I2C
+from sensor_scripts.driver.i2c import Adafruit_I2C
 import smbus
 import time
 
@@ -180,6 +180,7 @@ if __name__ == '__main__':
     # ***************************************************
     # Set num_gpios to 8 for MCP23008 or 16 for MCP23017!
     # ***************************************************
-    #mcp = Adafruit_MCP230XX(address = 0x20, num_gpios = 8) # MCP23008
+    # mcp = Adafruit_MCP230XX(address = 0x20, num_gpios = 8) # MCP23008
     # mcp = Adafruit_MCP230XX(address = 0x20, num_gpios = 16) # MCP23017
-   print 'Im just a dumb dummy!'
+    # print('Im just a dumb dummy!')
+    pass

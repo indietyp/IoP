@@ -2,6 +2,9 @@ import socket
 
 from models.plant import Plant
 from models.plant import Person
+from models.security import MailAccount
+from models.security import KeyChain as keychain
+from tools.security import KeyChain
 from models.sensor import Sensor
 from models.sensor import SensorHardware, SensorHardwareConnector
 
@@ -14,7 +17,7 @@ if Plant.select().count() == 0:
   plant.species = input('The species? ').lower()
 
   def interval():
-    int_interval = input('emailing interval? (int) ')
+    int_interval = input('emailing interval? (int) (h) ')
 
     if int_interval.isdigit() is True:
       return int(int_interval)
@@ -44,6 +47,23 @@ if Plant.select().count() == 0:
   plant.sat_streak = 0
   plant.save()
   input('Plant setup finished! Continue? (if not ^C)\n')
+
+if MailAccount.select().where(MailAccount.daemon == True).count() == 0:
+  daemon_account = MailAccount()
+  print('email account is using smtp and ssl at port 465')
+  daemon_account.account = input('EMail account: ')
+  daemon_account.server = input('EMail server: ')
+  daemon_account.daemon = True
+
+  password = keychain()
+  encrypted = KeyChain().encrypt(input('Password: '))
+  password.secret = encrypted[0]
+  password.message = encrypted[1]
+  password.application = 'mailer'
+  password.save()
+
+  daemon_account.password = password
+  daemon_account.save()
 
 
 def model(sensor):
@@ -79,7 +99,8 @@ if SensorHardware.select().count() == 0:
                          'water_pump': ['moisture']}
 
   for hardware, values in hardware_collection.items():
-    current = SensorHardware(label=hardware).save()
+    current = SensorHardware(label=hardware, function='execute_' + hardware)
+    current.save()
 
     for sensor in values:
       sensor = Sensor.get(name=sensor)
