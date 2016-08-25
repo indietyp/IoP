@@ -109,15 +109,15 @@ class Display:
       self.get()
       self.calculate()
 
-      # Create MCP230xx GPIO adapter.
-      mcp = MCP230XX_GPIO(bus, address, gpio_count)
+      # # Create MCP230xx GPIO adapter.
+      # mcp = MCP230XX_GPIO(bus, address, gpio_count)
 
-      # Create LCD, passing in MCP GPIO adapter.
-      # lcd = Adafruit_CharLCD(pin_rs=11, pin_e=10, pins_db=pins['pins_db'], GPIO=mcp)
-      lcd = Adafruit_CharLCD(pin_rs=11, pin_e=10, pins_db=[12,13,14,15])
+      # # Create LCD, passing in MCP GPIO adapter.
+      # # lcd = Adafruit_CharLCD(pin_rs=11, pin_e=10, pins_db=pins['pins_db'], GPIO=mcp)
+      # lcd = Adafruit_CharLCD(pin_rs=11, pin_e=10, pins_db=[12,13,14,15])
 
-      lcd.clear()
-      lcd.message(self.data['display']['text'])
+      # lcd.clear()
+      # lcd.message(self.data['display']['text'])
 
     else:
       print('Display not set')

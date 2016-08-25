@@ -18,8 +18,6 @@ class DHT22:
   def __init__(self):
     pass
 
-  # MODE 0 -> 5min -> no notification
-  # MODE 1 -> 30min -> notify + legacy DATABASE
   def run(self):
     # == needs to be there 'is' is not valid!
     plant = Plant.select().where(Plant.localhost == True)[0]
@@ -46,21 +44,21 @@ class DHT22:
     # humidity, temperature = Adafruit_DHT.read_retry(sensor, pin)
 
     if humidity is not None and temperature is not None:
-      print(str(temperature))
-      print(str(humidity))
+      # print(str(temperature))
+      # print(str(humidity))
       # temperature = round(temperature, 2)
       # humidity = round(humidity, 2)
 
       tools = ToolChainSensor()
 
       print('temp ' + str(tools.insert_data(temperature)))
-      print('humi ' + str(tools.insert_data(humidity)))
+      # print('humi ' + str(tools.insert_data(humidity)))
 
-      print('ligh ' + str(tools.insert_data(light)))
-      print('mois ' + str(tools.insert_data(moisture)))
+      # print('ligh ' + str(tools.insert_data(light)))
+      # print('mois ' + str(tools.insert_data(moisture)))
 
-      tools.set_hardware(temperature)
-      tools.set_hardware(humidity)
+      # tools.set_hardware(temperature)
+      # tools.set_hardware(humidity)
 
       # t_id = self.db.Sensor.find_one({'t': 'temperature'})['s_id']
       # h_id = self.db.Sensor.find_one({'t': 'humidity'})['s_id']
@@ -84,7 +82,7 @@ class DHT22:
 
 if __name__ == '__main__':
   # DHT22().get_data()
-  # import time
+  import time
   # while True:
   DHT22().run()
   # print('done')

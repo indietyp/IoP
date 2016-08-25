@@ -20,7 +20,7 @@ class Plant(Model):
   species     = CharField()
   interval    = IntegerField()
 
-  person = ForeignKeyField(Person)
+  person      = ForeignKeyField(Person)
 
   role        = CharField(default='master')
   ip          = CharField()

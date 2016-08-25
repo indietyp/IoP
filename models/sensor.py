@@ -43,11 +43,12 @@ class SensorSatisfactionLevel(Model):
 
 
 class SensorStatus(Model):
-  """current sensor satisfaction level"""
+  """current sensor satisfaction level - high <-> low"""
   sensor      = ForeignKeyField(Sensor)
   plant       = ForeignKeyField(Plant)
-
   level       = ForeignKeyField(SensorSatisfactionLevel)
+
+  status      = BooleanField(default=False)  # low = False, high = True
 
   class Meta:
     database  = db
@@ -65,14 +66,16 @@ class SensorCount(Model):
     database  = db
 
 
-class SensorSetting(Model):
+class SensorSatisfactionValue(Model):
   """Satisfactionlevel min and max value"""
-  sensor      = ForeignKeyField(Sensor)
-  plant       = ForeignKeyField(Plant)
-  level       = ForeignKeyField(SensorSatisfactionLevel)
+  sensor        = ForeignKeyField(Sensor)
+  plant         = ForeignKeyField(Plant)
+  level         = ForeignKeyField(SensorSatisfactionLevel)
 
-  min_value   = FloatField()
-  max_value   = FloatField()
+  inherited    = BooleanField(default=False)
+
+  min_value    = FloatField(default=0, null=True)
+  max_value    = FloatField(default=1, null=True)
 
   class Meta:
     database  = db
@@ -87,6 +90,8 @@ class SensorDangerMessage(Model):
   value       = FloatField()
 
   sent        = BooleanField(default=False)
+  sent_time   = DateTimeField(null=True)
+
   created_at  = DateTimeField(default=datetime.datetime.now)
 
   class Meta:

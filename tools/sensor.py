@@ -2,9 +2,11 @@ from models.sensor import SensorData
 from models.sensor import Sensor
 from models.sensor import Plant
 from models.sensor import SensorHardwareConnector
+from models.sensor import *
 
 # from tools.mesh import ToolChainMeshSender
 from tools.hardware import ToolChainHardware
+from tools.forecast import SensorDataForecast
 
 
 class ToolChainSensor(object):
@@ -51,7 +53,7 @@ class ToolChainSensor(object):
                                .where(SensorData.sensor == sensor) \
                                .where(SensorData.plant == plant) \
                                .where(SensorData.persistant == False) \
-                               .order_by(SensorData.created_at)
+                               .order_by(SensorData.created_at.asc())
                                # .order_by(SensorData.created_at.desc())
 
     overflow = non_persistant.count() - sensor.persistant_hold
@@ -63,13 +65,73 @@ class ToolChainSensor(object):
 
     return deleted
 
+  def get_sensor_satification_value(self, data):
+    """ dict of data:
+          'sensor': object of sensor
+          'value': value - float
+          'plant': current selected plant
+    """
+    pl = data['plant']
+    se = data['sensor']
+    cl = SensorSatisfactionValue.select()\
+                                .where(SensorSatisfactionValue.plant == pl)\
+                                .where(SensorSatisfactionValue.sensor == se)
+    collection = cl
+
+    return collection
+
+  def modify_sensor_status(self, data):
+    """ dict of data:
+          'sensor': object of sensor
+          'value': value - float
+          'plant': current selected plant
+    """
+    collection = self.get_sensor_satification_value(data)
+
+    current = [0]
+
+    for satisfaction in collection:
+      if satisfaction.inherited is True:
+        min_value = satisfaction.sensor.min_value
+        max_value = satisfaction.sensor.max_value
+      else:
+        min_value = satisfaction.min_value
+        max_value = satisfaction.max_value
+
+      if min_value <= data['value'] <= max_value:
+        barrier = max_value - min_value / 2
+        high_low = True if data['value'] >= barrier else False
+
+        if min_value >= current[0]:
+          current[0] = min_value
+          status, result = SensorStatus.get_or_create(
+              sensor=data['sensor'],
+              plant=data['plant'],
+              defaults={'level': satisfaction.level})
+
+          status.level = satisfaction.level
+          status.status = high_low
+          status.save()
+
+          # not rlly working?
+          # counter, result = SensorCount.get_or_create(
+          #     plant=data['plant'],
+          #     sensor=data['sensor'],
+          #     level=satisfaction.level,
+          #     defaults={'count': int(0)})
+          # counter.count += 1
+          # counter.save()
+
+    return 'success'
+
+
+
   def insert_data(self, data):
     """ dict of data:
           'sensor': object of sensor
           'value': value - float
           'plant': current selected plant
     """
-
     current_entries = SensorData.select()\
                                 .where(SensorData.sensor == data['sensor'])\
                                 .count()
@@ -96,6 +158,7 @@ class ToolChainSensor(object):
     sensor_db.save()
 
     self.delete_non_persistant_overflow(data['sensor'], data['plant'])
+    data['satisfaction'] = self.modify_sensor_status(data)
 
     # CALL MESH SCRIPT FOR SYNCING!
     # CALL modify_sensor_satisfaction MARKING
@@ -103,16 +166,23 @@ class ToolChainSensor(object):
     # --> add_sensor_current_status
 
     # ToolChainMeshSender.notify_data(sensor_db)
+    SensorDataForecast().run(data)
+
     return persistant
 
   def set_hardware(self, data):
-    # hardware = SensorHardware.select()
+    pass
+    hardware = SensorHardware.select()
 
     hardware = SensorHardwareConnector.select() \
                                       .where(SensorHardwareConnector.sensor == data['sensor'])
 
+    data['satisfaction'] = SensorStatus.get(
+        SensorStatus.sensor == data['sensor'],
+        SensorStatus.plant == data['plant'])
+
     hardware_toolchain = ToolChainHardware()
     for piece in hardware:
-      exec('hardware_toolchain.{}()'.format(piece.hardware.function))
+      exec('hardware_toolchain.{}(data)'.format(piece.hardware.function))
 
     # get hardware -> call function (in database?)

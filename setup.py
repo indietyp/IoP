@@ -7,6 +7,7 @@ from models.security import KeyChain as keychain
 from tools.security import KeyChain
 from models.sensor import Sensor
 from models.sensor import SensorHardware, SensorHardwareConnector
+from models.sensor import *
 
 print('Welcome to the configuration of IoP')
 if Plant.select().count() == 0:
@@ -89,9 +90,9 @@ for sensor in ['temperature', 'light', 'humidity', 'moisture']:
 
     db_sensor.save()
 
+all_sensors = ['temperature', 'light', 'humidity', 'moisture']
 if SensorHardware.select().count() == 0:
   print('doing some other stuff')
-  all_sensors = ['temperature', 'light', 'humidity', 'moisture']
   hardware_collection = {'led_traffic_light': all_sensors,
                          'led_bar': ['moisture'],
                          'display': ['temperature', 'humidity'],
@@ -106,3 +107,48 @@ if SensorHardware.select().count() == 0:
       sensor = Sensor.get(name=sensor)
       c = SensorHardwareConnector(hardware=current, sensor=sensor)
       c.save()
+
+
+def isfloat(text):
+  try:
+    return float(input(text))
+  except:
+    print('try again')
+    return isfloat(text)
+
+
+for level in ['threat', 'cautioning', 'optimum']:
+  if SensorSatisfactionLevel.select()\
+                            .where(SensorSatisfactionLevel.label == level)\
+                            .count() == 0:
+    satisfaction_level = SensorSatisfactionLevel()
+    satisfaction_level.label = level
+    print(level)
+    satisfaction_level.name_color = input('color: ')
+    satisfaction_level.save()
+
+    for single_sensor in all_sensors:
+      print('Sensor: ' + single_sensor)
+      obj_sensor = Sensor.get(Sensor.name == single_sensor)
+      plant = Plant.get(Plant.localhost == True)
+
+      print('Sensor min - ' + str(obj_sensor.min_value))
+      print('Sensor max - ' + str(obj_sensor.max_value))
+
+      sensor_satisfaction_value = SensorSatisfactionValue()
+
+      sensor_satisfaction_value.plant = plant
+      sensor_satisfaction_value.sensor = obj_sensor.id
+      sensor_satisfaction_value.level = satisfaction_level
+      # print(sensor_satisfaction_value.sensor)
+
+      if level == 'threat':
+        sensor_satisfaction_value.inherited = True
+        sensor_satisfaction_value.min_value = None
+        sensor_satisfaction_value.max_value = None
+      else:
+        sensor_satisfaction_value.min_value = isfloat('min_value: ')
+        sensor_satisfaction_value.max_value = isfloat('max_value: ')
+
+      # print(sensor_satisfaction_value.sensor)
+      sensor_satisfaction_value.save()

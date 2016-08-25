@@ -1,9 +1,0 @@
-per sensor:
-
-green or red or yellow:
-temperature counter + humidity counter + lc + mc
-/ 4
-((green + yellow + red) / green) * 100
-cut commas!
-
-
