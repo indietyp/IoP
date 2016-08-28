@@ -1,6 +1,82 @@
-INIT - 1 BYTE
-  001 [MASTER <-> MASTER]
-  002 [MASTER --> SLAVE]
+<INIT, [PLANT_UUID, MESSAGE_UUID], [PRIORITY, RECIPIENT_UUID], [CODE], [MESSAGE, MESSAGE, MESSAGE, MESSAGE], END>
+
+INIT + END
+  1       [MASTER <-> MASTER]
+  2       [MASTER --> SLAVE]
+
+PLANT_UUID
+  UUID4   [SENDER UUID]
+  (same across devices)
+
+MESSAGE_UUID
+  UUID4   [LOGGING]
+  (same scross devices)
+
+PRIORITY
+  0 - 255 [HIGHER MORE PRIORITY]
+
+RECIPIENT_UUID
+  UUID4   [PLANT RECEIVER]
+  (same across devices)
+
+CODE
+  5 DIGIT [INTEGER]
+    1 DIGIT [ref. MODE]
+    2 DIGIT [SUBMODE]
+    2 DIGIT [SUBSUBMODE OR 00]
+
+A_MESSAGE
+  255CHAR [EXTRA INFORMATION]
+
+B_MESSAGE
+  255CHAR [EXTRA INFORMATION]
+
+C_MESSAGE
+  255CHAR [EXTRA INFORMATION]
+
+D_MESSAGE
+  255CHAR [EXTRA INFORMATION]
+
+MODE
+  1       [ALIVE]
+    1       [ASK]
+    2       [RESPONSE TO ALIVE]
+  2       [SEND]
+    1       [REQUEST] - [MASTER --> SLAVE FEATURE]
+    2       [SEND]    - [MASTER --> SLAVE FEATURE]
+    3       [NOTIFY]
+      1       [DATA]
+      2       [IP]
+
+    A_MESSAGE:
+      UUID SENSOR
+  3       [REGISTER]
+    <-- needs work on extra information -->
+    1       [MULTICAST]
+    2       [WANT_REGISTER]
+    3       [STARTING REST NEW]
+    4       [FINISHED REST NEW]
+    5       [STARTING REST OLD]
+    6       [FINISHED REST OLD]
+    7       [INFORMING     OLD]
+    8       [FINISHED INFORMING]
+    95      [SUCCESS]
+    98      [RECORD ALREADY EXISTS]
+    99      [FAIL]
+  4       [DISCOVER]
+    1       [INITIAL]
+    2       [RESPONSE I'M THERE]
+  8       [SUCCESS]
+  9       [FAIL]
+(mode in CODE ex. alive: 10100 response: 10200)
+
+REGISTER
+  MULTICAST (I'm new) - RESPONSE (already exists or not)
+                                - NEW_REST - FINISHED - OLD_REST - FINISHED - INFORM_FINISHED (old)
+  WANT_REGISTER       -
+  (plant discovered it (interface or mesh), want's to add)
+
+check every day - rest if everybody has same! Add if neccassary
 
 MODE - 1 BYTE
   001 [ALIVE]

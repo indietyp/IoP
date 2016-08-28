@@ -6,6 +6,7 @@ from sensor_scripts.extensions.mailer import PlantMailer
 
 class ToolChainHardware(object):
   """docstring for ToolChainHardware"""
+
   def __init__(self):
     pass
 

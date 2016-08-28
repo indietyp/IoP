@@ -1,5 +1,6 @@
 from peewee import *
 from settings.database import DATABASE_NAME
+import uuid
 
 import datetime
 db = SqliteDatabase(DATABASE_NAME)
@@ -19,6 +20,7 @@ class Plant(Model):
   location    = CharField()
   species     = CharField()
   interval    = IntegerField()
+  uuid        = UUIDField(default=uuid.uuid4, unique=True)
 
   person      = ForeignKeyField(Person)
 

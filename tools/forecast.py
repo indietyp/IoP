@@ -1,30 +1,57 @@
 import pandas as pd
 import numpy as np
-import matplotlib.pylab as plt
 import datetime
 from models.sensor import SensorData
-from sklearn.linear_model import ElasticNet
-from sklearn.ensemble import RandomForestRegressor
+from models.sensor import SensorDataPrediction
+from settings.debug import GRAPH
 from sklearn.ensemble import ExtraTreesRegressor
-# from sklearn.tree import DecisionTreeRegressor
-
-from sklearn.neighbors import RadiusNeighborsRegressor
-# %matplotlib inline
-# from matplotlib.pylab import rcParams
-# rcParams['figure.figsize'] = 15, 6
 
 
 class SensorDataForecast(object):
   def __init__(self):
     pass
 
-  def test_stationarity(self, timeseries):
+  def show_graph(self, data_dates, data, prediction_dates, predictions):
+    import matplotlib.pylab as plt
 
-    # Determing rolling statistics
-    rolmean = timeseries.rolling(center=False, window=12).mean()
+    index = pd.DatetimeIndex(data_dates)
+    original = pd.Series(data, index=index)
 
-  def learn(self, data):
-    print('STARTED')
+    index = pd.DatetimeIndex(prediction_dates)
+    predicted = pd.Series(predictions, index=index)
+
+    plt.plot(original, color='red')
+    plt.plot(predicted, color='blue')
+    plt.show()
+
+  def datetime_to_dict(self, array, field='date'):
+    array['timestamp'] = []
+    array['year'] = []
+    array['month'] = []
+    array['day'] = []
+    array['hour'] = []
+    array['minute'] = []
+    array['weekday'] = []
+
+    for d_time in array[field]:
+      array['year'].append(d_time.year)
+      array['month'].append(d_time.month)
+      array['day'].append(d_time.day)
+      array['hour'].append(d_time.hour)
+      array['minute'].append(d_time.minute)
+
+      array['weekday'].append(d_time.date().isoweekday())
+      array['timestamp'].append(d_time.timestamp())
+
+    return array
+
+  def predict(self, data):
+    """ forecasting timebased sensor data
+        INPUT dict
+          plant - current plant object
+          sensor - current sensor object
+
+    """
     sd = SensorData.select() \
                    .where(SensorData.plant == data['plant']) \
                    .where(SensorData.sensor == data['sensor']) \
@@ -33,58 +60,33 @@ class SensorDataForecast(object):
     data = {}
     data['date'] = []
     data['value'] = []
-    data['timestamp'] = []
     data['average'] = []
-
-    data['year'] = []
-    data['month'] = []
-    data['day'] = []
-    data['hour'] = []
-    data['minute'] = []
-    data['weekday'] = []
-
-    for entry in sd:
-      data['date'].append(entry.created_at)
-      data['value'].append(entry.value)
-
-    for date in data['date']:
-      str_date = date.replace('+00:00', '')
-      dt_date = datetime.datetime.strptime(str_date, '%Y-%m-%d %H:%M:%S')
-
-      data['year'].append(dt_date.year)
-      data['month'].append(dt_date.month)
-      data['day'].append(dt_date.day)
-      data['hour'].append(dt_date.hour)
-      data['minute'].append(dt_date.minute)
-
-      data['weekday'].append(dt_date.date().isoweekday())
-      data['timestamp'].append(dt_date.timestamp())
-      last_datetime = dt_date
 
     future = {}
     future['date'] = []
-    future['timestamp'] = []
 
-    future['year'] = []
-    future['month'] = []
-    future['day'] = []
-    future['hour'] = []
-    future['minute'] = []
-    future['weekday'] = []
+    if len(sd) < 1000:
+      print('not enough samples')
+      return None
 
-    # for i in range(1, 95):
-    for i in range(0, 2000):
-      fu = last_datetime + datetime.timedelta(minutes=30)
-      future['date'].append(fu)
-      future['year'].append(fu.year)
-      future['month'].append(fu.month)
-      future['day'].append(fu.day)
-      future['hour'].append(fu.hour)
-      future['minute'].append(fu.minute)
+    for entry in sd:
+      created_at = entry.created_at
+      str_entry = created_at.replace('+00:00', '')
+      dt_date = datetime.datetime.strptime(str_entry, '%Y-%m-%d %H:%M:%S')
+      data['date'].append(dt_date)
 
-      future['weekday'].append(fu.date().isoweekday())
-      future['timestamp'].append(fu.timestamp())
-      last_datetime = fu
+      data['value'].append(entry.value)
+
+    last_datetime = data['date'][-1]
+
+    cap = int(len(data['date']) / 100 * 10)
+    for i in range(0, cap):
+      current = last_datetime + datetime.timedelta(minutes=30)
+      future['date'].append(current)
+      last_datetime = current
+
+    data = self.datetime_to_dict(data)
+    future = self.datetime_to_dict(future)
 
     index = pd.DatetimeIndex(data['date'])
     time_series = pd.Series(data['value'], index=index)
@@ -99,40 +101,38 @@ class SensorDataForecast(object):
     columns = data_frame.columns.tolist()
     columns = [c for c in columns if c not in ['value', 'average', 'date']]
 
-    # linear
-    # model = ElasticNet()
-
-    # quite good
-    # model = RandomForestRegressor()
-
-    # very good
     model = ExtraTreesRegressor()
-
-    # model = RadiusNeighborsRegressor()
     model.fit(data_frame[columns].values,
               data_frame['average'].values)
 
     pred_data_frame = pd.DataFrame(future)
     predictions = model.predict(pred_data_frame[columns].values)
 
-    index = pd.DatetimeIndex(data['date'])
-    original = pd.Series(data['average'], index=index)
+    future['prediction'] = []
+    for prediction in predictions:
+      future['prediction'].append(prediction)
 
-    index = pd.DatetimeIndex(future['date'])
-    predicted = pd.Series(predictions, index=index)
+    if GRAPH is True:
+      self.show_graph(data['date'], data['average'], future['date'], predictions)
 
-    plt.plot(original, color='red')
-    plt.plot(predicted, color='blue')
-    plt.show()
-    # print(time_series)
-    # self.test_stationarity(time_series)
+    return future
 
+  def insert_database(self, data):
+    SensorDataPrediction.delete().where(SensorDataPrediction.plant == data['plant']) \
+                                 .where(SensorDataPrediction.sensor == data['sensor']) \
+                                 .execute()
 
-    # plt.plot(time_series)
-    # plt.show()
+    for key, prediction in enumerate(data['prediction']['prediction']):
+      entry = SensorDataPrediction()
+      entry.plant = data['plant']
+      entry.sensor = data['sensor']
+      entry.value = prediction
+      entry.time = data['prediction']['date'][key]
+      entry.save()
 
   def run(self, data):
-    self.learn(data)
+    data['prediction'] = self.predict(data)
+    self.insert_database(data)
 
 if __name__ == '__main__':
   from models.plant import Plant

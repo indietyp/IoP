@@ -25,7 +25,7 @@ class KeyChain(object):
 
 if __name__ == "__main__":
   notification_account = MailAccount.select()\
-                                       .where(MailAccount.daemon == True)[0]
+                                    .where(MailAccount.daemon == True)[0]
 
   crypt_pwd = notification_account.password
   password = KeyChain.decrypt(crypt_pwd.secret, crypt_pwd.message)

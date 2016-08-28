@@ -2,6 +2,7 @@ from peewee import *
 import datetime
 from settings.database import DATABASE_NAME
 from models.plant import *
+import uuid
 
 db = SqliteDatabase(DATABASE_NAME)
 
@@ -10,6 +11,7 @@ class Sensor(Model):
   model       = CharField()
   name        = CharField(unique=True)
   unit        = CharField()
+  uuid        = UUIDField(default=uuid.uuid4)
 
   min_value   = FloatField()
   max_value   = FloatField()
@@ -114,3 +116,15 @@ class SensorHardwareConnector(Model):
   class Meta:
     database = db
 
+
+class SensorDataPrediction(Model):
+  plant       = ForeignKeyField(Plant)
+  sensor      = ForeignKeyField(Sensor)
+
+  value       = FloatField()
+  time        = DateTimeField()
+
+  created_at  = DateTimeField(default=datetime.datetime.now)
+
+  class Meta:
+    database = db

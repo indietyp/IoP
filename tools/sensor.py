@@ -124,8 +124,6 @@ class ToolChainSensor(object):
 
     return 'success'
 
-
-
   def insert_data(self, data):
     """ dict of data:
           'sensor': object of sensor

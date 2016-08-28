@@ -1,8 +1,20 @@
 from models.sensor import *
+import sys
+
+
+class MeshString(str):
+  def rreplace(self, old, new, maxcount=sys.maxsize):
+    """ reverse replace
+        reverses string and runs replace at reversed old and new
+        returns reversed reversed string
+    """
+    self = self[::-1].replace(old[::-1], new[::-1], maxcount)[::-1]
+    return self
 
 
 class VariousTools(object):
   """docstring for VariousTools"""
+
   def __init__(self):
     pass
 
@@ -25,28 +37,3 @@ class VariousTools(object):
       output[key] = {'min': sat_lvl.min_value, 'max': sat_lvl.max_value}
 
     return output
-
-  def check_sensor_value_for_satisfaction_range(self, data):
-    """ INPUT data (dict):
-          'sensor': object of sensor
-          'value': value - float
-          'plant': current selected plant
-
-        OUTPUT (object)
-    """
-    ranges = self.get_satisfaction_ranges(data['sensor'], data['plant'])
-    print(ranges)
-
-  def csvfsr(self):
-    return self.check_sensor_value_for_state()
-
-  def modify_current_sensor_satisfaction(self, data):
-    """ INPUT data (dict):
-          'sensor': object of sensor
-          'value': value - float
-          'plant': current selected plant
-        OUTPUT (object):
-          sensorsatisfaction
-    """
-
-    pass
