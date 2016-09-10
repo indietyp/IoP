@@ -1,64 +1,281 @@
 import socket
+import time
+import uuid
 from tools.main import MeshString
+from models.mesh import MeshMessage, MeshObject
+from settings.mesh import MULTICAST_ADDRESS, EXTERNAL_PORT
+from settings.database import DATABASE_NAME
+from tools.mesh import MeshTools
 
 
 class MeshNetwork(object):
   """ response daemon for mesh network """
 
-  def __init(self):
-    pass
+  def __init__(self):
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    s.connect(("gmail.com", 80))
+    self.IP = s.getsockname()[0]
+    s.close()
 
   def daemon(self):
     client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    multicast_addr = '224.0.0.1'
+    multicast_addr = MULTICAST_ADDRESS
+    port = EXTERNAL_PORT
     host = '0.0.0.0'
-    port = 4012
     membership = socket.inet_aton(multicast_addr) + socket.inet_aton(host)
 
     client.setsockopt(socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, membership)
     client.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
     client.bind((host, port))
-    print(client.recvfrom(65000))
+    while True:
+      received = client.recvfrom(65000)
+      print(received)
+      message = received[0].decode('utf-8')
+      message = message.replace('<', '[').replace('>', ']')
+      message = eval(message)
 
-  def send(self, plant, code, messages, master=True, priority=255, recipient=None):
+      # origin = Plant.get(Plant.uuid == uuid.UUID(message[1][0]))
+      # target = Plant.get(Plant.uuid == uuid.UUID(message[2][1]))
+
+      # if target.id != Plant.get(Plant.localhost == True).id:
+        # raise ValueError('target & local plant not the same')
+
+      if self.IP != received[1][0]:
+        code = str(message[3][0])
+        if code[0] == '1':
+          if int(code[1:3]) == 1:
+            self.alive(origin, 2)
+          else:
+            self.send_local()
+        elif code[0] == '2':
+          if int(code[1:3]) == 1:
+            pass
+        elif code[0] == '3':
+          pass
+        elif code[0] == '4':
+          if int(code[1:3]) == 1:
+            self.discover(target=[message[1][0], received[1][0]], mode=2)
+          elif int(code[1:3]) == 2:
+            registered = False if message[1][0] == '' else True
+
+            status, result = MeshObject.get_or_create(
+                ip=received[1][0],
+                defaults={'registered': registered})
+            status.registered = registered
+            status.save()
+      else:
+        print('same IP')
+
+  def create_message_object(self, plant, code, messages, received=False,
+                            recipient=None, muuid=None, priority=255):
+    message = MeshMessage()
+    message.plant = plant
+    message.sender = recipient
+    message.uuid = muuid if muuid is not None else uuid.uuid4()
+
+    message.received = received
+    message.priority = priority
+    message.code = code
+
+    message.a_message = messages[0]
+    message.b_message = messages[1]
+    message.c_message = messages[2]
+    message.d_message = messages[3]
+    message.save()
+
+    return message.uuid
+
+  def send(self, code, plant=None, messages=[], master=True, priority=255,
+           recipient=None, multicast=False, no_database=False):
+    """ main method for sending information in the mesh_network
+        code - 5 digit number for mode
+        plant - optional (origin, plant object)
+        messages - 4len array with additional information to be sended
+                  -> auto cut to 4 existing
+        master - mode of sended information - currently only Master supportet
+        priority - 0-255 higher mor priority (not implemented fully yet)
+        recipient - [str with UUID, ip] or peewee plant object or None if multicast
+        multicast - sending with multicast
+        no_database - function does not use database
+    """
+    if type(recipient) == list:
+      recipient_uuid = recipient[0]
+      external_address = recipient[1]
+      create_message_object_recipient = None
+    elif recipient is None:
+      recipient_uuid = ''
+      external_address = ''
+      create_message_object_recipient = None
+    else:
+      recipient_uuid = recipient.uuid
+      external_address = recipient.ip
 
     len_message = len(messages)
-
     [messages.append('') for _ in range(0, 4 - len_message) if len_message < 4]
     [messages.pop() for _ in range(0, len_message - 4) if len_message > 4]
 
-    messages = [x if x != '' else '-' * 256 for x in messages]
+    if no_database is False:
+      muuid = self.create_message_object(plant, code, messages, True,
+                                         create_message_object_recipient, None, priority)
 
-    # if len_message < 4:
-    #   for _ in range(0, 4 - len_message):
-    #     messages.append('')
-    # elif len_message > 4:
-    #   for i in range(0, len_message - 4):
-    #     del messages[i + 4]
+    messages = [x if x != '' else '-' * 256 for x in messages]
 
     master = int(master)
     package = [master, [], [], [], [], master]
-    package[1].append(plant.uuid)
+
+    if plant is not None:
+      package[1].append(str(plant.uuid))
+      package[1].append(str(muuid))
+    else:
+      package[1].append('')
+      package[1].append(str(uuid.uuid4()))
 
     package[2].append(priority)
-    package[2].append(recipient.uuid if recipient is not None else '')
-
+    package[2].append(recipient_uuid)
     package[3].append(code)
-
     package[4] = messages
 
     str_package = repr(package).replace('[', '<', 1)
     str_package = MeshString(str_package).rreplace(']', '>', 1).encode('utf-8')
     print(str_package)
 
-    sender = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    port = 4012
-    sender.sendto(str_package, ('127.0.0.1', port))
+    if multicast is False:
+      print(external_address)
+      address = external_address
+      sender = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    else:
+      print('MULTICAST')
+      address = MULTICAST_ADDRESS
+      sender = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
+      sender.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, 2)
+
+    sender.sendto(str_package, (address, EXTERNAL_PORT))
+
     sender.close()
+
+  def alive(self, target, mode=1):
+    if mode > 2:
+      raise ValueError('invalid mode')
+    plant = Plant.get(Plant.localhost == True)
+
+    if mode == 1:
+      code = 10100
+      # self.send(plant, code, recipient=target)
+    elif mode == 2:
+      code = 10200
+
+    self.send(code, plant=plant, recipient=target)
+
+  def discover(self, target=None, mode=1):
+    """ if mode is 1 - target == peewee plant object
+        if mode is 2 - target == list [UUID, IP]
+    """
+    if mode == 1:
+      plant = Plant.get(Plant.localhost == True)
+      code = 40100
+      self.send(code, plant=plant, recipient=None, multicast=True)
+    elif mode == 2:
+      code = 40200
+      try:
+        print('DISCOVER: 1')
+        plant = Plant.get(Plant.localhost == True)
+        code += 1
+        self.send(code, plant=plant, recipient=target, messages=['LOGGED', 'DATABASE'])
+      except:
+        print('DISCOVER: 2')
+        code += 2
+        self.send(code, no_database=True, recipient=target, messages=['NOT_LOGGED', 'NO_DATABASE'])
+
+  def register(self, mode, ip=None, recipient=None):
+    """ MODES:
+      [1] DISCOVER AND ASK PUBLICKEY
+      [2] GENERATE PUBLICKEY AND SEND
+      [3] OPEN HTTP AND ESTABLISH
+      [4] DOWNLOAD FILE, DECRYPT, RENAME
+      [5] SIGNAL FINISHED
+      [6] SIGNAL WORKING
+      [7] SINGAL DONE
+      [8] SINGAL DONE
+
+      RECIPIENT = [UUID, IP]
+    """
+
+    if mode == 1:
+      localhost = Plant.get(Plant.localhost == True)
+      try:
+        plant = MeshObject.get(MeshObject.registered == False, MeshObject.ip == ip)
+      except:
+        raise 'plant already registered'
+
+      self.send(30100, plant=localhost, recipient=['', plant.ip])
+
+    elif mode == 2:
+      import binascii
+      import os
+      from Crypto.PublicKey import RSA
+      from Crypto import Random
+      import re
+      tools = MeshTools()
+
+      random_generator = Random.new().read
+      key = RSA.generate(1024, random_generator)
+
+      directory = './keys/'
+      tools.create_dir_if_not_exists(directory)
+
+      public = key.publickey().exportKey('DER')
+
+      for i in [['.pub', public],
+                ['.priv', key.exportKey('DER')]]:
+
+        filename = directory + 'localhost' + i[0]
+        hex_key = tools.bin2hex(i[1])
+        hex_key = hex_key.decode()
+        with open(filename, 'w') as out:
+          out.write(hex_key)
+
+      public = tools.bin2hex(public)
+      public = public.decode()
+      public = re.findall('.{1,100}', public)
+
+      self.send(30200, recipient=recipient, messages=public, no_database=True)
+
+    elif mode == 3:
+      import http.server
+      import socketserver
+      import os
+      import shutil
+      tools = MeshTools()
+
+      directory = './database_serve/'
+      tools.reinit_dir(directory)
+
+      filename = directory + 'index.html'
+      with open(filename, 'w') as out:
+        out.write(tools.random_string(20) + 'PRAISE THE ALL MIGHTY UNICORN' + tools.random_string(20))
+
+      filename = directory + tools.random_string(100, True)
+      shutil.copyfile(DATABASE_NAME, filename)
+      print(filename)
+
+      os.chdir(directory)
+      PORT = 8000
+
+      Handler = http.server.SimpleHTTPRequestHandler
+
+      httpd = socketserver.TCPServer(("", PORT), Handler)
+
+      print("serving at port", PORT)
+      httpd.serve_forever()
+
 
 if __name__ == '__main__':
   from models.plant import Plant
 
-  plant = Plant.get(Plant.name == 'marta')
-  MeshNetwork().send(plant, 10100, ['', '', '', '', 'test'])
+  # plant = Plant.get(Plant.name == 'marta')
+  # MeshNetwork().send(plant, 10100, ['', '', '', ''])
+  # MeshNetwork().daemon()
+  # MeshNetwork().discover(1)
+  MeshNetwork().register(3)
+  # MeshNetwork().discover(['91c9280b-76c1-42a3-93eb-85250065230f', '192.168.178.54'], mode=2)

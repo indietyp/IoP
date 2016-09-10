@@ -140,5 +140,12 @@ if __name__ == '__main__':
 
   data = {}
   data['plant'] = Plant.get(Plant.name == 'marta')
-  data['sensor'] = Sensor.get(Sensor.name == 'temperature')
+  data['sensor'] = Sensor.get(Sensor.name == 'light')
+  print(data['sensor'])
+  SensorDataForecast().run(data)
+  print('done')
+  data['sensor'] = Sensor.get(Sensor.name == 'humidity')
+  SensorDataForecast().run(data)
+  print('done')
+  data['sensor'] = Sensor.get(Sensor.name == 'moisture')
   SensorDataForecast().run(data)

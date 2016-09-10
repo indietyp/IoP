@@ -1,0 +1,45 @@
+ mesh network:
+   test:
+     [ ] alive: register needed
+     [ ] register
+     ✔ discover @done (16-09-05 20:14)
+     [ ] discover with database integration
+   build register:
+     ✔ add MeshObject @done (16-09-06 19:20)
+     ✔ discovered into database @done (16-09-06 19:21)
+
+       ✔ discover @existing @done (16-09-06 19:31)
+       ✔ delay 5 sec @existing @done (16-09-06 19:31)
+       ✔ reply not registered @new @done (16-09-06 19:31)
+       ✔ fetch all discovered @done (16-09-06 19:31)
+     ✔ ask publickey @existing @done (16-09-06 19:31)
+     ✔ send publickey @new @done (16-09-08 20:40)
+       [ ] generate AES(or something else) key
+     [ ] send encrypted key
+       [ ] create database backup [named hash] @existing
+       [ ] open HTTP server @existing
+     [ ] send HTTP established [encrypted] [A_MESSAGE port, B_MESSAGE hash] @existing
+       [ ] download file, rename @new
+       [ ] change local plant @new
+     [ ] send finished @existing
+       [ ] test with alive, rest @existing
+     [ ] send working @existing
+       [ ] rest api to others [insert] @new
+     [ ] send done @new
+     [ ] send done @existing
+
+
+frontend:
+  add plant:
+    [ ] layout
+    [ ] logic
+  sensordata:
+    [ ] switch to indexedDB
+
+ sensor_scripts (SS xD):
+   core:
+    [ ] light and moisture test and port to sqlite
+   extensions:
+    [ ] LED to python 3
+   driver:
+    [ ] port to python 3

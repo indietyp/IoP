@@ -15,33 +15,106 @@ getCurrentPlant = () ->
     return
   return request.responseText
 
+getCurrentPUUID = () ->
+  request = $.ajax
+    url: '/get/current/p_uuid',
+    method: 'POST',
+    # not as good as you might think!
+    # pls find other solution, thank you!
+    async: false
+    data: {}
+
+  request.done (msg) ->
+    return
+
+  request.fail (jqXHR, textStatus) ->
+    $('section.mainContent').html('Request failed:' + textStatus);
+    return
+  return request.responseText
+
+getCurrentSensor = () ->
+  request = $.ajax
+    url: '/get/current/sensor',
+    method: 'POST',
+    async: false
+    data: {}
+
+  request.done (msg) ->
+    return
+
+  request.fail (jqXHR, textStatus) ->
+    $('section.mainContent').html('Request failed:' + textStatus);
+    return
+  return request.responseText
+
 initLineGraph = (graphName) ->
-  # ADD LOCAL STORAGE
-  sensordata = $.ajax
-   url: '/get/plant/sensor/dataset',
-   method: 'POST'
-   data: {}
+  sensor = getCurrentSensor()
+  plant = getCurrentPUUID()
+  current = localStorage.getItem(sensor + ',' + plant)
 
-  sensordata.done (sensordatamsg) ->
-    sensordataset = []
-    # console.log sensordatamsg
-    for data in JSON.parse(sensordatamsg)
-     # console.log data
-      sensordataset.push [new Date(data['dt'] * 1000), data['v']]
+  if current is null or current == ''
+    console.log 'building localStorage'
+    sensordata = $.ajax
+      url: '/get/plant/sensor/dataset',
+      method: 'POST'
+      data: {}
 
-    smoothPlotter.smoothing = 0.33;
-    g = new Dygraph(document.getElementById("graph"),
-     sensordataset,
-     {
-      labels: ['time', graphName],
-      plotter: smoothPlotter,
-      legend: 'always',
-      animatedZooms: true,
-      # title: 'dygraphs chart template'
-     });
-    # window.sensordataset = sensordataset
+    sensordata.done (sensordatamsg) ->
+      sensordataset = []
 
-   return
+      for data in JSON.parse(sensordatamsg)['real']
+        sensordataset.push [new Date(data['timestamp'] * 1000), data['value'], null]
+
+      for data in JSON.parse(sensordatamsg)['predicted']
+        sensordataset.push [new Date(data['timestamp'] * 1000), null, data['value']]
+
+      localStorage.setItem(sensor + ',' + plant, sensordatamsg)
+
+      smoothPlotter.smoothing = 0.33;
+      g = new Dygraph(document.getElementById("graph"),
+       sensordataset,
+       {
+        labels: ['time', graphName, 'prediction'],
+        plotter: smoothPlotter,
+        legend: 'always',
+        animatedZooms: true,
+       });
+      return
+    return
+  else
+    console.log 'using localStorage'
+    current_data = JSON.parse(current)
+    sensordata = $.ajax
+      url: '/get/plant/sensor/dataset/custom',
+      method: 'POST'
+      data: {'latest_timestamp': current_data['real'][current_data['real'].length - 1]['timestamp']}
+
+    sensordata.done (sensordatamsg) ->
+      sensordataset = []
+
+      for data in JSON.parse(sensordatamsg)['real']
+        current_data.push data
+
+      current_data['predicted'] = JSON.parse(sensordatamsg)['predicted']
+      localStorage.setItem(sensor + ',' + plant, JSON.stringify(current_data))
+
+      for data in current_data['real']
+        sensordataset.push [new Date(data['timestamp'] * 1000), data['value'], null]
+
+      for data in current_data['predicted']
+        sensordataset.push [new Date(data['timestamp'] * 1000), null, data['value']]
+
+      smoothPlotter.smoothing = 0.33;
+      g = new Dygraph(document.getElementById("graph"),
+       sensordataset,
+       {
+        labels: ['time', graphName, 'prediction'],
+        plotter: smoothPlotter,
+        legend: 'always',
+        animatedZooms: true,
+       });
+    return
+  return
 window.initLineGraph = initLineGraph
 
 initSetTab = (tabName) ->
@@ -236,6 +309,27 @@ sg_rsps_submit = (that) ->
     return
   return
 window.sg_rsps_submit = sg_rsps_submit
+
+# SUMBIT VAL + NAME AND COMPARE
+sg_rsps_create = (that) ->
+  $(that).addClass 'disabled'
+  $(that).addClass 'loading'
+  wizard = $("#create_select option:selected").text();
+  console.log wizard
+  name = $('#__rspsc_name').val()
+  email = $('#__rspsc_email').val()
+
+  request = $.ajax
+    url: '/create/responsible',
+    method: 'POST'
+    data: {'name': name, 'email': email, 'wizard': wizard}
+
+  request.done (msg) ->
+    $(that).removeClass 'disabled'
+    $(that).removeClass 'loading'
+    return
+  return
+window.sg_rsps_create = sg_rsps_create
 
 sg_rsps_reset = (that) ->
   $(that).addClass 'disabled'

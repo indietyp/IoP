@@ -51,13 +51,13 @@ block content
               //-   { title: "Tokyo",         value : 12,  color: "#2C3E50" },
               //-   { title: "Tokyo",         value : 38,  color: "#000000" },
               //- ]);
-              $("#doughnutChart").drawDoughnutChart(#{content['current_data']['v']}, !{content['sensor_range']}, !{content['sensor_color_ranges']});
+              $("#doughnutChart").drawDoughnutChart(#{content['current_data']['value']}, !{content['sensor_range']}, !{content['sensor_color_ranges']});
             });
     .spacer(style='flex-grow:0.25')
 
   .ui.segment
     #graph(style='width:100%; height:350px')
-      - var randomizer = ['data needs to be polished', 'some bits escaped, we\'re trying to catch them', 'cleaning data pipes!', 'it\'s not a bug, it\'s a feature!', 'your connection is to slow..', 'shaving beards', 'loading more than 1000 datasets, could you please be impressed... thank you', 'killing some bugs', 'trying to discuss if 1+1 is really 2 or rather 10', 'MARTA IS EVERYWHERE!']
+      - var randomizer = ['data needs to be polished', 'some bits escaped, we\'re trying to catch them', 'cleaning data pipes!', 'it\'s not a bug, it\'s a feature!', 'your connection is too slow..', 'shaving beards', 'loading more than 1000 datasets, could you please be impressed... thank you', 'killing some bugs', 'trying to discuss if 1+1 is really 2 or rather 10', 'MARTA IS EVERYWHERE!', 'predicting into the future', 'washing dishes', 'helping parents', 'solving really hard equations', 'scrambling words', 'trying to be cool', 'getting sunglasses for data']
       .ui.active.inverted.dimmer
         .ui.text.loader= 'please wait... ' + content['random'].choice(randomizer)
     script(type='text/javascript').

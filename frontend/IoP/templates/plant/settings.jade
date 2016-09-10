@@ -94,29 +94,41 @@ block content
     .ui.two.column.middle.aligned.very.relaxed.stackable.grid
       .column
         .ui.form
-          .ui.shape(style='width:100%')
-            .sides
-              .side.active
-                .field
-                  label Name
-                  .ui.left.icon.input
-                      input(type='text',placeholder='Name')
-                      i.user.icon
-                .field
-                  label EMail
-                  .ui.left.icon.input
-                      input(type='text',placeholder='EMail')
-                      i.user.icon
-                .ui.basic.button.fluid.green >> Next >>
-              .side
-                .preview.img-wrapper
-                .file-upload-wrapper
-                  input(type='file', name='file', class='file-upload-native', accept='image/*')
-                  input(type='text', disabled='', placeholder='ui input upload image', class='file-upload-text')
+          .multipart_complex(style='width:100%')
+            .side.first(style='width:100%')
+              .field
+                label Name
+                .ui.left.icon.input
+                    input#__rspsc_name(type='text', placeholder='Name')
+                    i.user.icon
+              .field
+                label EMail
+                .ui.left.icon.input
+                    input#__rspsc_email(type='text', placeholder='EMail')
+                    i.user.icon
+              .ui.basic.button.fluid.green.forward >> next >>
+            .side.second(style='width:100%; display:none')
+              .field
+                label Wizard
+                select.ui.dropdown#create_select
+                  option no
+                  option yes
+              .field
+                label Image
+                .ui.fluid.left.icon.input
+                  input(type='file', placeholder='Image')
+                  i.file.image.outline.icon
+              .ui.basic.button.fluid.green(onClick='sg_rsps_create(this)') submit
       script(type='text/javascript').
-        //- $( ".ui.basic.button.fluid.green" ).click(function() {
-        //-    $('.shape').shape('flip left');
-        //- });
+        $( ".ui.basic.button.fluid.green.forward" ).click(function() {
+          $('.multipart_complex > .side.first').fadeOut('slow', function() {
+            $('.multipart_complex > .side.second').fadeIn('slow')
+          });
+        });
+
+        $('.ui.dropdown#create_select')
+          .dropdown()
+        ;
       .ui.vertical.divider Or
       .column
         .ui.form

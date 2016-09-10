@@ -152,3 +152,17 @@ for level in ['threat', 'cautioning', 'optimum']:
 
       # print(sensor_satisfaction_value.sensor)
       sensor_satisfaction_value.save()
+
+if PlantNetworkStatus.select() < 3:
+  plant = Plant.get(Plant.localhost == True)
+  for name in ['online', 'offline']:
+    status = PlantNetworkStatus()
+    status.name = name
+    status.save()
+
+    uptime = PlantNetworkUptime()
+    uptime.plant = plant
+    uptime.status = status
+    uptime.overall = 0
+    uptime.current = 0
+    uptime.save()

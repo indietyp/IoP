@@ -11,7 +11,7 @@ router = Router(SqliteDatabase(DATABASE_NAME))
 # try:
 if sys.argv[1] == 'makemigrations':
   models = []
-  for module in ['plant', 'sensor', 'people', 'security']:
+  for module in ['plant', 'sensor', 'people', 'security', 'mesh']:
     exec('import ' + module)
     models.extend([
       obj for name, obj in inspect.getmembers(

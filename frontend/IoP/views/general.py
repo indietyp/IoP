@@ -11,7 +11,7 @@ def sensorTest():
 
 @app.route('/overview')
 def overviewTest():
-  return render_template('overview.jade', content= {'get': True})
+  return render_template('overview.jade', content={'get': True})
 
 @app.route('/plant/settings')
 def plantSettingsTest():

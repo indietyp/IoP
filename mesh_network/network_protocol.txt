@@ -76,6 +76,35 @@ REGISTER
   WANT_REGISTER       -
   (plant discovered it (interface or mesh), want's to add)
 
+PUBLICKEY, PRIVATEKEY? ENCRYTPTION?
+WANT_REGISTER
+existing -> discover
+existing -> asking ip (which was discovered if no registered)
+new      -> I'm not registered
+existing -> asking for public key
+new      -> send public key
+existing -> create backup of database (random hash) -> encrypted with public key
+existing -> open HTTPServer -> on port 3406)
+existing -> saying HTTPServer established (B_MESSAGE == hash, A_MESSAGE == port)
+new      -> downloading file
+new      -> changing local plant
+new      -> saying finished
+existing -> test with ALIVE and REST_CALL (get/plant/localhost)
+existing -> saying done working -> if not call wizard
+new      -> okay!
+new      -> insert new plant with REST_API to other plants
+new      -> signal done
+existing -> signal done
+
+
+new      -> rest call to recipient uuid
+new      -> confirmation, working
+existing -> testing with ALIVE call
+existing -> first setup ready to go
+new      -> mirroring plants ()
+
+
+
 check every day - rest if everybody has same! Add if neccassary
 
 MODE - 1 BYTE
