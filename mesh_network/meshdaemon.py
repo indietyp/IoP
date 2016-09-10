@@ -187,7 +187,7 @@ class MeshNetwork(object):
         code += 2
         self.send(code, no_database=True, recipient=target, messages=['NOT_LOGGED', 'NO_DATABASE'])
 
-  def register(self, mode, ip=None, recipient=None):
+  def register(self, mode, ip=None, recipient=None, message=None, origin=None):
     """ MODES:
       [1] DISCOVER AND ASK PUBLICKEY
       [2] GENERATE PUBLICKEY AND SEND
@@ -214,6 +214,7 @@ class MeshNetwork(object):
       import binascii
       import os
       from Crypto.PublicKey import RSA
+      from tools.mesh import MeshTools
       from Crypto import Random
       import re
       tools = MeshTools()
@@ -237,11 +238,53 @@ class MeshNetwork(object):
 
       public = tools.bin2hex(public)
       public = public.decode()
+      print(len(public))
       public = re.findall('.{1,100}', public)
+      print(str(public))
 
       self.send(30200, recipient=recipient, messages=public, no_database=True)
 
     elif mode == 3:
+      from Crypto.PublicKey import RSA
+      from tools.mesh import MeshTools
+
+      plant = Plant.get(Plant.localhost == True)
+      tools = MeshTools()
+      directory = './keys/'
+
+      public_key = ''.join(message)
+      public_key = tools.hex2bin(public_key)
+      crypter = RSA.importKey(public_key)
+
+      key = tools.random_string(32)
+      iv = tools.random_string(10, True)
+
+      for i in [['.key', key], ['.iv', iv]]:
+        filename = directory + 'localhost' + i[0]
+        with open(filename, 'w') as out:
+          out.write(i[1])
+
+      e_key = crypter.encrypt(key.encode(), 'x')[0]
+      e_iv = crypter.encrypt(iv.encode(), 'x')[0]
+
+      e_key = tools.bin2hex(e_key)
+      e_iv = tools.bin2hex(e_iv)
+
+      filename = directory + origin + '.pub'
+      hex_key = tools.bin2hex(public_key.encode())
+      hex_key = hex_key.decode()
+      with open(filename, 'w') as out:
+        out.write(hex_key)
+
+      self.send(30300, recipient=recipient, messages=[e_key.decode(), e_iv.decode(), '', 'NON_STANDARD_LENGTH'], plant=plant)
+
+    elif mode == 4:
+      # READ FILE PRIVATE KEY -> DECRYPT
+      # SAVE KEY IV
+      # (IP . replaced with _)
+      pass
+
+    elif mode == 5:
       import http.server
       import socketserver
       import os
@@ -277,5 +320,7 @@ if __name__ == '__main__':
   # MeshNetwork().send(plant, 10100, ['', '', '', ''])
   # MeshNetwork().daemon()
   # MeshNetwork().discover(1)
-  MeshNetwork().register(3)
+  # import re
+  key = ['30819f300d06092a864886f70d010101050003818d0030818902818100dbb6652a142ee8a36375c77a84c51f3410762486bf', 'c754e7c57d087ac5e61ca8a68847715d19493ee03fe6a52f2ab452fc067e21d186c84596bc3ef33211b6a291e4c1300e1d3b', 'dddf4086558b18c3331d8660063286b034307380abba3dd30774f83404662267f97b0765aca03e82d6accfa5026254c31da9', '8822dec0e131490203010001']
+  MeshNetwork().register(3, origin='192.168.178.54', recipient=['', '192.168.178.54'], message=key)
   # MeshNetwork().discover(['91c9280b-76c1-42a3-93eb-85250065230f', '192.168.178.54'], mode=2)

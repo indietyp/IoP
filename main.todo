@@ -14,8 +14,9 @@
        ✔ fetch all discovered @done (16-09-06 19:31)
      ✔ ask publickey @existing @done (16-09-06 19:31)
      ✔ send publickey @new @done (16-09-08 20:40)
-       [ ] generate AES(or something else) key
-     [ ] send encrypted key
+       ✔ generate AES(or something else) key @done (16-09-10 15:58)
+     ✔ send encrypted key @existing @done (16-09-10 15:58)
+     [ ] save and say ok! @new
        [ ] create database backup [named hash] @existing
        [ ] open HTTP server @existing
      [ ] send HTTP established [encrypted] [A_MESSAGE port, B_MESSAGE hash] @existing
