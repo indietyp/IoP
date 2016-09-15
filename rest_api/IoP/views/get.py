@@ -2,15 +2,9 @@ from IoP import app
 from models.plant import Plant, PlantNetworkUptime, Person
 from models.sensor import Sensor, SensorData, SensorCount, SensorSatisfactionValue, SensorDataPrediction
 from uuid import UUID
-from pymongo import MongoClient
-from bson import json_util, ObjectId
 from playhouse.shortcuts import model_to_dict
-import json, datetime, bson, random, pymongo
+import json, datetime, bson, random
 import sys
-
-client = MongoClient(connect=False)
-db = client.iop
-
 
 # the frontend is dumb! only give data from database, scripts to the other stuff
 @app.route('/get/plants/name')

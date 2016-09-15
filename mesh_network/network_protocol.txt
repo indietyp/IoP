@@ -1,5 +1,46 @@
 <INIT, [PLANT_UUID, MESSAGE_UUID], [PRIORITY, RECIPIENT_UUID], [CODE], [MESSAGE, MESSAGE, MESSAGE, MESSAGE], END>
 
+MODE
+  1       [ALIVE][EXTERNAL TEST AND MONITORING]
+    1       [ASK]
+    2       [RESPONSE TO ALIVE]
+  2       [DELIVER]
+    1       [REQUEST] - [MASTER --> SLAVE FEATURE]
+    2       [SEND]    - [MASTER --> SLAVE FEATURE]
+  3       [REGISTER][EXTERNAL TEST AND MONITORING]
+    1       [ASK PUBLICKEY]
+    2       [GENERATE PUBLICKEY]
+    3       [SAVE AND SEND AES][ENCRYPTED]
+    4       [SAVE AND SEND OK]
+    5       [ESTABLISH WEBSERVER][ENCRYPTED]
+    6       [DOWNLOAD][ENCRYPTED]
+    7       [CANCEL WEBSERVER AND TEST REST]
+    8       [SEND DONE]
+    9       [SEND DONE]
+    95      [SUCCESS]
+    98      [RECORD ALREADY EXISTS]
+    99      [FAIL]
+  4       [DISCOVER]
+    1       [INITIAL]
+    2       [RESPONSE I'M THERE]
+  5       [NOTIFY]
+    1       [NEW_DATA]  - [A_MESSAGE - UUID sensor]
+    2       [IP]
+  8       [SUCCESS]
+  9       [FAIL]
+(mode in CODE ex. alive: 10100 response: 10200)
+
+RETURN
+  1       [ALIVE]
+    1      [SUCESS]
+    254    [FAIL - NO RESPONSE]
+    255    [FAIL - PROCESS]
+  3       [REGISTER]
+    1      [SUCESS]
+    254    [FAIL - NO RESPONSE]
+    255    [FAIL - PROCESS]
+
+
 INIT + END
   1       [MASTER <-> MASTER]
   2       [MASTER --> SLAVE]
@@ -36,107 +77,3 @@ C_MESSAGE
 
 D_MESSAGE
   255CHAR [EXTRA INFORMATION]
-
-MODE
-  1       [ALIVE]
-    1       [ASK]
-    2       [RESPONSE TO ALIVE]
-  2       [SEND]
-    1       [REQUEST] - [MASTER --> SLAVE FEATURE]
-    2       [SEND]    - [MASTER --> SLAVE FEATURE]
-    3       [NOTIFY]
-      1       [DATA]
-      2       [IP]
-
-    A_MESSAGE:
-      UUID SENSOR
-  3       [REGISTER]
-    <-- needs work on extra information -->
-    1       [MULTICAST]
-    2       [WANT_REGISTER]
-    3       [STARTING REST NEW]
-    4       [FINISHED REST NEW]
-    5       [STARTING REST OLD]
-    6       [FINISHED REST OLD]
-    7       [INFORMING     OLD]
-    8       [FINISHED INFORMING]
-    95      [SUCCESS]
-    98      [RECORD ALREADY EXISTS]
-    99      [FAIL]
-  4       [DISCOVER]
-    1       [INITIAL]
-    2       [RESPONSE I'M THERE]
-  8       [SUCCESS]
-  9       [FAIL]
-(mode in CODE ex. alive: 10100 response: 10200)
-
-REGISTER
-  MULTICAST (I'm new) - RESPONSE (already exists or not)
-                                - NEW_REST - FINISHED - OLD_REST - FINISHED - INFORM_FINISHED (old)
-  WANT_REGISTER       -
-  (plant discovered it (interface or mesh), want's to add)
-
-PUBLICKEY, PRIVATEKEY? ENCRYTPTION?
-WANT_REGISTER
-existing -> discover
-existing -> asking ip (which was discovered if no registered)
-new      -> I'm not registered
-existing -> asking for public key
-new      -> send public key
-existing -> create backup of database (random hash) -> encrypted with public key
-existing -> open HTTPServer -> on port 3406)
-existing -> saying HTTPServer established (B_MESSAGE == hash, A_MESSAGE == port)
-new      -> downloading file
-new      -> changing local plant
-new      -> saying finished
-existing -> test with ALIVE and REST_CALL (get/plant/localhost)
-existing -> saying done working -> if not call wizard
-new      -> okay!
-new      -> insert new plant with REST_API to other plants
-new      -> signal done
-existing -> signal done
-
-
-new      -> rest call to recipient uuid
-new      -> confirmation, working
-existing -> testing with ALIVE call
-existing -> first setup ready to go
-new      -> mirroring plants ()
-
-
-
-check every day - rest if everybody has same! Add if neccassary
-
-MODE - 1 BYTE
-  001 [ALIVE]
-    MODE - 1 BYTE
-      001 [ASK]
-        2 BYTES - currently no function (0)
-      002 [ALIVE]
-        4 BYTES - Internet Protocol Address
-  002 [SEND]
-    (NOT INCLUDED IN MASTER <-> MASTER)
-    MODE - 1 BYTE
-      001 [REQUEST]
-      002 [SEND]
-    SENSOR - 1 BYTE
-      001 [TEMPERATURE]
-      002 [HUMIDITY]
-      003 [LIGHT]
-      004 [MOISTURE]
-  003 [REGISTER]
-    MODE - 1 BYTE
-      001 [MULTICAST]
-      002 [SEND]
-        1 BYTE - STATUS
-        001 [NO DOCUMENT IN DATABASE]
-        002 [DOCUMENT IN DATABASE]
-      003 [SIGNAL]
-      004 [CHECK]
-        1 BYTE - STATUS
-        001 [CREATED AND INSERTED]
-        211 [ONLY CREATED]
-        212 [NOTHING HAPPEND :/]
-    254 [SUCCESS]
-    255 [FAIL]
-

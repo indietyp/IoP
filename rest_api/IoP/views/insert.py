@@ -13,3 +13,7 @@ def create_plant_name():
   person.save()
 
   return json.dumps({'info': 1})
+
+@app.route('/create/plant', methods=['POST'])
+def create_plant():
+  pass

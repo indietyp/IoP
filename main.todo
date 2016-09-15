@@ -1,9 +1,14 @@
  mesh network:
    test:
-     [ ] alive: register needed
-     [ ] register
+     ✔ alive: register needed @done (16-09-14 21:26)
+     ✔ register @done (16-09-13 20:42)
      ✔ discover @done (16-09-05 20:14)
-     [ ] discover with database integration
+     ✔ discover with database integration @done (16-09-13 20:42)
+     ✔ notify_ip @done (16-09-13 20:43)
+     [ ] dedicated alive
+     [ ] dedicated register
+     [ ] rest api change of underlying db in virtualbox -> does it work at all or do I need to restart the process?
+     ✔ multithreaded process deamon @done (16-09-15 20:31)
    build register:
      ✔ add MeshObject @done (16-09-06 19:20)
      ✔ discovered into database @done (16-09-06 19:21)
@@ -16,31 +21,63 @@
      ✔ send publickey @new @done (16-09-08 20:40)
        ✔ generate AES(or something else) key @done (16-09-10 15:58)
      ✔ send encrypted key @existing @done (16-09-10 15:58)
-     [ ] save and say ok! @new
-       [ ] create database backup [named hash] @existing
-       [ ] open HTTP server @existing
-     [ ] send HTTP established [encrypted] [A_MESSAGE port, B_MESSAGE hash] @existing
-       [ ] download file, rename @new
-       [ ] change local plant @new
-     [ ] send finished @existing
-       [ ] test with alive, rest @existing
-     [ ] send working @existing
-       [ ] rest api to others [insert] @new
-     [ ] send done @new
-     [ ] send done @existing
+     ✔ save and say ok! @new @done (16-09-10 16:10)
+       ✔ create database backup [named hash] @existing @done (16-09-10 18:03)
+       ✔ open HTTP server @existing @done (16-09-10 18:03)
+     ✔ send HTTP established [encrypted] [A_MESSAGE port, B_MESSAGE hash, C_MESSAGE new_plantUUID] @existing @done (16-09-12 15:39)
+       ✔ download file, rename @new @done (16-09-12 16:13)
+       ✔ change local plant @new @done (16-09-13 14:54)
+       [ ] start data daemon @new
+     ✔ send finished @existing @done (16-09-13 15:06)
+       ✔ wget until 404 own adress index (max 4) - kill http_server @done (16-09-13 15:06)
+       ✔ test with alive, rest @existing @done (16-09-13 15:06)
+     ✔ send working @existing @done (16-09-13 15:06)
+       ✘ rest api to others [insert] @new @cancelled (16-09-13 18:28)
+         ✘ frontend! @cancelled (16-09-13 18:28)
+     ✔ send done @new @done (16-09-13 15:11)
+     ✔ send done @existing @done (16-09-13 15:11)
+     ✔ registered change on @new @done (16-09-14 21:27)
+    build notify:
+      ip:
+        ✔ detect if changes @done (16-09-13 20:43)
+        ✔ reply with [3] == NOT_CHANGED, CHANGED @done (16-09-13 20:43)
+      new_data:
+        [ ] trigger after insert data
+        --> do this to all! except localhost
+          [ ] send new trigger @origin
+          [ ] fetch data @target
+
+    build register and alive:
+      ✔ database integration @done (16-09-14 21:27)
+        ✔ different port and listen 120 (alive) or 320 (register) -> check if fail or not! Is better with that @done (16-09-14 21:27)
+    dedicated register:
+      [ ] first insert to all other plants
 
 
 frontend:
   add plant:
     [ ] layout
     [ ] logic
+    [ ] rest api to others
   sensordata:
     [ ] switch to indexedDB
+   all:
+    [ ] no database mode
+
+
+ rest:
+   all:
+     [ ] no database mode
+       [ ] -> detect change of database?
+
 
  sensor_scripts (SS xD):
+   daemon:
+     [ ] check no database
+       [ ] if working start loop -> else not
    core:
     [ ] light and moisture test and port to sqlite
    extensions:
     [ ] LED to python 3
    driver:
-    [ ] port to python 3
+    [ ] to python 3
