@@ -18,7 +18,8 @@ class DHT22:
   def __init__(self):
     pass
 
-  def run(self):
+  @staticmethod
+  def run():
     # == needs to be there 'is' is not valid!
     plant = Plant.select().where(Plant.localhost == True)[0]
 

@@ -1,5 +1,6 @@
 from IoP import app, init
 from flask import render_template
+from IoP import init, init_overview
 
 @app.route('/')
 def index():
@@ -12,6 +13,13 @@ def sensorTest():
 @app.route('/overview')
 def overviewTest():
   return render_template('overview.jade', content={'get': True})
+
+@app.route('/add_plant')
+def add_plant():
+  content = init()
+  # content.update(init_overview())
+  content.update({'get': True, 'current_active': 'add plant'})
+  return render_template('general/add.jade', content=content)
 
 @app.route('/plant/settings')
 def plantSettingsTest():

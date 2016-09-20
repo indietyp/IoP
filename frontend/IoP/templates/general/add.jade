@@ -3,4 +3,104 @@ if content['get']
 
 block content
   .ui.segment
-    h1.ui.header add plant
+    h1.ui.header(style='text-align:center; margin-bottom: 2%') Add a plant to the mesh network and system!
+    .ui.form
+      .ui.grid
+        .eight.wide.column
+          .field
+            label IP-Adress
+            .wrapper(style='display:flex;align-items:center;flex-direction:row')
+              .ui.selection.dropdown.discover(style='width:100%')
+                input(type='hidden', name='person')
+                i.signal.icon
+                .default.text IP-Adress
+                .menu
+              button.ui.icon.button.right.attached(onclick='device_discover()')
+                i.refresh.icon
+
+            script(type='text/javascript').
+              device_discover()
+              $('.ui.dropdown')
+                .dropdown()
+              ;
+        .eight.wide.column
+          .field
+            label Name
+            .ui.fluid.left.icon.input
+              input(type='text', placeholder='Name')
+              i.tag.icon
+
+        .eight.wide.column
+          .field
+            label Location
+            .ui.fluid.left.icon.input
+              input(type='text', placeholder='Name')
+              i.home.icon
+
+        .eight.wide.column
+          .field
+            label Species
+            .ui.fluid.left.icon.input
+              input(type='text', placeholder='Name')
+              i.leaf.icon
+
+
+        .eight.wide.column
+          .field
+            label Notification Interval
+            .ui.fluid.left.icon.right.labeled.input
+              input(type='number', placeholder='Name', max='12', min='0')
+              i.mail.icon
+              .ui.basic.label hours
+
+        .eight.wide.column
+          .field
+            label Extra Details Duration
+            .ui.fluid.left.icon.right.labeled.input
+              input(type='number', placeholder='Name', max='30', min='0')
+              i.asterisk.icon
+              .ui.basic.label days
+
+        .eight.wide.column
+          .field
+            label Responsible
+            .wrapper(style='display:flex;align-items:center;flex-direction:row')
+              .ui.selection.dropdown.responsible(style='width:100%')
+                input(type='hidden', name='person')
+                i.user.icon
+                .default.text Responsible
+                .menu
+              button.ui.icon.button.right.attached(onclick='add_plant_responsibles()')
+               i.refresh.icon
+            script(type='text/javascript').
+              add_plant_responsibles()
+              $('.ui.dropdown')
+                .dropdown()
+              ;
+
+        .eight.wide.column
+          .field
+            label Role
+            .wrapper(style='display:flex;align-items:center;flex-direction:row')
+              .ui.selection.dropdown(style='width:100%')
+                input(type='hidden', name='person')
+                i.terminal.icon
+                .default.text Role
+                .menu
+                  .item(data-value='1') master
+                  .disabled.item(data-value='2') slave
+              button.ui.icon.button.right.attached(onclick='device_discover()')
+                i.refresh.icon
+
+            script(type='text/javascript').
+              $('.ui.dropdown')
+                .dropdown()
+              ;
+
+      .ui.two.buttons(style='margin-top: 2%')
+        .ui.basic.button.fluid.green Apply
+        .ui.basic.button.fluid.red Reset
+  //- DISCOVER PLANT
+  //- --> select name usw.
+  //- --> --> register
+  //- only point direct db integration! and access to dedicated register

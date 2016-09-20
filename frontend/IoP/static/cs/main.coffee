@@ -348,6 +348,46 @@ sg_rsps_reset = (that) ->
     return
 window.sg_rsps_reset = sg_rsps_reset
 
+device_discover = () ->
+  $('div.ui.selection.dropdown.discover > div.default.text').html 'please wait a couple of seconds'
+  current = $.ajax
+    url: '/get/discover'
+    method: 'POST'
+    data: {}
+
+  current.done (msg) ->
+    msg = JSON.parse msg
+    $('div.ui.selection.dropdown.discover > div.menu').empty()
+
+    for item in msg
+      $('div.ui.selection.dropdown.discover > div.menu').append '<div class="item data-value="' + msg + '"> ' + msg + ' </div>'
+      # return
+    $('div.ui.selection.dropdown.discover > div.default.text').html 'IP-Adress - done loading'
+    # return
+  return
+
+window.device_discover = device_discover
+
+add_plant_responsibles = () ->
+  $('div.ui.selection.dropdown.responsible > div.default.text').html 'please wait a couple of seconds'
+  current = $.ajax
+    url: '/get/responsibles',
+    method: 'POST'
+    data: {}
+
+  current.done (msg) ->
+    msg = JSON.parse msg
+
+    $('div.ui.selection.dropdown.responsible > div.menu').empty()
+    for person in msg
+      $('div.ui.selection.dropdown.responsible > div.menu').append '<div class="item" data-value="' + person['email'] + '">' + person['name'] + ' &lt' + person['email'] + '&gt </div>'
+
+    $('div.ui.selection.dropdown.responsible > div.default.text').html 'Responsible - done loading'
+
+  return
+
+window.add_plant_responsibles = add_plant_responsibles
+
 $ ->
   $('div.menu.mainMenu a').click (e) ->
     $(this).parent().children('.active').removeClass 'active'

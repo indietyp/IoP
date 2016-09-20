@@ -1,5 +1,6 @@
 import RPi.GPIO as GPIO
-# from ...tools.main import Tools
+from models.plant import Plant
+from models.sensor import Sensor, SensorStatus
 
 
 class TrafficLight(object):
@@ -7,73 +8,34 @@ class TrafficLight(object):
   def __init__(self):
     pass
 
-  def calculate(self, currentState, state):
-    stateOfSensor = ''
-    if self.sensorName in currentState['green']:
-      stateOfSensor = 'green'
-    if self.sensorName in currentState['yellow']:
-      stateOfSensor = 'yellow'
-    if self.sensorName in currentState['red']:
-      stateOfSensor = 'red'
-    if state != currentState:
-      currentState[stateOfSensor].remove(self.sensorName)
-      currentState[state['color']].append(self.sensorName)
+  @staticmethod
+  def run():
+    setting = {'threat': 0, 'cautioning': 0, 'optimum': 0}
+    plant = Plant.get(Plant.localhost == True)
 
-    return currentState
+    all_status = SensorStatus.select().where(SensorStatus.plant == plant)
 
-  def insert(self):
-    toolChain = Tools(self.db, self.plant)
-    dataRange = toolChain.getOptions(self.sensorAbbreviation)
-    state = toolChain.checkOptions(self.value, dataRange)
-    newState = self.calculate(self.plant['sensorOptima'], state)
-    self.db.Plant.update_one(
-    {"abbreviation": self.plant['abbreviation']},
-    {
-        "$set": {
-          'sensorOptima': newState
-        }
-    }
-    )
+    for status in all_status:
+      setting[status.level.label] += 1
 
-  def set(self):
-    red = False
-    yellow = False
-    green = False
 
-    currentStates = self.plant['sensorOptima']
+    GPIO.setup
+    # GREEN
+    GPIO.setup(03, GPIO.OUT)
+    GPIO.output(03, False)
+    # YELLOW
+    GPIO.setup(06, GPIO.OUT)
+    GPIO.output(06, False)
+    # RED
+    GPIO.setup(13, GPIO.OUT)
+    GPIO.output(13, False)
 
-    if currentStates['red']:
-      red = True
-    elif currentStates['yellow']:
-      yellow = True
-    else:
-      green = True
-
-    leds = self.db.ExternalDevices.find_one({'n': 'generalLEDs'})
-
-    toolChain = Tools(self.db, self.plant)
-    gpioPins = toolChain.getPins('gpio')
-
-    GPIO.setwarnings(False)
-    GPIO.setmode(GPIO.BCM)
-
-    for pin in gpioPins:
-      GPIO.setup(pin, GPIO.OUT)
-
-    # with leds['p']['gpio'] as led:
-    # GPIO.output(13, True)
-    GPIO.output(int(leds['p']['gpio']['green']), False)
-    GPIO.output(int(leds['p']['gpio']['yellow']), False)
-    GPIO.output(int(leds['p']['gpio']['red']), False)
-
-    GPIO.output(int(leds['p']['gpio']['green']), green)
-    GPIO.output(int(leds['p']['gpio']['yellow']), yellow)
-    GPIO.output(int(leds['p']['gpio']['red']), red)
-
-    def full(self):
-      self.insert()
-      self.set()
+    if setting['danger'] > 0:
+      GPIO.output(13, True)
+    elif setting['warning'] > 0:
+      GPIO.output(06, True)
+    elif setting['optima'] > 0:
+      GPIO.output(03, True)
 
 if __name__ == "__main__":
-  test = generalStatus('m', 'l', 50)
-  test.set()
+  TrafficLight.run()

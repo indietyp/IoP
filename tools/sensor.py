@@ -164,7 +164,8 @@ class ToolChainSensor(object):
     # --> add_sensor_current_status
 
     # ToolChainMeshSender.notify_data(sensor_db)
-    SensorDataForecast().run(data)
+    if persistant is True:
+      SensorDataForecast().run(data)
 
     return persistant
 

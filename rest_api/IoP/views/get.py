@@ -1,10 +1,14 @@
 from IoP import app
+
+import sys
+import datetime
+import json
+from uuid import UUID
+from bson import json_util
+from playhouse.shortcuts import model_to_dict
 from models.plant import Plant, PlantNetworkUptime, Person
 from models.sensor import Sensor, SensorData, SensorCount, SensorSatisfactionValue, SensorDataPrediction
-from uuid import UUID
-from playhouse.shortcuts import model_to_dict
-import json, datetime, bson, random
-import sys
+
 
 # the frontend is dumb! only give data from database, scripts to the other stuff
 @app.route('/get/plants/name')

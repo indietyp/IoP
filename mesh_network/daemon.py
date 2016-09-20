@@ -386,23 +386,28 @@ class MeshNetwork(object):
       e_hash = tools.bin2hex(e_hash).decode()
       e_uuid = tools.bin2hex(e_uuid).decode()
 
-      p = Process(target=self.http_server, args=('./database_serve/', port, ))
-      p.daemon = True
-      p.start()
-      time.sleep(2)
+
+      # p = Process(target=self.http_server, args=('./database_serve/', port, ))
+      # p.daemon = True
+      # p.start()
+      # time.sleep(2)
 
       localhost = Plant.get(Plant.localhost == True)
       self.send(30500, recipient=recipient, messages=[e_port, e_hash, e_uuid], plant=localhost)
+      self.http_server('./database_serve/', port)
 
     elif mode == 6:
       import urllib.request
+      import time
       from Crypto.PublicKey import RSA
       from tools.mesh import MeshAES
       from tools.mesh import MeshTools
       from settings.database import DATABASE_NAME
+      from sensor_scripts.daemon import SensorDaemon
       from uuid import UUID
       import os
       tools = MeshTools()
+      time.sleep(2)
 
       directory = './keys/'
       with open(directory + 'localhost.priv') as out:
@@ -439,6 +444,7 @@ class MeshNetwork(object):
       plant.save()
 
       os.remove(u_hash)
+      SensorDaemon().run()
 
       self.send(30600, recipient=recipient, messages=[u_port], plant=plant)
 

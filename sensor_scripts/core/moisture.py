@@ -1,44 +1,32 @@
-from time import sleep
-from pymongo import MongoClient
+import time
+from models.plant import Plant
+from models.sensor import Sensor
 
-from ..driver.mcp3008 import mcp3008
-from ..tools.main import Tools
-from ..extensions.mailer import PlantMailer
-from ..extensions.led.general import generalStatus
-from ..extensions.led.moisture_bar import StatusBar
-from ..extensions.waterPump import WaterPumpChecker
+from tools.sensor import ToolChainSensor
+from sensor_scripts.dricer.mcp3008 import mcp3008
 
-client = MongoClient()
-db = client.pot
 
-plantAbbreviation = db.Plant.find_one({'localhost': True})['abbreviation']
+class GenericMoisture(object):
+  """docstring for GenericMoisture"""
 
-# READ SENSOR 10 TIMES
-m = []
-for i in range(0,10):
-    m.append(mcp3008().read_pct(5))
-    sleep(.2)
+  def __init__(self):
+    super(GenericMoisture, self).__init__()
 
-moisture = sum(m) / float(len(m))
-if moisture != 0:
+  @staticmethod
+  def run(samples=10):
+    values = []
+    for i in range(0, samples):
+      values.append(mcp3008.read_pct(5))
+      time.sleep(.2)
 
-  # INSERT INTO DATABASE
-  toolChain = Tools(db, plantAbbreviation)
-  toolChain.insertSensor('m', round(moisture, 2))
+    average = sum(values) / float(len(values))
+    if average != 0:
+      tools = ToolChainSensor()
+      plant = Plant.get(Plant.localhost == True)
 
-  # ACTIVATE MAILER
-  mailer = PlantMailer(plantAbbreviation, 'm')
-  mailer.send()
+      moisture = {'sensor': Sensor.get(Sensor.name == 'moisture'),
+                  'plant': plant,
+                  'value': average}
 
-  # INSERT IN 'led_bar'
-  ledBar = StatusBar(plantAbbreviation, moisture)
-  ledBar.setStatus()
-
-  # INSERT IN WATERPUMP
-  waterPump = WaterPumpChecker(plantAbbreviation)
-  waterPump.set()
-
-  # INSERT IN GENERAL LEDS
-  generalMoisture = generalStatus(plantAbbreviation, 'm', moisture)
-  generalMoisture.insert()
-  generalMoisture.set()
+      tools.insert_data(moisture)
+      tools.set_hardware(moisture)

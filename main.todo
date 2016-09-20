@@ -7,7 +7,15 @@
      ✔ notify_ip @done (16-09-13 20:43)
      [ ] dedicated alive
      [ ] dedicated register
-     [ ] rest api change of underlying db in virtualbox -> does it work at all or do I need to restart the process?
+     ✔ rest api change of underlying db in virtualbox -> does it work at all or do I need to restart the process? @done (16-09-18 13:38)
+     [ ] moisture
+     [ ] light
+     [ ] temperature + humidity
+     [ ] extensions
+       [ ] moisture bar
+       [ ] trafficlight
+       [ ] display
+       [ ] water_pump
      ✔ multithreaded process deamon @done (16-09-15 20:31)
    build register:
      ✔ add MeshObject @done (16-09-06 19:20)
@@ -27,7 +35,8 @@
      ✔ send HTTP established [encrypted] [A_MESSAGE port, B_MESSAGE hash, C_MESSAGE new_plantUUID] @existing @done (16-09-12 15:39)
        ✔ download file, rename @new @done (16-09-12 16:13)
        ✔ change local plant @new @done (16-09-13 14:54)
-       [ ] start data daemon @new
+       ✔ start sensor_data daemon @new @done (16-09-17 17:05)
+         ✔ -> check if available @done (16-09-17 17:05)
      ✔ send finished @existing @done (16-09-13 15:06)
        ✔ wget until 404 own adress index (max 4) - kill http_server @done (16-09-13 15:06)
        ✔ test with alive, rest @existing @done (16-09-13 15:06)
@@ -45,39 +54,44 @@
         [ ] trigger after insert data
         --> do this to all! except localhost
           [ ] send new trigger @origin
+            [ ] new trigger -> notify new_data
           [ ] fetch data @target
+            [ ] get from plant!
 
     build register and alive:
       ✔ database integration @done (16-09-14 21:27)
         ✔ different port and listen 120 (alive) or 320 (register) -> check if fail or not! Is better with that @done (16-09-14 21:27)
     dedicated register:
-      [ ] first insert to all other plants
+      [ ] last insert to all other plants
 
 
 frontend:
   add plant:
-    [ ] layout
+    ✔ layout @done (16-09-19 20:41)
     [ ] logic
     [ ] rest api to others
   sensordata:
     [ ] switch to indexedDB
-   all:
-    [ ] no database mode
 
 
  rest:
    all:
-     [ ] no database mode
-       [ ] -> detect change of database?
+     ✔ no database mode @done (16-09-17 14:40)
+       ✔ -> detect change of database? @done (16-09-17 14:40)
+     ✔ changes automatically detected! @done (16-09-17 16:29)
 
 
  sensor_scripts (SS xD):
    daemon:
-     [ ] check no database
-       [ ] if working start loop -> else not
+     ✔ check no database @done (16-09-17 14:00)
+     ✔ check already running @done (16-09-17 14:00)
+       ✔ if both is True start loop -> else not @done (16-09-17 14:00)
    core:
-    [ ] light and moisture test and port to sqlite
+    ✔ port moisture @done (16-09-16 15:35)
+    ✔ port light @done (16-09-16 15:35)
    extensions:
-    [ ] LED to python 3
+    ✔ LED to python 3 @done (16-09-18 13:37)
+      ✔ TrafficLight @done (16-09-17 17:34)
+      ✔ MoistureBar @done (16-09-18 13:37)
    driver:
     [ ] to python 3
