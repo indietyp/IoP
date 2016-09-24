@@ -27,21 +27,21 @@ block content
           .field
             label Name
             .ui.fluid.left.icon.input
-              input(type='text', placeholder='Name')
+              input.name(type='text', placeholder='Name')
               i.tag.icon
 
         .eight.wide.column
           .field
             label Location
             .ui.fluid.left.icon.input
-              input(type='text', placeholder='Name')
+              input.location(type='text', placeholder='Name')
               i.home.icon
 
         .eight.wide.column
           .field
             label Species
             .ui.fluid.left.icon.input
-              input(type='text', placeholder='Name')
+              input.species(type='text', placeholder='Name')
               i.leaf.icon
 
 
@@ -49,7 +49,7 @@ block content
           .field
             label Notification Interval
             .ui.fluid.left.icon.right.labeled.input
-              input(type='number', placeholder='Name', max='12', min='0')
+              input.notification_interval(type='number', placeholder='Name', max='12', min='0')
               i.mail.icon
               .ui.basic.label hours
 
@@ -57,7 +57,7 @@ block content
           .field
             label Extra Details Duration
             .ui.fluid.left.icon.right.labeled.input
-              input(type='number', placeholder='Name', max='30', min='0')
+              input.duration(type='number', placeholder='Name', max='30', min='0')
               i.asterisk.icon
               .ui.basic.label days
 
@@ -98,7 +98,7 @@ block content
               ;
 
       .ui.two.buttons(style='margin-top: 2%')
-        .ui.basic.button.fluid.green Apply
+        .ui.basic.button.fluid.green(onclick='register_new_plant()') Apply
         .ui.basic.button.fluid.red Reset
   //- DISCOVER PLANT
   //- --> select name usw.

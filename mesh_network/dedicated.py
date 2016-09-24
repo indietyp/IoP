@@ -16,9 +16,9 @@ class MeshDedicatedDispatch(object):
     # because built in is better than if I ever wanted to use it, and it's not
     try:
       data = receiver.recvfrom(1024)
+      data = data[0].decode('utf-8')
       data = eval(data)
       data = data[1]
-      receiver.close()
     except:
       data = 254
 
@@ -67,12 +67,11 @@ class MeshDedicatedDispatch(object):
     status = self.get(120)
 
     if status == 1:
-      obj = MeshObject.select().where(MeshObject.ip == plant.ip)
+      obj = MeshObject.get(MeshObject.ip == plant.ip)
       obj.registered = True
       obj.save()
     else:
-      raise 'something went from: error code: ' + status
-
+      raise BaseException('something went from: error code: ' + str(status))
 
   def reboot(self):
     """ for system reboot """
@@ -80,4 +79,4 @@ class MeshDedicatedDispatch(object):
     daemon = MeshNetwork()
 
     for plant in Plant.select().where(Plant.localhost == False):
-      daemon.delive(2, sib=1, recipient=plant)
+      daemon.deliver(2, sib=1, recipient=plant)

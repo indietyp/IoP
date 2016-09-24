@@ -303,7 +303,10 @@ def get_sensor_status_average_percent(p_uuid):
   print(summary, file=sys.stdout)
   output = {}
   for key, item in average.items():
-    output[key] = [round(item / summary * 100), item]
+    try:
+      output[key] = [round(item / summary * 100), item]
+    except ZeroDivisionError:
+      output[key] = [0, item]
 
   return json.dumps(output)
 
@@ -325,6 +328,10 @@ def get_sensor_staus_online(p_uuid):
   for key, uptime in output.items():
     print(type(output[key][1]))
     output[key][0] = round(output[key][1] / summary * 100) if output[key][1] != 0 else 0
+
+  if output == {}:
+    output = {'online': [0, 0.0, 0.0], 'offline': [0, 0.0, 0.0]}
+
   return json.dumps(output)
 
 

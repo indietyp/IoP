@@ -118,8 +118,8 @@ class MeshNetwork(object):
   def send_local(self, mode, code, port=2311):
     """ method for communication between daemon and other scripts """
     sender = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-
     sender.sendto(str([mode, code]).encode(), ('127.0.0.1', port))
+    sender.close()
 
   def send(self, code, plant=None, messages=[], master=True, priority=255,
            recipient=None, multicast=False, no_database=False):
@@ -403,7 +403,7 @@ class MeshNetwork(object):
       from tools.mesh import MeshAES
       from tools.mesh import MeshTools
       from settings.database import DATABASE_NAME
-      from sensor_scripts.daemon import SensorDaemon
+      from sensor_scripts.daemon.main import SensorDaemon
       from uuid import UUID
       import os
       tools = MeshTools()
@@ -444,9 +444,9 @@ class MeshNetwork(object):
       plant.save()
 
       os.remove(u_hash)
-      SensorDaemon().run()
 
       self.send(30600, recipient=recipient, messages=[u_port], plant=plant)
+      SensorDaemon().run()
 
     elif mode == 7:
       import urllib.request

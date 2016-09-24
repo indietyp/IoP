@@ -2,31 +2,33 @@ doctype html
 html
   head
     title Internet of Plants (PoT v2)
-    link(rel='stylesheet',href='{{url_for("static", filename="semantic.min.css")}}')
-    link(rel='stylesheet',href='{{url_for("static", filename="jquery-ui.min.css")}}')
-    link(rel='stylesheet',href='{{url_for("static", filename="jquery-ui-slider-pips.css")}}')
-    link(rel='stylesheet',href='{{url_for("static", filename="sidebar.min.css")}}')
-    link(rel='stylesheet',href='{{url_for("static", filename="checkbox.min.css")}}')
-    link(rel='stylesheet',href='{{url_for("static", filename="icon.min.css")}}')
-    link(rel='stylesheet',href='{{url_for("static", filename="slider.min.css")}}')
-    link(rel='stylesheet',href='{{url_for("static", filename="dropdown.min.css")}}')
+    link(rel='stylesheet',href='{{url_for("static", filename="css/semantic.min.css")}}')
+    link(rel='stylesheet',href='{{url_for("static", filename="css/jquery-ui.min.css")}}')
+    link(rel='stylesheet',href='{{url_for("static", filename="css/jquery-ui-slider-pips.css")}}')
+    link(rel='stylesheet',href='{{url_for("static", filename="css/slider.min.css")}}')
+    link(rel='stylesheet',href='{{url_for("static", filename="css/icon.min.css")}}')
+    link(rel='stylesheet',href='{{url_for("static", filename="css/main.css")}}')
+    //- link(rel='stylesheet',href='{{url_for("static", filename="sidebar.min.css")}}')
+    //- link(rel='stylesheet',href='{{url_for("static", filename="dropdown.min.css")}}')
+    //- link(rel='stylesheet',href='{{url_for("static", filename="checkbox.min.css")}}')
     //- link(rel='stylesheet',href='{{url_for("static", filename="doughnut.css")}}')
-    script(src='{{url_for("static", filename="jquery.min.js")}}')
-    script(src='{{url_for("static", filename="imageUploader.js")}}')
-    script(src='{{url_for("static", filename="jquery-ui.min.js")}}')
-    script(src='{{url_for("static", filename="semantic.min.js")}}')
-    script(src='{{url_for("static", filename="checkbox.min.js")}}')
+
+    script(src='{{url_for("static", filename="js/jquery.min.js")}}')
+    script(src='{{url_for("static", filename="js/jquery-ui.min.js")}}')
+    script(src='{{url_for("static", filename="js/semantic.min.js")}}')
     script(src='{{url_for("static", filename="js/main.js")}}')
     script(src='{{url_for("static", filename="js/dygraph-combined.js")}}')
     script(src='{{url_for("static", filename="js/dygraph-smooth-plotter.js")}}')
-    script(src='{{url_for("static", filename="dropdown2.js")}}')
-    script(src='{{url_for("static", filename="sidebar.min.js")}}')
-    //- script(src='{{url_for("static", filename="chart.js")}}')
-    script(src='{{url_for("static", filename="doughnut.js")}}')
+    script(src='{{url_for("static", filename="js/doughnut.js")}}')
     script(src='{{url_for("static", filename="js/lodash.custom.min.js")}}')
-    script(src='{{url_for("static", filename="jquery-ui-slider-pips.js")}}')
+    script(src='{{url_for("static", filename="js/jquery-ui-slider-pips.js")}}')
+    script(src="https://unpkg.com/dexie@latest/dist/dexie.js")
+    //- script(src='{{url_for("static", filename="imageUploader.js")}}')
+    //- script(src='{{url_for("static", filename="checkbox.min.js")}}')
+    //- script(src='{{url_for("static", filename="dropdown2.js")}}')
+    //- script(src='{{url_for("static", filename="sidebar.min.js")}}')
+    //- script(src='{{url_for("static", filename="chart.js")}}')
 
-    link(rel='stylesheet',href='{{url_for("static", filename="css/main.css")}}')
 
   body
     .ui.vertical.inverted.sticky.menu.fixed.top.iopsidebar
@@ -49,7 +51,7 @@ html
         //-   i.icon
         //-     img(src='http://emojione.com/wp-content/uploads/assets/emojis/1f618.svg' style='width:24px')
 
-      a.item
+      a.item.add_plant
         | Add Plant
         i.plus.icon
 

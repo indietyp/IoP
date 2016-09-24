@@ -1,6 +1,10 @@
-from IoP import app, init_overview, init_sensor, set_uuid
+from IoP import app, init_overview, init_sensor, set_uuid, init
 from flask import render_template, session, request
-import sys, urllib.request, urllib.parse, random, json
+import sys
+import urllib.request
+import urllib.parse
+import random
+import json
 
 
 @app.route('/get/plant/overview', methods=['POST'])
@@ -44,8 +48,13 @@ def getCustomSensorDataset():
   with urllib.request.urlopen('http://localhost:2902/get/plant/' + uuid + '/sensor/' + sensor + '/data/' + str(float(request.form['latest_timestamp']))) as response:
     output['real'] = json.loads(response.read().decode('utf8'))
 
-  with urllib.request.urlopen('http://localhost:2902/get/plant/' + uuid + '/sensor/' + sensor + '/prediction') as response:
-    output['predicted'] = json.loads(response.read().decode('utf8'))
+  print(str(output), file=sys.stderr)
+
+  if output['real'] == []:
+    output['predicted'] = []
+  else:
+    with urllib.request.urlopen('http://localhost:2902/get/plant/' + uuid + '/sensor/' + sensor + '/prediction') as response:
+      output['predicted'] = json.loads(response.read().decode('utf8'))
 
   return json.dumps(output)
 
@@ -201,3 +210,11 @@ def createPlantResponsible():
     data = json.loads(response.read().decode('utf8'))
 
   return json.dumps({'info': 'success'})
+
+
+@app.route('/display/add_plant/', methods=['POST'])
+def display_add_plant():
+  content = init()
+  content.update({'get': False, 'current_active': 'add plant'})
+
+  return render_template('general/add.jade', content=content)

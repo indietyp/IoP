@@ -1,0 +1,7 @@
+if content['get']
+  extends 'main.jade'
+
+block content
+  if 'error' in content
+    if content['error'] != ''
+      .ui.red.inverted.segment(style='position:fixed;bottom:2%;right:1%;font-size:20px')= content['error']

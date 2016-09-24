@@ -45,17 +45,47 @@ class SensorDataForecast(object):
 
     return array
 
-  def predict(self, data):
+  def get_sensor_data(self, data):
+    sd = SensorData.select() \
+                   .where(SensorData.plant == data['plant']) \
+                   .where(SensorData.sensor == data['sensor']) \
+                   .order_by(SensorData.created_at.asc())
+
+    return sd
+
+  def simulated_data(self, data):
+    sd = self.get_sensor_data(data)
+    data_count = sd.count()
+
+    if data_count == 0:
+      other = {'plant': None, 'sensor': None}
+      other['plant'] = Plant.select().where(Plant.localhost == False)[0]
+      other['sensor'] = data['sensor']
+      generated = []
+
+      csd = self.get_sensor_data(other)
+      data_count = csd.count()
+
+      if data_count <= 1000:
+        generated = self.predict(data, sd)
+      else:
+        import random
+        start = random.randint(0, data_count - 1000)
+        generated = self.predict(data, sd[start:start + 1000])
+
+      for entry in sd:
+        pass
+
+      for entry in generated:
+        pass
+
+  def predict(self, data, sd):
     """ forecasting timebased sensor data
         INPUT dict
           plant - current plant object
           sensor - current sensor object
 
     """
-    sd = SensorData.select() \
-                   .where(SensorData.plant == data['plant']) \
-                   .where(SensorData.sensor == data['sensor']) \
-                   .order_by(SensorData.created_at.asc())
 
     data = {}
     data['date'] = []
@@ -131,7 +161,7 @@ class SensorDataForecast(object):
       entry.save()
 
   def run(self, data):
-    data['prediction'] = self.predict(data)
+    data['prediction'] = self.predict(data, self.get_sensor_data(data))
     self.insert_database(data)
 
 if __name__ == '__main__':

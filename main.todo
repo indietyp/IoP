@@ -5,8 +5,12 @@
      ✔ discover @done (16-09-05 20:14)
      ✔ discover with database integration @done (16-09-13 20:42)
      ✔ notify_ip @done (16-09-13 20:43)
+     ✔ add_plant @done (16-09-21 18:18)]
+     [ ] simulated plant
+     [ ] completed add_plant
      [ ] dedicated alive
-     [ ] dedicated register
+     ✔ dedicated register @done (16-09-21 18:18)
+     [ ] dedicated reboot
      ✔ rest api change of underlying db in virtualbox -> does it work at all or do I need to restart the process? @done (16-09-18 13:38)
      [ ] moisture
      [ ] light
@@ -63,15 +67,39 @@
         ✔ different port and listen 120 (alive) or 320 (register) -> check if fail or not! Is better with that @done (16-09-14 21:27)
     dedicated register:
       [ ] last insert to all other plants
-
+      ✘ only inserts holger @cancelled (16-09-21 16:07)
+      ✔ status @done (16-09-21 18:18)
+      ✔ check if plant with ip already exists @done (16-09-21 18:18)
 
 frontend:
+  ✔ fix general links @done (16-09-21 20:15)
+  ✔ add add_plant @done (16-09-21 21:33)
+  ✔ add add_plant redirect @done (16-09-21 21:33)
+  [ ] add overview
+  [ ] add smiles
   add plant:
+    [ ] add persistant duration
+    [ ] link from main page and redirect if done
     ✔ layout @done (16-09-19 20:41)
-    [ ] logic
+    ✔ logic @done (16-09-20 20:42)
     [ ] rest api to others
+    ✘ only inserts holger @cancelled (16-09-21 16:07)
   sensordata:
-    [ ] switch to indexedDB
+    ✔ pie bug @done (16-09-21 21:36)
+    ✔ switch to indexedDB @done (16-09-24 14:29)
+      ✔ write to indexedDB @done (16-09-23 23:02)
+      ✔ read from indexedDB @done (16-09-24 14:24)
+    [ ] add partial sensordata fetch -> 100 assets
+      [ ] progress bar
+    ✔ add sensordata if new data = [] - not access predicted @done (16-09-24 14:29)
+  plant settings:
+    [ ] message presets
+  general settings:
+    [ ] integrate
+      [ ] message presets
+      [ ] people management
+      [ ] day/night cycle
+        [ ] integrate also in tools
 
 
  rest:
@@ -79,9 +107,13 @@ frontend:
      ✔ no database mode @done (16-09-17 14:40)
        ✔ -> detect change of database? @done (16-09-17 14:40)
      ✔ changes automatically detected! @done (16-09-17 16:29)
+   get:
+     [ ] add partial sensordata fetch -> 100 assets
+   create:
+     [ ] plant
+       [ ] create all related tables entries -> mirror from localhost
 
-
- sensor_scripts (SS xD):
+ sensor_scripts:
    daemon:
      ✔ check no database @done (16-09-17 14:00)
      ✔ check already running @done (16-09-17 14:00)
@@ -90,8 +122,21 @@ frontend:
     ✔ port moisture @done (16-09-16 15:35)
     ✔ port light @done (16-09-16 15:35)
    extensions:
+     water_pump:
+       [ ] rethink with actual pump!
     ✔ LED to python 3 @done (16-09-18 13:37)
       ✔ TrafficLight @done (16-09-17 17:34)
       ✔ MoistureBar @done (16-09-18 13:37)
+   tools + models:
+     [ ] add persistant duration!
+     [ ] add simulated plant!
+       [ ] generated in simulated
+       [ ] check if predicted < now
+         [ ] delete in predicted and insert in sensor data
+         [ ] if predicted.count() == 0
+           [ ] generate new
    driver:
     [ ] to python 3
+   tools:
+     [ ] integrate sat_streak and max_persistant
+     [ ] reintegrate SensorCount

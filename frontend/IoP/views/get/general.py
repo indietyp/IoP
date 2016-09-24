@@ -2,8 +2,10 @@ import json
 import time
 from IoP import app
 from models.mesh import MeshObject
+from models.plant import Plant, Person
 from mesh_network.daemon import MeshNetwork
-from flask import render_template
+from mesh_network.dedicated import MeshDedicatedDispatch
+from flask import render_template, request
 
 
 @app.route('/get/general/settings', methods=['POST'])
@@ -21,5 +23,25 @@ def get_device_discover():
   for item in MeshObject.select().where(MeshObject.registered == False):
     output.append(item.ip)
 
-  print(str(output))
   return json.dumps(output)
+
+
+@app.route('/create/plant', methods=['POST'])
+def create_new_plant():
+  try:
+    Plant.get(Plant.ip == request.form['ip'])
+  except:
+    plant = Plant()
+    plant.name = request.form['name']
+    plant.location = request.form['location']
+    plant.species = request.form['species']
+    plant.interval = request.form['interval']
+
+    plant.person = Person.get(Person.email == request.form['email'])
+    plant.ip = request.form['ip']
+    plant.sat_streak = 0
+    plant.save()
+
+    MeshDedicatedDispatch().register(plant)
+
+  return str(True)

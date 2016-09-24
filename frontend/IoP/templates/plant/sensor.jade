@@ -45,14 +45,16 @@ block content
       .doughnutInformation(style='height:290px;width:290px')
         #doughnutChart.chart
         //- needs to be finished! (add data -> range! and so on! and modify js library todo so)
+        //- not working?
         script(type='text/javascript').
             $(function(){
               //- $("#doughnutChart").drawDoughnutChart([
               //-   { title: "Tokyo",         value : 12,  color: "#2C3E50" },
               //-   { title: "Tokyo",         value : 38,  color: "#000000" },
               //- ]);
-              $("#doughnutChart").drawDoughnutChart(#{content['current_data']['value']}, !{content['sensor_range']}, !{content['sensor_color_ranges']});
+              //- $("#doughnutChart").drawDoughnutChart(#{content['current_data']['value']}, !{content['sensor_range']}, !{content['sensor_color_ranges']});
             });
+            $("#doughnutChart").drawDoughnutChart(#{content['current_data']['value']}, !{content['sensor_range']}, !{content['sensor_color_ranges']});
     .spacer(style='flex-grow:0.25')
 
   .ui.segment

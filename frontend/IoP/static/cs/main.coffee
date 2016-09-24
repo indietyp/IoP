@@ -47,73 +47,139 @@ getCurrentSensor = () ->
     return
   return request.responseText
 
+setuppredicted = (db, jsonmsg, plant, sensor, graphName) ->
+  bulkadd = []
+  display = []
+  for entry in jsonmsg['predicted']
+    bulkadd.push {plant: plant, sensor: sensor, value: entry['value'], timestamp: entry['timestamp']}
+
+  db.predicted.bulkAdd(bulkadd).then (result) ->
+    db.real.where('[plant+sensor]').equals([plant, sensor]).each (result) ->
+      display.push [new Date(result.timestamp * 1000), result.value, null]
+      return
+
+    .then (result) ->
+      db.predicted.where('[plant+sensor]').equals([plant, sensor]).each (result) ->
+        display.push [new Date(result.timestamp * 1000), null, result.value]
+        return
+      .then (result) ->
+        smoothPlotter.smoothing = 0.33;
+        g = new Dygraph(document.getElementById("graph"),
+         display,
+         {
+          labels: ['time', graphName, 'prediction'],
+          plotter: smoothPlotter,
+          legend: 'always',
+          animatedZooms: true,
+         });
+        return
+      .catch (error) ->
+        console.log error
+        return
+    .catch (error) ->
+      console.log error
+      return
+    return
+  .catch (error) ->
+    console.log error
+    return
+  return
+
+
 initLineGraph = (graphName) ->
   sensor = getCurrentSensor()
   plant = getCurrentPUUID()
-  current = localStorage.getItem(sensor + ',' + plant)
+  db = new Dexie 'sensordata'
 
-  if current is null or current == ''
-    console.log 'building localStorage'
-    sensordata = $.ajax
-      url: '/get/plant/sensor/dataset',
-      method: 'POST'
-      data: {}
+  db.version(1).stores({
+    real: '++id, sensor, plant, [plant+sensor]',
+    predicted: '++id, sensor, plant, [plant+sensor]'
+  })
+  db.open().catch ->
+    alert('Uh oh : ' + error);
 
-    sensordata.done (sensordatamsg) ->
-      sensordataset = []
+  collection_count = -1
+  db.real.where('[plant+sensor]').equals([plant, sensor]).count().then (result) ->
+    display = []
+    console.log result
+    if result == 0
+      console.log 'building indexedDB'
+      sensordata = $.ajax
+        url: '/get/plant/sensor/dataset',
+        method: 'POST'
+        data: {}
 
-      for data in JSON.parse(sensordatamsg)['real']
-        sensordataset.push [new Date(data['timestamp'] * 1000), data['value'], null]
+      sensordata.done (sensordatamsg) ->
+        bulkadd = []
+        json_msg = JSON.parse(sensordatamsg)
+        for data in json_msg['real']
+          display.push [new Date(data['timestamp'] * 1000), data['value'], null]
+          bulkadd.push {plant: plant, sensor: sensor, value: data['value'], timestamp: data['timestamp']}
 
-      for data in JSON.parse(sensordatamsg)['predicted']
-        sensordataset.push [new Date(data['timestamp'] * 1000), null, data['value']]
+        db.real.bulkAdd(bulkadd).then (result) ->
+          bulkadd = []
+          for data in json_msg['predicted']
+            display.push [new Date(data['timestamp'] * 1000), null, data['value']]
+            bulkadd.push {plant: plant, sensor: sensor, value: data['value'], timestamp: data['timestamp']}
 
-      localStorage.setItem(sensor + ',' + plant, sensordatamsg)
-
-      smoothPlotter.smoothing = 0.33;
-      g = new Dygraph(document.getElementById("graph"),
-       sensordataset,
-       {
-        labels: ['time', graphName, 'prediction'],
-        plotter: smoothPlotter,
-        legend: 'always',
-        animatedZooms: true,
-       });
+          db.predicted.bulkAdd(bulkadd).then (result) ->
+            smoothPlotter.smoothing = 0.33;
+            g = new Dygraph(document.getElementById("graph"),
+              display,
+              {
+                labels: ['time', graphName, 'prediction'],
+                plotter: smoothPlotter,
+                legend: 'always',
+                animatedZooms: true,
+              });
+            return
+          .catch (error) ->
+            console.log error
+            return
+          return
+        .catch (error) ->
+          console.log error
+          return
+        return
       return
+    else
+      console.log 'using indexedDB'
+      db.real.where('[plant+sensor]').equals([plant, sensor]).last().then (result) ->
+        latestdata = $.ajax
+          url: '/get/plant/sensor/dataset/custom'
+          method: 'POST'
+          data: {'latest_timestamp': result['timestamp']}
+
+        latestdata.done (msg) ->
+          display = []
+          jsonmsg = JSON.parse msg
+
+          bulkadd = []
+          for entry in jsonmsg['real']
+            bulkadd.push {plant: plant, sensor: sensor, value: entry['value'], timestamp: entry['timestamp']}
+
+          db.real.bulkAdd(bulkadd).then (result) ->
+            bulkadd = []
+            if jsonmsg['predicted'].length < 0
+              db.predicted.clear().then (result) ->
+                setuppredicted(db, jsonmsg, plant, sensor, graphName)
+                console.log 'terminating predicted table'
+            else
+              console.log 'continuing'
+              setuppredicted(db, jsonmsg, plant, sensor, graphName)
+
+          .catch (error) ->
+            console.log error
+            return
+        return
+      .catch (error) ->
+        console.log error
+        return
     return
-  else
-    console.log 'using localStorage'
-    current_data = JSON.parse(current)
-    sensordata = $.ajax
-      url: '/get/plant/sensor/dataset/custom',
-      method: 'POST'
-      data: {'latest_timestamp': current_data['real'][current_data['real'].length - 1]['timestamp']}
-
-    sensordata.done (sensordatamsg) ->
-      sensordataset = []
-
-      for data in JSON.parse(sensordatamsg)['real']
-        current_data.push data
-
-      current_data['predicted'] = JSON.parse(sensordatamsg)['predicted']
-      localStorage.setItem(sensor + ',' + plant, JSON.stringify(current_data))
-
-      for data in current_data['real']
-        sensordataset.push [new Date(data['timestamp'] * 1000), data['value'], null]
-
-      for data in current_data['predicted']
-        sensordataset.push [new Date(data['timestamp'] * 1000), null, data['value']]
-
-      smoothPlotter.smoothing = 0.33;
-      g = new Dygraph(document.getElementById("graph"),
-       sensordataset,
-       {
-        labels: ['time', graphName, 'prediction'],
-        plotter: smoothPlotter,
-        legend: 'always',
-        animatedZooms: true,
-       });
+  .catch (error) ->
+    console.log error
     return
+
   return
 window.initLineGraph = initLineGraph
 
@@ -360,7 +426,7 @@ device_discover = () ->
     $('div.ui.selection.dropdown.discover > div.menu').empty()
 
     for item in msg
-      $('div.ui.selection.dropdown.discover > div.menu').append '<div class="item data-value="' + msg + '"> ' + msg + ' </div>'
+      $('div.ui.selection.dropdown.discover > div.menu').append '<div class="item" data-value="' + msg + '"> ' + msg + ' </div>'
       # return
     $('div.ui.selection.dropdown.discover > div.default.text').html 'IP-Adress - done loading'
     # return
@@ -388,7 +454,41 @@ add_plant_responsibles = () ->
 
 window.add_plant_responsibles = add_plant_responsibles
 
+register_new_plant = () ->
+  console.log('HEY')
+  a = $('input.name').val()
+  b = $('input.location').val()
+  c = $('input.species').val()
+  d = $('input.notification_interval').val()
+  e = $('.ui.selection.dropdown.responsible .active.selected').data()['value']
+  f = $('.ui.selection.dropdown.discover .active.selected').data()['value']
+  current = $.ajax
+    url: '/create/plant'
+    method: 'POST'
+    data: {'name': a, 'location': b, 'species': c, 'interval': d, 'email': e, 'ip': f}
+
+  current.done (msg) ->
+    window.location.href = '/'
+  return
+
+window.register_new_plant = register_new_plant
+
 $ ->
+  $('a.item.add_plant').click (e) ->
+    request = $.ajax
+      url: '/display/add_plant/',
+      method: 'POST'
+      data: {}
+
+    request.done (msg) ->
+      $('section.mainContent').fadeOut 'slow', () ->
+        $('section.mainContent').html(msg)
+        $('section.mainContent').html(msg).fadeIn('slow')
+        return
+      window.history.pushState({}, '', '/add_plant');
+
+    return
+
   $('div.menu.mainMenu a').click (e) ->
     $(this).parent().children('.active').removeClass 'active'
     $(this).addClass 'active'

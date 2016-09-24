@@ -3,6 +3,7 @@ from flask import render_template, session
 import random
 
 
+@app.route('/plant/<plant>')
 @app.route('/plant/<plant>/overview')
 def overview(plant):
   session['plant'] = plant
