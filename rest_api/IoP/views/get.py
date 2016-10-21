@@ -6,7 +6,9 @@ import json
 from uuid import UUID
 from bson import json_util
 from playhouse.shortcuts import model_to_dict
-from models.plant import Plant, PlantNetworkUptime, Person
+
+from models.mesh import MeshObject
+from models.plant import Plant, PlantNetworkUptime, Person, MessagePreset
 from models.sensor import Sensor, SensorData, SensorCount, SensorSatisfactionValue, SensorDataPrediction
 
 
@@ -25,6 +27,23 @@ def get_hole_plant(p_uuid):
   del plant['id']
   plant['uuid'] = str(plant['uuid'])
   return json.dumps(plant, default=json_util.default)
+
+
+@app.route('/get/plant/<p_uuid>/sensor/<s_uuid>/latest')
+def get_latest_dataset(p_uuid, s_uuid):
+  plant = Plant.get(Plant.uuid == p_uuid)
+  sensor = Sensor.get(Sensor.name == s_uuid)
+
+  sd = SensorData.select().where(SensorData.plant == plant) \
+                          .where(SensorData.sensor == sensor) \
+                          .order_by(SensorData.created_at.desc())
+
+  selected = model_to_dict(sd[0])
+  del selected['sensor']
+  del selected['plant']
+  del selected['id']
+
+  return json.dumps(selected, default=json_util.default)
 
 
 @app.route('/get/plant/<p_uuid>/created_at')
@@ -69,6 +88,7 @@ def get_responsible_full_dataset(p_uuid):
   responsible = Plant.get(Plant.uuid == UUID(p_uuid)).person
   responsible = model_to_dict(responsible)
   del responsible['id']
+  del responsible['preset']
 
   return json.dumps(responsible)
 
@@ -136,8 +156,11 @@ def get_plant_sensor_data(p_uuid, sensor):
   content = []
   for data in sensor_data_set:
     data = model_to_dict(data)
-    data['timestamp'] = data['created_at'].replace('+00:00', '')
-    data['timestamp'] = datetime.datetime.strptime(data['timestamp'], '%Y-%m-%d %H:%M:%S')
+    try:
+      data['timestamp'] = data['created_at'].replace('+00:00', '')
+      data['timestamp'] = datetime.datetime.strptime(data['timestamp'], '%Y-%m-%d %H:%M:%S')
+    except:
+      data['timestamp'] = datetime.datetime.strptime(data['timestamp'], "%Y-%m-%d %H:%M:%S.%f")
     data['timestamp'] = data['timestamp'].timestamp()
 
     del data['id']
@@ -162,8 +185,11 @@ def get_plant_sensor_data_after(p_uuid, sensor, until):
   content = []
   for data in sensor_data_set:
     data = model_to_dict(data)
-    data['timestamp'] = data['created_at'].replace('+00:00', '')
-    data['timestamp'] = datetime.datetime.strptime(data['timestamp'], '%Y-%m-%d %H:%M:%S')
+    try:
+      data['timestamp'] = data['created_at'].replace('+00:00', '')
+      data['timestamp'] = datetime.datetime.strptime(data['timestamp'], '%Y-%m-%d %H:%M:%S')
+    except:
+      data['timestamp'] = datetime.datetime.strptime(data['timestamp'], "%Y-%m-%d %H:%M:%S.%f")
     data['timestamp'] = data['timestamp'].timestamp()
 
     del data['id']
@@ -231,9 +257,11 @@ def get_sensor_data_high_low(p_uuid, sensor, high, date_time=None):
 
   raw = sensor_data_set[0]
   data = model_to_dict(raw)
-
-  data['t'] = raw.created_at.replace('+00:00', '')
-  data['t'] = datetime.datetime.strptime(data['t'], '%Y-%m-%d %H:%M:%S')
+  data['t'] = data['created_at'].replace('+00:00', '')
+  try:
+    data['t'] = datetime.datetime.strptime(data['t'], '%Y-%m-%d %H:%M:%S')
+  except:
+    data['t'] = datetime.datetime.strptime(data['t'], "%Y-%m-%d %H:%M:%S.%f")
   data['t'] = data['t'].timestamp()
 
   data['v'] = data['value']
@@ -365,10 +393,85 @@ def get_responsible_persons():
   for person in people:
     dict_person = model_to_dict(person)
     del dict_person['id']
+    del dict_person['preset']
     output.append(dict_person)
 
   return json.dumps(output)
 
+
+@app.route('/get/plant/<p_uuid>/sensor/<sensor>/data/start/<int:start>/stop/<int:stop>')
+def get_plant_data_selective(p_uuid, sensor, start, stop):
+  plant = Plant.get(Plant.uuid == p_uuid)
+  sensor = Sensor.get(Sensor.name == sensor)
+  sensor_data_set = SensorData.select() \
+                              .where(SensorData.plant == plant) \
+                              .where(SensorData.sensor == sensor) \
+                              .order_by(SensorData.created_at.desc()) \
+                              .offset(start) \
+                              .limit(stop - start)
+
+
+  content = []
+  for data in sensor_data_set:
+    data = model_to_dict(data)
+    try:
+      data['timestamp'] = data['created_at'].replace('+00:00', '')
+      data['timestamp'] = datetime.datetime.strptime(data['timestamp'], '%Y-%m-%d %H:%M:%S')
+    except:
+      data['timestamp'] = datetime.datetime.strptime(data['timestamp'], "%Y-%m-%d %H:%M:%S.%f")
+    data['timestamp'] = data['timestamp'].timestamp()
+
+    del data['id']
+    del data['plant']
+    del data['sensor']
+    content.append(data)
+  return json.dumps(content)
+
+
+@app.route('/get/plant/<p_uuid>/sensor/<sensor>/data/count')
+def get_plant_count(p_uuid, sensor):
+  plant = Plant.get(Plant.uuid == p_uuid)
+  sensor = Sensor.get(Sensor.name == sensor)
+  sensor_data_set = SensorData.select() \
+                              .where(SensorData.plant == plant) \
+                              .where(SensorData.sensor == sensor)
+
+  return json.dumps({'count': sensor_data_set.count()})
+
+
+@app.route('/get/messages/names')
+def get_message_names():
+  messages = MessagePreset.select()
+
+  output = []
+  for message in messages:
+    output.append({'name': message.name, 'uuid': str(message.uuid)})
+
+  return json.dumps(output)
+
+
+@app.route('/get/message/<m_uuid>/content')
+def get_message_content(m_uuid):
+  message = MessagePreset.get(MessagePreset.uuid == m_uuid)
+  return json.dumps(message.message)
+
+
+@app.route('/get/discovered/<int:registered>/names')
+def get_current_discover(registered):
+  if registered == 0:
+    items = MeshObject.select().where(MeshObject.registered == False)
+  elif registered == 1:
+    items = MeshObject.select().where(MeshObject.registered == True)
+  elif registered == 2:
+    items = MeshObject.select()
+  else:
+    return json.dumps({'info': 'path registered value not valid'})
+
+  output = []
+  for item in items:
+    output.append(item.ip)
+
+  return json.dumps(output)
 
 # @app.route('/get/plants/random')
 

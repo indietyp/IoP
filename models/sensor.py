@@ -17,7 +17,7 @@ class Sensor(Model):
   max_value   = FloatField()
 
   persistant_offset = FloatField(default=1)
-  persistant_hold   = IntegerField(default=2016)
+  # persistant_hold   = IntegerField(default=2016)
 
   class Meta:
     database  = db

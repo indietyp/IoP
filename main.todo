@@ -9,6 +9,10 @@
      [ ] simulated plant
      [ ] completed add_plant
      [ ] dedicated alive
+     [ ] rest_api create/plant
+     [ ] rest_api create/plant/register
+     ✔ dedicated deliver new_data @done (16-09-26 18:55)
+     ✔ deliver new_data @done (16-09-27 15:09)
      ✔ dedicated register @done (16-09-21 18:18)
      [ ] dedicated reboot
      ✔ rest api change of underlying db in virtualbox -> does it work at all or do I need to restart the process? @done (16-09-18 13:38)
@@ -55,12 +59,13 @@
         ✔ detect if changes @done (16-09-13 20:43)
         ✔ reply with [3] == NOT_CHANGED, CHANGED @done (16-09-13 20:43)
       new_data:
-        [ ] trigger after insert data
-        --> do this to all! except localhost
-          [ ] send new trigger @origin
-            [ ] new trigger -> notify new_data
-          [ ] fetch data @target
-            [ ] get from plant!
+        ✔ trigger after insert data @done (16-09-26 15:58)
+          ✔ --> do this to all! except localhost @done (16-09-26 15:58)
+          ✔ dedicated mode @done (16-09-26 15:58)
+          ✔ send new trigger @origin @done (16-09-25 20:12)
+            ✔ new trigger -> notify new_data @done (16-09-25 20:12)
+          ✔ fetch data @target @done (16-09-25 20:12)
+            ✔ get from plant! @done (16-09-25 20:12)
 
     build register and alive:
       ✔ database integration @done (16-09-14 21:27)
@@ -77,6 +82,7 @@ frontend:
   ✔ add add_plant redirect @done (16-09-21 21:33)
   [ ] add overview
   [ ] add smiles
+  [ ] consider log view!
   add plant:
     [ ] add persistant duration
     [ ] link from main page and redirect if done
@@ -89,8 +95,9 @@ frontend:
     ✔ switch to indexedDB @done (16-09-24 14:29)
       ✔ write to indexedDB @done (16-09-23 23:02)
       ✔ read from indexedDB @done (16-09-24 14:24)
-    [ ] add partial sensordata fetch -> 100 assets
-      [ ] progress bar
+    ✔ add partial sensordata fetch -> 100 assets @done (16-09-27 18:37)
+      ✔ could also be x^n or something like this, so it's like 10...25...100...1000...10000 @done (16-09-27 18:37)
+      ✘ progress bar @cancelled (16-09-27 18:37)
     ✔ add sensordata if new data = [] - not access predicted @done (16-09-24 14:29)
   plant settings:
     [ ] message presets
@@ -103,15 +110,22 @@ frontend:
 
 
  rest:
+   discover:
+     [ ] discover
+     [ ] get discover
    all:
      ✔ no database mode @done (16-09-17 14:40)
        ✔ -> detect change of database? @done (16-09-17 14:40)
      ✔ changes automatically detected! @done (16-09-17 16:29)
    get:
-     [ ] add partial sensordata fetch -> 100 assets
+     ✔ time also from datetime @done (16-09-26 18:56)
+     ✔ add partial sensordata fetch -> 100 assets @done (16-09-27 18:38)
    create:
      [ ] plant
        [ ] create all related tables entries -> mirror from localhost
+         [ ] SensorStatus
+         [ ] SensorCount
+         [ ] SensorSatisfactionValue
 
  sensor_scripts:
    daemon:
@@ -128,7 +142,7 @@ frontend:
       ✔ TrafficLight @done (16-09-17 17:34)
       ✔ MoistureBar @done (16-09-18 13:37)
    tools + models:
-     [ ] add persistant duration!
+     ✔ add persistant duration! @done (16-10-09 18:38)
      [ ] add simulated plant!
        [ ] generated in simulated
        [ ] check if predicted < now

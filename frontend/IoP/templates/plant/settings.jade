@@ -155,17 +155,25 @@ block content
   .ui.segment
     h1.ui.header Notification Settings
     p gonna be continued! JS and stuff!
-    .ui.slider.checkbox
-            input(type='checkbox', name='newsletter')
-            label use customized message?
-    .ui.slider.checkbox
-            input(type='checkbox', name='newsletter')
-            label cluster messages?
-    .preset_message
+    .ui.slider.checkbox.expand_create
+      input(type='checkbox', name='customized')
+      label create new message
+    script(type='text/javascript').
+      $('.checkbox.expand_create')
+        .checkbox()
+        .first().checkbox({
+          onChange: function() {
+            $('.preset_message.create_message_one').fadeToggle('slow')
+            $('.custom_message.create_message_two').fadeToggle('slow')
+          }
+        })
+      ;
+
+    .preset_message.create_message_one(style='position:absolute; width:98%; z-index: 1000;')
       .ui.form
         .field
           label Preset
-          .ui.selection.dropdown
+          .ui.selection.dropdown.notification_message
               input(type='hidden', name='person')
               i.dropdown.icon
               .default.text Preset
@@ -176,7 +184,7 @@ block content
           $('.ui.selection.dropdown')
             .dropdown()
           ;
-    .custom_message
+    .custom_message.create_message_two(style='display:none')
       .ui.form
         .field
           label Heading
@@ -186,19 +194,19 @@ block content
           label Content
           p for your customized message you can use these tags to insert custom data
           .usecases(style='margin-bottom:1%')
-            .ui.label.basic.violet [name]
-            .ui.label.basic.violet [current]
-            .ui.label.basic.violet [ideal_max]
-            .ui.label.basic.violet [ideal_min]
-            .ui.label.basic.violet [warning_max]
-            .ui.label.basic.violet [warning_min]
+            .ui.label.basic.violet [sensor]
+            .ui.label.basic.violet [plant]
             .ui.label.basic.violet [date]
-            .ui.label.basic.violet [eu_time]
-            .ui.label.basic.violet [us_time]
-            .ui.label.basic.violet [firstname]
-            .ui.label.basic.violet [lastname]
-            .ui.label.basic.green [for]
-            .ui.label.basic.green [for_end]
+            .ui.label.basic.violet [current]
+            .ui.label.basic.violet [time (12h)]
+            .ui.label.basic.violet [time (24h)]
+            .ui.label.basic.violet [name]
+            .ui.label.basic.violet [email]
+            .ui.label.basic.violet [ideal_min]
+            .ui.label.basic.violet [ideal_max]
+            .ui.label.basic.violet [warning_min]
+            .ui.label.basic.violet [warning_max]
+            .ui.label.basic.violet [unit]
           textarea
     .interval(style='margin-top:5%')
       p(style='margin-bottom:3%') sensor notification interval (hours)

@@ -4,8 +4,10 @@ from IoP import app
 from models.mesh import MeshObject
 from models.plant import Plant, Person
 from mesh_network.daemon import MeshNetwork
-from mesh_network.dedicated import MeshDedicatedDispatch
+# from mesh_network.dedicated import MeshDedicatedDispatch
 from flask import render_template, request
+import urllib.request
+import urllib.parse
 
 
 @app.route('/get/general/settings', methods=['POST'])
@@ -28,20 +30,9 @@ def get_device_discover():
 
 @app.route('/create/plant', methods=['POST'])
 def create_new_plant():
-  try:
-    Plant.get(Plant.ip == request.form['ip'])
-  except:
-    plant = Plant()
-    plant.name = request.form['name']
-    plant.location = request.form['location']
-    plant.species = request.form['species']
-    plant.interval = request.form['interval']
+  data = urllib.parse.urlencode(request.form).encode('ascii')
+  req = urllib.request.Request('http://localhost:2902/create/plant/register', data)
+  with urllib.request.urlopen(req) as response:
+    data = response.read().decode('utf8')
 
-    plant.person = Person.get(Person.email == request.form['email'])
-    plant.ip = request.form['ip']
-    plant.sat_streak = 0
-    plant.save()
-
-    MeshDedicatedDispatch().register(plant)
-
-  return str(True)
+  return data

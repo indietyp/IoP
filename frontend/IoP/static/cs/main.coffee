@@ -11,7 +11,7 @@ getCurrentPlant = () ->
     return
 
   request.fail (jqXHR, textStatus) ->
-    $('section.mainContent').html('Request failed:' + textStatus);
+    $('section.mainContent').html('Request failed:' + textStatus)
     return
   return request.responseText
 
@@ -28,7 +28,7 @@ getCurrentPUUID = () ->
     return
 
   request.fail (jqXHR, textStatus) ->
-    $('section.mainContent').html('Request failed:' + textStatus);
+    $('section.mainContent').html('Request failed:' + textStatus)
     return
   return request.responseText
 
@@ -43,35 +43,34 @@ getCurrentSensor = () ->
     return
 
   request.fail (jqXHR, textStatus) ->
-    $('section.mainContent').html('Request failed:' + textStatus);
+    $('section.mainContent').html('Request failed:' + textStatus)
     return
   return request.responseText
 
 setuppredicted = (db, jsonmsg, plant, sensor, graphName) ->
   bulkadd = []
   display = []
+  console.log display
   for entry in jsonmsg['predicted']
     bulkadd.push {plant: plant, sensor: sensor, value: entry['value'], timestamp: entry['timestamp']}
 
   db.predicted.bulkAdd(bulkadd).then (result) ->
-    db.real.where('[plant+sensor]').equals([plant, sensor]).each (result) ->
-      display.push [new Date(result.timestamp * 1000), result.value, null]
-      return
-
-    .then (result) ->
+    db.real.where('[plant+sensor]').equals([plant, sensor]).sortBy('timestamp').then (array) ->
+      for result in array
+        display.push [new Date(result.timestamp * 1000), result.value, null]
       db.predicted.where('[plant+sensor]').equals([plant, sensor]).each (result) ->
         display.push [new Date(result.timestamp * 1000), null, result.value]
         return
       .then (result) ->
-        smoothPlotter.smoothing = 0.33;
+        smoothPlotter.smoothing = 0.33
         g = new Dygraph(document.getElementById("graph"),
-         display,
-         {
-          labels: ['time', graphName, 'prediction'],
-          plotter: smoothPlotter,
-          legend: 'always',
-          animatedZooms: true,
-         });
+          display,
+          {
+            labels: ['time', graphName, 'prediction'],
+            plotter: smoothPlotter,
+            legend: 'always',
+            animatedZooms: true,
+          })
         return
       .catch (error) ->
         console.log error
@@ -92,38 +91,37 @@ initLineGraph = (graphName) ->
   db = new Dexie 'sensordata'
 
   db.version(1).stores({
-    real: '++id, sensor, plant, [plant+sensor]',
+    real: '++id, sensor, plant, timestamp, [plant+sensor]',
     predicted: '++id, sensor, plant, [plant+sensor]'
   })
   db.open().catch ->
-    alert('Uh oh : ' + error);
+    alert('Uh oh : ' + error)
 
   collection_count = -1
   db.real.where('[plant+sensor]').equals([plant, sensor]).count().then (result) ->
     display = []
     console.log result
     if result == 0
-      console.log 'building indexedDB'
-      sensordata = $.ajax
-        url: '/get/plant/sensor/dataset',
+      display = []
+      console.log 'building indexedDB [partial]'
+      count = $.ajax
+        url: '/get/plant/sensor/data/count'
         method: 'POST'
-        data: {}
+        data: {'sensor': sensor}
 
-      sensordata.done (sensordatamsg) ->
-        bulkadd = []
-        json_msg = JSON.parse(sensordatamsg)
-        for data in json_msg['real']
-          display.push [new Date(data['timestamp'] * 1000), data['value'], null]
-          bulkadd.push {plant: plant, sensor: sensor, value: data['value'], timestamp: data['timestamp']}
+      count.done (msg) ->
+        count = JSON.parse(msg)['count']
+        i = 0
+        start = 0
+        stop = 0
 
-        db.real.bulkAdd(bulkadd).then (result) ->
-          bulkadd = []
-          for data in json_msg['predicted']
-            display.push [new Date(data['timestamp'] * 1000), null, data['value']]
-            bulkadd.push {plant: plant, sensor: sensor, value: data['value'], timestamp: data['timestamp']}
-
-          db.predicted.bulkAdd(bulkadd).then (result) ->
-            smoothPlotter.smoothing = 0.33;
+        while stop < count
+          i+=1
+          start = if i == 1 then 0 else stop
+          stop = Math.floor(Math.pow(i, 3))
+          console.log stop - start
+          if i == 1
+            smoothPlotter.smoothing = 0.33
             g = new Dygraph(document.getElementById("graph"),
               display,
               {
@@ -131,20 +129,90 @@ initLineGraph = (graphName) ->
                 plotter: smoothPlotter,
                 legend: 'always',
                 animatedZooms: true,
-              });
+              })
+
+          sensordata = $.ajax
+            url: '/get/plant/sensor/data/range'
+            method: 'POST'
+            data: {'sensor': sensor, 'start': start, 'stop': stop}
+
+          sensordata.done (sensordatamsg) ->
+            bulkadd = []
+            json_msg = JSON.parse(sensordatamsg)
+            for data in json_msg
+              display.unshift [new Date(data['timestamp'] * 1000), data['value'], null]
+              bulkadd.push {plant: plant, sensor: sensor, value: data['value'], timestamp: data['timestamp']}
+
+            db.real.bulkAdd(bulkadd).then (result) ->
+              g.updateOptions( { 'file': display } )
+              return
+            .catch (error) ->
+              console.log error
+              return
             return
-          .catch (error) ->
-            console.log error
+
+        prediction = $.ajax
+          url: '/get/plant/sensor/prediction'
+          method: 'POST'
+          data: {'sensor': sensor}
+
+        prediction.done (prediction) ->
+          json_prediction = JSON.parse(prediction)
+          bulkadd = []
+          console.log 'predicting'
+
+          for data in json_prediction
+            display.push [new Date(data['timestamp'] * 1000), null, data['value']]
+            bulkadd.push {plant: plant, sensor: sensor, value: data['value'], timestamp: data['timestamp']}
+
+          db.predicted.bulkAdd(bulkadd).then (result) ->
+            g.updateOptions({'file': display})
             return
-          return
-        .catch (error) ->
-          console.log error
-          return
+        return
+
+
+      # sensordata = $.ajax
+      #   url: '/get/plant/sensor/dataset',
+      #   method: 'POST'
+      #   data: {}
+
+      # sensordata.done (sensordatamsg) ->
+        # bulkadd = []
+        # json_msg = JSON.parse(sensordatamsg)
+        # for data in json_msg['real']
+        #   display.push [new Date(data['timestamp'] * 1000), data['value'], null]
+        #   bulkadd.push {plant: plant, sensor: sensor, value: data['value'], timestamp: data['timestamp']}
+
+        # db.real.bulkAdd(bulkadd).then (result) ->
+        #   bulkadd = []
+        #   for data in json_msg['predicted']
+        #     display.push [new Date(data['timestamp'] * 1000), null, data['value']]
+        #     bulkadd.push {plant: plant, sensor: sensor, value: data['value'], timestamp: data['timestamp']}
+
+        #   db.predicted.bulkAdd(bulkadd).then (result) ->
+        #     smoothPlotter.smoothing = 0.33;
+        #     g = new Dygraph(document.getElementById("graph"),
+        #       display,
+        #       {
+        #         labels: ['time', graphName, 'prediction'],
+        #         plotter: smoothPlotter,
+        #         legend: 'always',
+        #         animatedZooms: true,
+        #       });
+        #     return
+        #   .catch (error) ->
+        #     console.log error
+        #     return
+        #   return
+        # .catch (error) ->
+        #   console.log error
+        #   return
         return
       return
     else
       console.log 'using indexedDB'
-      db.real.where('[plant+sensor]').equals([plant, sensor]).last().then (result) ->
+      db.real.where('[plant+sensor]').equals([plant, sensor]).reverse().sortBy('timestamp').then (result) ->
+        result = result[0]
         latestdata = $.ajax
           url: '/get/plant/sensor/dataset/custom'
           method: 'POST'
@@ -153,6 +221,7 @@ initLineGraph = (graphName) ->
         latestdata.done (msg) ->
           display = []
           jsonmsg = JSON.parse msg
+          console.log jsonmsg['real'].length
 
           bulkadd = []
           for entry in jsonmsg['real']
@@ -201,7 +270,7 @@ sg_nsps = () ->
     $('#__nsps_type input').val msg['type']
     $('#__nsps_location input').val msg['location']
 
-    $('#__nsps_segment').fadeIn 'slow';
+    $('#__nsps_segment').fadeIn 'slow'
     return
   return
 window.sg_nsps = sg_nsps
@@ -264,17 +333,17 @@ sg_ssps = () ->
         current_settings.push settings['yellow']['max']
 
         $("#flat-slider-vertical-" + sensor)
-            .slider({
-                max: range['max'],
-                min: range['min'],
-                values: current_settings,
-                orientation: "vertical"
-            })
-            .slider("pips", {
-                first: "pip",
-                last: "pip"
-            })
-            .slider("float");
+          .slider({
+            max: range['max'],
+            min: range['min'],
+            values: current_settings,
+            orientation: "vertical"
+          })
+          .slider("pips", {
+            first: "pip",
+            last: "pip"
+          })
+          .slider("float")
     $('.__ssps_segment').fadeIn 'slow'
     return
   return
@@ -288,7 +357,7 @@ sg_ssps_submit = (that) ->
   values = $("#flat-slider-vertical-" + name).slider( "values" )
   values = values.sort (a, b) -> return a - b
   # console.log values
-  $("#flat-slider-vertical-" + name).slider( "values", values );
+  $("#flat-slider-vertical-" + name).slider( "values", values )
 
   request = $.ajax
     url: '/update/plant/ranges',
@@ -318,7 +387,7 @@ sg_ssps_reset = (that) ->
     values.push msg['green']['min']
     values.push msg['green']['max']
     values.push msg['yellow']['max']
-    $("#flat-slider-vertical-" + name).slider( "values", values );
+    $("#flat-slider-vertical-" + name).slider( "values", values )
     $(that).removeClass 'disabled'
     $(that).removeClass 'loading'
     return
@@ -345,7 +414,7 @@ sg_rsps = () ->
 
     current.done (msg) ->
       msg = JSON.parse(msg)
-      $('#select').dropdown('set selected', msg['email']);
+      $('#select').dropdown('set selected', msg['email'])
       $('#__rsps_input').val(msg['email'])
       $('#__rsps_segment').fadeIn 'slow'
       return
@@ -361,7 +430,7 @@ window.sg_rsps_change = sg_rsps_change
 sg_rsps_submit = (that) ->
   $(that).addClass 'disabled'
   $(that).addClass 'loading'
-  name = $("#select option:selected").text();
+  name = $("#select option:selected").text()
   email = $('#__rsps_input').val()
 
   request = $.ajax
@@ -380,7 +449,7 @@ window.sg_rsps_submit = sg_rsps_submit
 sg_rsps_create = (that) ->
   $(that).addClass 'disabled'
   $(that).addClass 'loading'
-  wizard = $("#create_select option:selected").text();
+  wizard = $("#create_select option:selected").text()
   console.log wizard
   name = $('#__rspsc_name').val()
   email = $('#__rspsc_email').val()
@@ -407,7 +476,7 @@ sg_rsps_reset = (that) ->
 
   current.done (msg) ->
     msg = JSON.parse(msg)
-    $('#select').dropdown('set selected', msg['email']);
+    $('#select').dropdown('set selected', msg['email'])
     $('#__rsps_input').val(msg['email'])
     $(that).removeClass 'disabled'
     $(that).removeClass 'loading'
@@ -485,7 +554,7 @@ $ ->
         $('section.mainContent').html(msg)
         $('section.mainContent').html(msg).fadeIn('slow')
         return
-      window.history.pushState({}, '', '/add_plant');
+      window.history.pushState({}, '', '/add_plant')
 
     return
 
@@ -501,8 +570,8 @@ $ ->
       data: {}
 
     request.done (msg) ->
-      $('section.mainContent').html(msg);
-      window.history.pushState({}, '', '/global/settings');
+      $('section.mainContent').html(msg)
+      window.history.pushState({}, '', '/global/settings')
       $('div.menu.mainMenu a').parent().children('.active').removeClass 'active'
       # $('div.menu.mainMenu a.overview').addClass 'active'
       $('div.pusher div.ui.segment div.information h1.ui.header.plant_header').html _.capitalize('Global Settings')
@@ -510,10 +579,10 @@ $ ->
       return
 
     request.fail (jqXHR, textStatus) ->
-      $('section.mainContent').html('Request failed:' + textStatus);
+      $('section.mainContent').html('Request failed:' + textStatus)
       return
 
-    window.history.pushState({}, '', '/global/settings');
+    window.history.pushState({}, '', '/global/settings')
     return
 
   $('a.item.plant_settings').click (e) ->
@@ -523,7 +592,7 @@ $ ->
       data: {}
 
     request.done (msg) ->
-      $('section.mainContent').html(msg);
+      $('section.mainContent').html(msg)
       $('div.menu.mainMenu a').parent().children('.active').removeClass 'active'
 
       # sg_nsps == settings get - non specific plant stuff
@@ -531,10 +600,10 @@ $ ->
       return
 
     request.fail (jqXHR, textStatus) ->
-      $('section.mainContent').html('Request failed:' + textStatus);
+      $('section.mainContent').html('Request failed:' + textStatus)
       return
 
-    window.history.pushState({}, '', '/plant/' +  getCurrentPlant()  + '/settings');
+    window.history.pushState({}, '', '/plant/' +  getCurrentPlant()  + '/settings')
     return
 
   $('a.item.plant').click (e) ->
@@ -547,9 +616,9 @@ $ ->
 
     request.done (msg) ->
       $('section.mainContent').fadeOut 'slow', () ->
-        $('section.mainContent').html(msg).fadeIn('slow');
+        $('section.mainContent').html(msg).fadeIn('slow')
         return
-      window.history.pushState({}, '', '/plant/' + plant + '/overview');
+      window.history.pushState({}, '', '/plant/' + plant + '/overview')
       $('div.menu.mainMenu a').parent().children('.active').removeClass 'active'
       $('div.menu.mainMenu a.overview').addClass 'active'
       $('div.pusher div.ui.segment div.information h1.ui.header.plant_header').html _.capitalize(plant)
@@ -557,7 +626,7 @@ $ ->
       return
 
     request.fail (jqXHR, textStatus) ->
-      $('section.mainContent').html('Request failed:' + textStatus);
+      $('section.mainContent').html('Request failed:' + textStatus)
       return
     return
 
@@ -574,10 +643,10 @@ $ ->
       return
 
     request.fail (jqXHR, textStatus) ->
-      $('section.mainContent').html('Request failed:' + textStatus);
+      $('section.mainContent').html('Request failed:' + textStatus)
       return
 
-    window.history.pushState({}, '', '/plant/' +  getCurrentPlant()  + '/' + sensor);
+    window.history.pushState({}, '', '/plant/' +  getCurrentPlant()  + '/' + sensor)
     return
 
   $('a.item.overview').click (e) ->
@@ -587,12 +656,12 @@ $ ->
       data: {}
 
     request.done (msg) ->
-      $('section.mainContent').html(msg);
-      window.history.pushState({}, '', '/plant/' + getCurrentPlant() + '/overview');
+      $('section.mainContent').html(msg)
+      window.history.pushState({}, '', '/plant/' + getCurrentPlant() + '/overview')
       return
 
     request.fail (jqXHR, textStatus) ->
-      $('section.mainContent').html('Request failed:' + textStatus);
+      $('section.mainContent').html('Request failed:' + textStatus)
       return
     return
   return

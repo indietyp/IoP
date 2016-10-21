@@ -152,6 +152,7 @@ class SensorDataForecast(object):
                                  .where(SensorDataPrediction.sensor == data['sensor']) \
                                  .execute()
 
+    print(data)
     for key, prediction in enumerate(data['prediction']['prediction']):
       entry = SensorDataPrediction()
       entry.plant = data['plant']
@@ -161,8 +162,10 @@ class SensorDataForecast(object):
       entry.save()
 
   def run(self, data):
-    data['prediction'] = self.predict(data, self.get_sensor_data(data))
-    self.insert_database(data)
+    sd = self.get_sensor_data(data)
+    if not sd.count() < 1000:
+      data['prediction'] = self.predict(data, sd)
+      self.insert_database(data)
 
 if __name__ == '__main__':
   from models.plant import Plant

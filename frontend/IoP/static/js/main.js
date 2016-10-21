@@ -48,12 +48,13 @@
   };
 
   setuppredicted = function(db, jsonmsg, plant, sensor, graphName) {
-    var bulkadd, display, entry, i, len, ref;
+    var bulkadd, display, entry, j, len, ref;
     bulkadd = [];
     display = [];
+    console.log(display);
     ref = jsonmsg['predicted'];
-    for (i = 0, len = ref.length; i < len; i++) {
-      entry = ref[i];
+    for (j = 0, len = ref.length; j < len; j++) {
+      entry = ref[j];
       bulkadd.push({
         plant: plant,
         sensor: sensor,
@@ -62,9 +63,12 @@
       });
     }
     db.predicted.bulkAdd(bulkadd).then(function(result) {
-      db.real.where('[plant+sensor]').equals([plant, sensor]).each(function(result) {
-        display.push([new Date(result.timestamp * 1000), result.value, null]);
-      }).then(function(result) {
+      db.real.where('[plant+sensor]').equals([plant, sensor]).sortBy('timestamp').then(function(array) {
+        var k, len1;
+        for (k = 0, len1 = array.length; k < len1; k++) {
+          result = array[k];
+          display.push([new Date(result.timestamp * 1000), result.value, null]);
+        }
         return db.predicted.where('[plant+sensor]').equals([plant, sensor]).each(function(result) {
           display.push([new Date(result.timestamp * 1000), null, result.value]);
         }).then(function(result) {
@@ -93,7 +97,7 @@
     plant = getCurrentPUUID();
     db = new Dexie('sensordata');
     db.version(1).stores({
-      real: '++id, sensor, plant, [plant+sensor]',
+      real: '++id, sensor, plant, timestamp, [plant+sensor]',
       predicted: '++id, sensor, plant, [plant+sensor]'
     });
     db.open()["catch"](function() {
@@ -101,37 +105,85 @@
     });
     collection_count = -1;
     db.real.where('[plant+sensor]').equals([plant, sensor]).count().then(function(result) {
-      var display, sensordata;
+      var count, display;
       display = [];
       console.log(result);
       if (result === 0) {
-        console.log('building indexedDB');
-        sensordata = $.ajax({
-          url: '/get/plant/sensor/dataset',
+        display = [];
+        console.log('building indexedDB [partial]');
+        count = $.ajax({
+          url: '/get/plant/sensor/data/count',
           method: 'POST',
-          data: {}
+          data: {
+            'sensor': sensor
+          }
         });
-        sensordata.done(function(sensordatamsg) {
-          var bulkadd, data, i, json_msg, len, ref;
-          bulkadd = [];
-          json_msg = JSON.parse(sensordatamsg);
-          ref = json_msg['real'];
-          for (i = 0, len = ref.length; i < len; i++) {
-            data = ref[i];
-            display.push([new Date(data['timestamp'] * 1000), data['value'], null]);
-            bulkadd.push({
-              plant: plant,
-              sensor: sensor,
-              value: data['value'],
-              timestamp: data['timestamp']
+        count.done(function(msg) {
+          var g, i, prediction, sensordata, start, stop;
+          count = JSON.parse(msg)['count'];
+          i = 0;
+          start = 0;
+          stop = 0;
+          while (stop < count) {
+            i += 1;
+            start = i === 1 ? 0 : stop;
+            stop = Math.floor(Math.pow(i, 3));
+            console.log(stop - start);
+            if (i === 1) {
+              smoothPlotter.smoothing = 0.33;
+              g = new Dygraph(document.getElementById("graph"), display, {
+                labels: ['time', graphName, 'prediction'],
+                plotter: smoothPlotter,
+                legend: 'always',
+                animatedZooms: true
+              });
+            }
+            sensordata = $.ajax({
+              url: '/get/plant/sensor/data/range',
+              method: 'POST',
+              data: {
+                'sensor': sensor,
+                'start': start,
+                'stop': stop
+              }
+            });
+            sensordata.done(function(sensordatamsg) {
+              var bulkadd, data, j, json_msg, len;
+              bulkadd = [];
+              json_msg = JSON.parse(sensordatamsg);
+              for (j = 0, len = json_msg.length; j < len; j++) {
+                data = json_msg[j];
+                display.unshift([new Date(data['timestamp'] * 1000), data['value'], null]);
+                bulkadd.push({
+                  plant: plant,
+                  sensor: sensor,
+                  value: data['value'],
+                  timestamp: data['timestamp']
+                });
+              }
+              db.real.bulkAdd(bulkadd).then(function(result) {
+                g.updateOptions({
+                  'file': display
+                });
+              })["catch"](function(error) {
+                console.log(error);
+              });
             });
           }
-          db.real.bulkAdd(bulkadd).then(function(result) {
-            var j, len1, ref1;
+          prediction = $.ajax({
+            url: '/get/plant/sensor/prediction',
+            method: 'POST',
+            data: {
+              'sensor': sensor
+            }
+          });
+          prediction.done(function(prediction) {
+            var bulkadd, data, j, json_prediction, len;
+            json_prediction = JSON.parse(prediction);
             bulkadd = [];
-            ref1 = json_msg['predicted'];
-            for (j = 0, len1 = ref1.length; j < len1; j++) {
-              data = ref1[j];
+            console.log('predicting');
+            for (j = 0, len = json_prediction.length; j < len; j++) {
+              data = json_prediction[j];
               display.push([new Date(data['timestamp'] * 1000), null, data['value']]);
               bulkadd.push({
                 plant: plant,
@@ -140,27 +192,20 @@
                 timestamp: data['timestamp']
               });
             }
-            db.predicted.bulkAdd(bulkadd).then(function(result) {
-              var g;
-              smoothPlotter.smoothing = 0.33;
-              g = new Dygraph(document.getElementById("graph"), display, {
-                labels: ['time', graphName, 'prediction'],
-                plotter: smoothPlotter,
-                legend: 'always',
-                animatedZooms: true
+            return db.predicted.bulkAdd(bulkadd).then(function(result) {
+              g.updateOptions({
+                'file': display
               });
-            })["catch"](function(error) {
-              console.log(error);
             });
-          })["catch"](function(error) {
-            console.log(error);
           });
+          return;
         });
         return;
       } else {
         console.log('using indexedDB');
-        db.real.where('[plant+sensor]').equals([plant, sensor]).last().then(function(result) {
+        db.real.where('[plant+sensor]').equals([plant, sensor]).reverse().sortBy('timestamp').then(function(result) {
           var latestdata;
+          result = result[0];
           latestdata = $.ajax({
             url: '/get/plant/sensor/dataset/custom',
             method: 'POST',
@@ -169,13 +214,14 @@
             }
           });
           latestdata.done(function(msg) {
-            var bulkadd, entry, i, jsonmsg, len, ref;
+            var bulkadd, entry, j, jsonmsg, len, ref;
             display = [];
             jsonmsg = JSON.parse(msg);
+            console.log(jsonmsg['real'].length);
             bulkadd = [];
             ref = jsonmsg['real'];
-            for (i = 0, len = ref.length; i < len; i++) {
-              entry = ref[i];
+            for (j = 0, len = ref.length; j < len; j++) {
+              entry = ref[j];
               bulkadd.push({
                 plant: plant,
                 sensor: sensor,
@@ -278,10 +324,10 @@
       data: {}
     });
     request.done(function(msg) {
-      var i, item, len, range_request, settings;
+      var item, j, len, range_request, settings;
       msg = JSON.parse(msg);
-      for (i = 0, len = msg.length; i < len; i++) {
-        item = msg[i];
+      for (j = 0, len = msg.length; j < len; j++) {
+        item = msg[j];
         settings = item['settings'];
         range_request = $.ajax({
           url: '/get/sensor/range',
@@ -380,10 +426,10 @@
       data: {}
     });
     request.done(function(msg) {
-      var current, i, len, person;
+      var current, j, len, person;
       msg = JSON.parse(msg);
-      for (i = 0, len = msg.length; i < len; i++) {
-        person = msg[i];
+      for (j = 0, len = msg.length; j < len; j++) {
+        person = msg[j];
         $('#select').append('<option value="' + person['email'] + '">' + person['name'] + '</option>');
       }
       current = $.ajax({
@@ -484,11 +530,11 @@
       data: {}
     });
     current.done(function(msg) {
-      var i, item, len;
+      var item, j, len;
       msg = JSON.parse(msg);
       $('div.ui.selection.dropdown.discover > div.menu').empty();
-      for (i = 0, len = msg.length; i < len; i++) {
-        item = msg[i];
+      for (j = 0, len = msg.length; j < len; j++) {
+        item = msg[j];
         $('div.ui.selection.dropdown.discover > div.menu').append('<div class="item" data-value="' + msg + '"> ' + msg + ' </div>');
       }
       return $('div.ui.selection.dropdown.discover > div.default.text').html('IP-Adress - done loading');
@@ -506,11 +552,11 @@
       data: {}
     });
     current.done(function(msg) {
-      var i, len, person;
+      var j, len, person;
       msg = JSON.parse(msg);
       $('div.ui.selection.dropdown.responsible > div.menu').empty();
-      for (i = 0, len = msg.length; i < len; i++) {
-        person = msg[i];
+      for (j = 0, len = msg.length; j < len; j++) {
+        person = msg[j];
         $('div.ui.selection.dropdown.responsible > div.menu').append('<div class="item" data-value="' + person['email'] + '">' + person['name'] + ' &lt' + person['email'] + '&gt </div>');
       }
       return $('div.ui.selection.dropdown.responsible > div.default.text').html('Responsible - done loading');

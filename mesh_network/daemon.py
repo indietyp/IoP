@@ -8,6 +8,7 @@ from models.mesh import MeshMessage, MeshObject
 from settings.mesh import MULTICAST_ADDRESS, EXTERNAL_PORT
 from settings.database import DATABASE_NAME
 from tools.mesh import MeshTools
+from bson import json_util
 
 
 class MeshNetwork(object):
@@ -71,7 +72,8 @@ class MeshNetwork(object):
       elif code[0] == '5':
         target = [message[1][0], received[1][0]]
         if int(code[1:3]) == 1:
-          pass
+          sub = int(code[3:]) + 1
+          self.deliver(1, sub=sub, recipient=target, message=message[4])
         elif int(code[1:3]) == 2:
           sub = int(code[3:]) + 1
           self.deliver(2, sub=sub, recipient=target)
@@ -478,14 +480,33 @@ class MeshNetwork(object):
       self.send_local(mode=4, code=1)
       self.send(30900, recipient=recipient, plant=plant)
 
-  def deliver(self, mode, recipient=None, sub=None, sensor=None):
+  def deliver(self, mode, recipient=None, sub=None, sensor=None, message=[]):
     plant = Plant.get(Plant.localhost == True)
     if mode == 1:
       if sub == 1:
-        self.send(50101, recipient=recipient, messages=[sensor.uuid], plant=plant)
+        self.send(50101, recipient=recipient, messages=[sensor.name], plant=plant)
       elif sub == 2:
-        # URL GET NEWEST DATASET!
-        pass
+        import json
+        import urllib.request
+        from models.sensor import SensorData, Sensor
+
+        plant = Plant.get(Plant.localhost == True)
+        print('http://{0}:2902/get/plant/{1}/sensor/{2}/latest'.format(recipient[1], recipient[0], message[0]))
+        with urllib.request.urlopen('http://{0}:2902/get/plant/{1}/sensor/{2}/latest'.format(recipient[1], recipient[0], message[0])) as response:
+          dataset = json.loads(response.read().decode('utf8'), object_hook=json_util.object_hook)
+
+        rec_obj = Plant.get(Plant.uuid == recipient[0])
+        sensor = Sensor.get(Sensor.name == message[0])
+
+        new_data = SensorData()
+        new_data.plant = rec_obj
+        new_data.sensor = sensor
+        new_data.created_at = dataset['created_at']
+        new_data.value = dataset['value']
+        new_data.persistant = dataset['persistant']
+        new_data.save()
+
+        self.send(50102, recipient=recipient, plant=plant)
 
     elif mode == 2:
       if sub == 1:
@@ -514,7 +535,7 @@ if __name__ == '__main__':
     plant = Plant.get(Plant.name == 'Holger')
     MeshNetwork().register(1, origin=plant)
   elif sys.argv[1] == 'alive':
-    plant = Plant.get(Plant.name == 'Holger')
+    plant = Plant.get(Plant.name == 'marta')
     i = 0
     import datetime
     now = datetime.datetime.now()

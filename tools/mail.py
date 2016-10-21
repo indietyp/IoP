@@ -16,6 +16,7 @@ class ThisIsATest(str):
 
 class NotificationMailer(object):
   """docstring for NotificationMailer"""
+
   def __init__(self):
     pass
 

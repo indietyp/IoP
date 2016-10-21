@@ -218,3 +218,36 @@ def display_add_plant():
   content.update({'get': False, 'current_active': 'add plant'})
 
   return render_template('general/add.jade', content=content)
+
+
+@app.route('/get/plant/sensor/data/range', methods=['POST'])
+def get_plant_sensor_data_range():
+  uuid = session['p_uuid']
+  sensor = request.form['sensor']
+
+  with urllib.request.urlopen('http://localhost:2902/get/plant/' +
+                              uuid + '/sensor/' + sensor + '/data/start/' +
+                              request.form['start'] + '/stop/' + request.form['stop']) as response:
+    data = response.read().decode('utf8')
+  return data
+
+
+@app.route('/get/plant/sensor/data/count', methods=['POST'])
+def get_plant_data_count():
+  uuid = session['p_uuid']
+  sensor = request.form['sensor']
+
+  with urllib.request.urlopen('http://localhost:2902/get/plant/' + uuid + '/sensor/' + sensor + '/data/count') as response:
+    data = response.read().decode('utf8')
+  return data
+
+
+@app.route('/get/plant/sensor/prediction', methods=['POST'])
+def get_plant_data_prediction():
+  uuid = session['p_uuid']
+  sensor = request.form['sensor']
+
+  with urllib.request.urlopen('http://localhost:2902/get/plant/' + uuid + '/sensor/' + sensor + '/prediction') as response:
+    output = response.read().decode('utf8')
+
+  return output

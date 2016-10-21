@@ -73,10 +73,17 @@ class MeshDedicatedDispatch(object):
     else:
       raise BaseException('something went from: error code: ' + str(status))
 
+  def new_data(self, sensor):
+    from models.plant import Plant
+
+    daemon = MeshNetwork()
+    for plant in Plant.select().where(Plant.localhost == False):
+      daemon.deliver(1, sub=1, recipient=plant, sensor=sensor)
+
   def reboot(self):
     """ for system reboot """
     from models.plant import Plant
     daemon = MeshNetwork()
 
     for plant in Plant.select().where(Plant.localhost == False):
-      daemon.deliver(2, sib=1, recipient=plant)
+      daemon.deliver(2, sub=1, recipient=plant)

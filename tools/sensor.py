@@ -4,6 +4,8 @@ from models.sensor import Plant
 from models.sensor import SensorHardwareConnector
 from models.sensor import *
 
+from mesh_network.dedicated import MeshDedicatedDispatch
+
 # from tools.mesh import ToolChainMeshSender
 from tools.hardware import ToolChainHardware
 from tools.forecast import SensorDataForecast
@@ -56,7 +58,7 @@ class ToolChainSensor(object):
                                .order_by(SensorData.created_at.asc())
                                # .order_by(SensorData.created_at.desc())
 
-    overflow = non_persistant.count() - sensor.persistant_hold
+    overflow = non_persistant.count() - plant.persistant_hold
     overflow = int(overflow)
 
     if overflow > 0:
@@ -158,14 +160,13 @@ class ToolChainSensor(object):
     self.delete_non_persistant_overflow(data['sensor'], data['plant'])
     data['satisfaction'] = self.modify_sensor_status(data)
 
-    # CALL MESH SCRIPT FOR SYNCING!
     # CALL modify_sensor_satisfaction MARKING
     # --> is calling
     # --> add_sensor_current_status
 
-    # ToolChainMeshSender.notify_data(sensor_db)
     if persistant is True:
       SensorDataForecast().run(data)
+      MeshDedicatedDispatch().new_data(data['sensor'])
 
     return persistant
 
