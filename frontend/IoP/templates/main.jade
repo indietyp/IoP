@@ -4,21 +4,27 @@ html
     title Internet of Plants (PoT v2)
     link(rel='stylesheet', href='{{url_for("static", filename="css/semantic.min.css")}}')
     link(rel='stylesheet', href='{{url_for("static", filename="css/main.css")}}')
+    link(rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico')}}?v=2")
+    link(rel='stylesheet', href='{{url_for("static", filename="css/jquery-ui.min.css")}}')
+    link(rel='stylesheet', href='{{url_for("static", filename="css/jquery-ui-slider-pips.css")}}')
+    link(rel='stylesheet', href='{{url_for("static", filename="css/slider.min.css")}}')
+    link(rel='stylesheet', href='{{url_for("static", filename="css/icon.min.css")}}')
     //- link(rel='stylesheet',href='{{url_for("static", filename="sidebar.min.css")}}')
     //- link(rel='stylesheet',href='{{url_for("static", filename="dropdown.min.css")}}')
     //- link(rel='stylesheet',href='{{url_for("static", filename="checkbox.min.css")}}')
     //- link(rel='stylesheet',href='{{url_for("static", filename="doughnut.css")}}')
 
-    script(defer, src='{{url_for("static", filename="js/jquery.min.js")}}')
-    script(defer, src='{{url_for("static", filename="js/jquery-ui.min.js")}}')
-    script(defer, src='{{url_for("static", filename="js/semantic.min.js")}}')
-    script(defer, src='{{url_for("static", filename="js/main.js")}}')
-    script(defer, src='{{url_for("static", filename="js/dygraph-combined.js")}}')
-    script(defer, src='{{url_for("static", filename="js/dygraph-smooth-plotter.js")}}')
-    script(defer, src='{{url_for("static", filename="js/doughnut.js")}}')
-    script(defer, src='{{url_for("static", filename="js/lodash.custom.min.js")}}')
-    script(defer, src='{{url_for("static", filename="js/jquery-ui-slider-pips.js")}}')
-    script(defer, src="https://unpkg.com/dexie@latest/dist/dexie.js")
+    script(src='{{url_for("static", filename="js/jquery.min.js")}}')
+    script(src='{{url_for("static", filename="js/jquery-ui.min.js")}}')
+    script(src='{{url_for("static", filename="js/semantic.min.js")}}')
+    script(src='{{url_for("static", filename="js/main.js")}}')
+    script(src='{{url_for("static", filename="js/extra.js")}}')
+    script(src='{{url_for("static", filename="js/dygraph-combined.js")}}')
+    script(src='{{url_for("static", filename="js/dygraph-smooth-plotter.js")}}')
+    script(src='{{url_for("static", filename="js/doughnut.js")}}')
+    script(src='{{url_for("static", filename="js/lodash.custom.min.js")}}')
+    script(src='{{url_for("static", filename="js/jquery-ui-slider-pips.js")}}')
+    script(src="https://unpkg.com/dexie@latest/dist/dexie.js")
     //- script(src='{{url_for("static", filename="imageUploader.js")}}')
     //- script(src='{{url_for("static", filename="checkbox.min.js")}}')
     //- script(src='{{url_for("static", filename="dropdown2.js")}}')
@@ -71,7 +77,125 @@ html
     .pusher
       .ui.segment.iopheader
         .information
-          h1.ui.header Internet of Plants
+          svg(
+             xmlns:dc="http://purl.org/dc/elements/1.1/"
+             xmlns:cc="http://creativecommons.org/ns#"
+             xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+             xmlns:svg="http://www.w3.org/2000/svg"
+             xmlns="http://www.w3.org/2000/svg"
+             xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+             xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+             height="46"
+             viewBox="0 0 97 14"
+             id="svg2"
+             version="1.1"
+             inkscape:version="0.91 r13725"
+             sodipodi:docname="internetofplants-wordmark.svg"
+             inkscape:export-filename="/Users/johannes/Desktop/internetofplants.png"
+             inkscape:export-xdpi="4320"
+             inkscape:export-ydpi="4320")
+            defs(
+               id="defs4")
+            sodipodi:namedview(
+               id="base"
+               pagecolor="#ffffff"
+               bordercolor="#666666"
+               borderopacity="1.0"
+               inkscape:pageopacity="0.0"
+               inkscape:pageshadow="2"
+               inkscape:zoom="45.254834"
+               inkscape:cx="12.246523"
+               inkscape:cy="5.9453379"
+               inkscape:document-units="px"
+               inkscape:current-layer="layer1"
+               showgrid="true"
+               units="px"
+               inkscape:snap-global="false"
+               inkscape:window-width="1440"
+               inkscape:window-height="852"
+               inkscape:window-x="0"
+               inkscape:window-y="0"
+               inkscape:window-maximized="1")
+                inkscape:grid(
+                   type="xygrid"
+                   id="grid4136"
+                   empspacing="4")
+            metadata(
+               id="metadata7")
+              rdf:RDF
+                cc:Work(
+                   rdf:about="")
+                  dc:format(image/svg+xml)
+                  dc:type(
+                     rdf:resource="http://purl.org/dc/dcmitype/StillImage")
+                  dc:title
+            g(
+               inkscape:label="Layer 1"
+               inkscape:groupmode="layer"
+               id="layer1"
+               transform="translate(0,-1036.3621)")
+              circle(
+                 style="opacity:1;fill:none;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:0.83333331;stroke-linecap:square;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:100;stroke-opacity:1"
+                 id="path4138"
+                 cx="8"
+                 cy="1048.6121"
+                 r="0.83333331")
+              circle(
+                 style="opacity:1;fill:none;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:0.83333331;stroke-linecap:square;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:100;stroke-opacity:1"
+                 id="path4140"
+                 cx="10.249898"
+                 cy="1046.6121"
+                 r="0.83333331")
+              circle(
+                 style="opacity:1;fill:none;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:0.83333331;stroke-linecap:square;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:100;stroke-opacity:1"
+                 id="path4142"
+                 cx="5.750102"
+                 cy="1046.6121"
+                 r="0.83333331")
+              path(
+                 style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+                 d="m 8,1047.8621 l 0,-6.4 c 0.4828743,-1.3922 1.4846633,-2.0528 3,-2 c -0.281901,1.2741 -1.3405856,1.9269 -2.9,2"
+                 id="path4144"
+                 inkscape:connector-curvature="0"
+                 sodipodi:nodetypes="cccc")
+              path(
+                 style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+                 d="m 10,1045.8621 l 0,-2.4001 c 0.284385,-0.7661 0.769034,-1.0162 1.667815,-0.9698 c -0.419219,0.8767 -0.90242,0.9772 -1.567815,0.9698"
+                 id="path4146"
+                 inkscape:connector-curvature="0"
+                 sodipodi:nodetypes="cccc")
+              path(
+                 style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+                 d="m 6.0004074,1045.8621 l 0,-3.9 c -0.3148835,-1.0663 -1.2685307,-1.1761 -2,-1 c 0.2235937,0.3823 0.5764825,1.1227 1.9,1"
+                 id="path4148"
+                 inkscape:connector-curvature="0"
+                 sodipodi:nodetypes="cccc")
+              path(
+                 style="color:#000000;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:medium;line-height:normal;font-family:sans-serif;text-indent:0;text-align:start;text-decoration:none;text-decoration-line:none;text-decoration-style:solid;text-decoration-color:#000000;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;baseline-shift:baseline;text-anchor:start;white-space:normal;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate"
+                 d="m 7,1042.8778 l 0,2.1464 c 0.163586,0.042 0.3217365,0.086 0.5,0.125 l 0,2.7129 l 1,0 l 0,-3.2285 l -0.0625,-0.1113 c -0.3495647,-0.6343 -0.6060895,-1.0908 -1.0371094,-1.418 C 7.2769921,1043.0107 7.1419011,1042.939 7,1042.8778 Z"
+                 id="path4171"
+                 inkscape:connector-curvature="0")
+              text(
+                 xml:space="preserve"
+                 style="font-style:normal;font-variant:normal;font-weight:600;font-stretch:normal;font-size:10px;line-height:125%;font-family:Cabin;-inkscape-font-specification:'Cabin Semi-Bold';text-align:center;letter-spacing:0px;word-spacing:0px;text-anchor:middle;opacity:1;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+                 x="19.219999"
+                 y="1047.7871"
+                 id="text4253"
+                 sodipodi:linespacing="125%")
+                 tspan(
+                   sodipodi:role="line"
+                   id="tspan4255"
+                   x="19.219999"
+                   y="1047.7871"
+                   style="font-style:normal;font-variant:normal;font-weight:600;font-stretch:normal;font-size:10px;font-family:Lato,'Helvetica Neue',Arial,Helvetica,sans-serif;-inkscape-font-specification:'Cabin Semi-Bold';text-align:start;text-anchor:start") Internet of Plants
+              circle(
+                 style="opacity:1;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.5;stroke-linecap:square;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:100;stroke-opacity:1"
+                 id="path4145"
+                 cx="16"
+                 cy="1044.3621"
+                 r="1")
+
+          //- h1.ui.header Internet of Plants
           .spacer
           h1.ui.header.plant_header= content['current_active'].capitalize()
           - var button_style = 'display:none' if content['type'] != 'plant' else 'display:inherit'
@@ -93,9 +217,5 @@ html
         $(document).ready(function() {initSetTab("#{content['current']}")});
       section.mainContent
         block content
-  link(rel='stylesheet', href='{{url_for("static", filename="css/jquery-ui.min.css")}}')
-  link(rel='stylesheet', href='{{url_for("static", filename="css/jquery-ui-slider-pips.css")}}')
-  link(rel='stylesheet', href='{{url_for("static", filename="css/slider.min.css")}}')
-  link(rel='stylesheet', href='{{url_for("static", filename="css/icon.min.css")}}')
 
 

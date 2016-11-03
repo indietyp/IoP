@@ -1,6 +1,6 @@
-from models.sensor import Sensor
+from models.plant import Person
 import uuid
 
-for sensor in Sensor.select():
-  sensor.uuid = uuid.uuid4()
-  sensor.save()
+for person in Person.select():
+  person.uuid = uuid.uuid4()
+  person.save()

@@ -18,14 +18,16 @@ def getGeneralSettings():
 # no mesh rest integration -> problematic!
 @app.route('/get/discover', methods=['POST'])
 def get_device_discover():
-  MeshNetwork().discover(1)
+  with urllib.request.urlopen('http://localhost:2902/execute/discover') as response:
+    execute = response.read().decode('utf8')
+
+  # MeshNetwork().discover(1)
   time.sleep(3)
 
-  output = []
-  for item in MeshObject.select().where(MeshObject.registered == False):
-    output.append(item.ip)
+  with urllib.request.urlopen('http://localhost:2902/get/discovered/0/names') as response:
+    output = response.read().decode('utf8')
 
-  return json.dumps(output)
+  return output
 
 
 @app.route('/create/plant', methods=['POST'])

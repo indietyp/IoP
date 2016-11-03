@@ -1,6 +1,6 @@
 from IoP import app
 from flask import request
-from pymongo import MongoClient
+from playhouse.shortcuts import model_to_dict
 import json
 import sys
 
@@ -15,9 +15,7 @@ import sys
 # - TYPE
 from models.plant import Plant, Person
 from models.sensor import SensorSatisfactionValue, SensorSatisfactionLevel, Sensor
-client = MongoClient(connect=False)
-db = client.iop
-
+from models.plant import MessagePreset
 
 @app.route('/update/plant/<p_uuid>/name', methods=['POST'])
 def update_plant_name(p_uuid):
@@ -74,10 +72,40 @@ def update_plant_ranges(p_uuid):
 
 
 @app.route('/update/plant/<p_uuid>/responsible', methods=['POST'])
-def update_plant_responsble(p_uuid):
+def update_plant_responsible(p_uuid):
   plant = Plant.get(Plant.uuid == p_uuid)
   person = Person.get(Person.email == request.form['email'], Person.name == request.form['name'])
 
   plant.person = person
   plant.save()
   return json.dumps({'info': 1})
+
+
+@app.route('/update/notification/message', methods=['POST'])
+def update_plant_notification_message():
+  data = request.form
+  preset, _ = MessagePreset.get_or_create(name=data['name'],
+                                          defaults={'message': data['text']})
+  preset.message = data['text']
+  preset.save()
+
+  plant = Plant.get(Plant.uuid == data['plant'])
+  plant.person.preset = preset
+  plant.person.save()
+
+  return json.dumps({'info': 'success'})
+
+
+@app.route('/update/responsible/wizard', methods=['POST'])
+def update_responsible_wizard():
+  wizards = Person.select().where(Person.wizard == True)
+
+  for old in wizards:
+    old.wizard = False
+    old.save()
+
+  person = Person.get(Person.uuid == request.form['replacement'])
+  person.wizard = True
+  person.save()
+
+  return json.dumps({'info': 'success'})

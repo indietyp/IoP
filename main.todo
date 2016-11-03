@@ -100,7 +100,7 @@ frontend:
       ✘ progress bar @cancelled (16-09-27 18:37)
     ✔ add sensordata if new data = [] - not access predicted @done (16-09-24 14:29)
   plant settings:
-    [ ] message presets
+    ✔ message presets @done (16-10-31 17:18)
   general settings:
     [ ] integrate
       [ ] message presets

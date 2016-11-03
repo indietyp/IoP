@@ -87,6 +87,7 @@ def get_survived(p_uuid):
 def get_responsible_full_dataset(p_uuid):
   responsible = Plant.get(Plant.uuid == UUID(p_uuid)).person
   responsible = model_to_dict(responsible)
+  responsible['uuid'] = str(responsible['uuid'])
   del responsible['id']
   del responsible['preset']
 
@@ -392,6 +393,7 @@ def get_responsible_persons():
   output = []
   for person in people:
     dict_person = model_to_dict(person)
+    dict_person['uuid'] = str(dict_person['uuid'])
     del dict_person['id']
     del dict_person['preset']
     output.append(dict_person)

@@ -9,3 +9,4 @@ import IoP.views.get
 import IoP.views.update
 import IoP.views.insert
 import IoP.views.execute
+import IoP.views.delete

@@ -165,6 +165,11 @@ block content
           onChange: function() {
             $('.preset_message.create_message_one').fadeToggle('slow')
             $('.custom_message.create_message_two').fadeToggle('slow')
+            $('.notification_message_content').html('')
+            $('.custom_message.create_message_two input').val('')
+            $('.ui.selection.dropdown')
+              .dropdown('clear')
+            ;
           }
         })
       ;
@@ -178,36 +183,42 @@ block content
               i.dropdown.icon
               .default.text Preset
               .menu
-                .item(data-value='1') EN
-                .item(data-value='0') DE
         script(type='text/javascript').
-          $('.ui.selection.dropdown')
-            .dropdown()
+          get_notification_messages(function (callback) {
+            $('.ui.selection.dropdown')
+            .dropdown({
+              onChange: function(value, text, $selectedItem) {
+                get_notification_message_content(value)
+              }
+            })
           ;
-    .custom_message.create_message_two(style='display:none')
+          })
+
+    .custom_message.create_message_two(style='position:absolute;; width:98%;display:none;z-index:2')
       .ui.form
         .field
           label Heading
-          .ui.fluid.input(style='margin-bottom:2.5%')
+          .ui.fluid.input
             input(type='text', placeholder='Heading')
-        .field
-          label Content
-          p for your customized message you can use these tags to insert custom data
-          .usecases(style='margin-bottom:1%')
-            .ui.label.basic.violet [sensor]
-            .ui.label.basic.violet [plant]
-            .ui.label.basic.violet [date]
-            .ui.label.basic.violet [current]
-            .ui.label.basic.violet [time (12h)]
-            .ui.label.basic.violet [time (24h)]
-            .ui.label.basic.violet [name]
-            .ui.label.basic.violet [email]
-            .ui.label.basic.violet [ideal_min]
-            .ui.label.basic.violet [ideal_max]
-            .ui.label.basic.violet [warning_min]
-            .ui.label.basic.violet [warning_max]
-            .ui.label.basic.violet [unit]
-          textarea
+    .ui.form(style='margin-top:5%')
+      .field
+        label Content
+        p for your customized message you can use these tags to insert custom data
+        .usecases(style='margin-bottom:1%')
+          .ui.label.basic.violet [sensor]
+          .ui.label.basic.violet [plant]
+          .ui.label.basic.violet [date]
+          .ui.label.basic.violet [current]
+          .ui.label.basic.violet [time (12h)]
+          .ui.label.basic.violet [time (24h)]
+          .ui.label.basic.violet [name]
+          .ui.label.basic.violet [email]
+          .ui.label.basic.violet [ideal_min]
+          .ui.label.basic.violet [ideal_max]
+          .ui.label.basic.violet [warning_min]
+          .ui.label.basic.violet [warning_max]
+          .ui.label.basic.violet [unit]
+        textarea.notification_message_content
     .interval(style='margin-top:5%')
       p(style='margin-bottom:3%') sensor notification interval (hours)
       #flat-slider-general-interval(style='margin-top: 24px;margin-bottom:24px')
@@ -243,8 +254,21 @@ block content
                 last: "pip"
             })
             .slider("float");
+    script.
+      function submit_notification (that) {
+        message = $("textarea.notification_message_content").html()
+        if ($(".create_message_two > .ui.form > .field > .ui.fluid.input > input").val() == '') {
+          name = $(".create_message_one .selected").html()
+        } else {
+          name = $(".create_message_two > .ui.form > .field > .ui.fluid.input > input").val()
+        }
+
+        if (name != undefined && message != undefined && message != '') {
+          return submit_notification_message(that, message, name)
+        }
+      }
     .ui.two.buttons(style='margin-top:5%')
-          .ui.basic.button.fluid.green Apply
+          .ui.basic.button.fluid.green(onclick='submit_notification(this)') Apply
           .ui.basic.button.fluid.red Reset
 
   script(type='text/javascript').

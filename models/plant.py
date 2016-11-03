@@ -21,6 +21,8 @@ class MessagePreset(Model):
 class Person(Model):
   email     = CharField()
   name      = CharField()
+
+  uuid      = UUIDField(default=uuid.uuid4, unique=True)
   wizard    = BooleanField(default=False)
   preset    = ForeignKeyField(MessagePreset, null=True)
 

@@ -5,54 +5,56 @@ block content
   .ui.segment
     h1.ui.header people managment
     .ui.middle.aligned.divided.list
-      .item
-        .right.floated.content
-          .ui.small.basic.icon.buttons
-            button.ui.button
-              .ui.radio.checkbox
-                input(type='radio' name='wizard')
-                label
-                  i.wizard.icon
-            button.ui.button(onclick="$('.ui.accordion').accordion('toggle', 0);")
-              i.edit.icon
-            button.ui.button
-              i.remove.icon
-        img.ui.avatar.image(src='https://source.unsplash.com/category/nature')
-        .content Andreas Marbach
-        .ui.accordion
-          .title(style='height:0;padding:0')
-          .content(style='margin-top:1%')
-            .ui.grid
-              .two.column.row.relaxed
-                .column(style='margin-bottom:1%')
-                  .ui.fluid.left.icon.input
-                    input(type='text', placeholder='Name')
-                    i.tag.icon
-                .column
-                  .ui.fluid.left.icon.input
-                    input(type='text', placeholder='EMail')
-                    i.home.icon
-            .ui.two.buttons
-                  .ui.basic.button.fluid.green Apply
-                  .ui.basic.button.fluid.red Reset
-        script(type='text/javascript').
-          $('.ui.accordion')
-            .accordion()
-          ;
-      .item
-        .right.floated.content
-          .ui.small.basic.icon.buttons
-            button.ui.button
-              .ui.radio.checkbox
-                input(type='radio' name='wizard')
-                label
-                  i.wizard.icon
-            button.ui.button
-              i.edit.icon
-            button.ui.button
-              i.remove.icon
-        img.ui.avatar.image(src='https://source.unsplash.com/random')
-        .content Matthis Töpfler
+      //- .item
+      //-   .right.floated.content
+      //-     .ui.small.basic.icon.buttons
+      //-       button.ui.button
+      //-         .ui.radio.checkbox
+      //-           input(type='radio' name='wizard')
+      //-           label
+      //-             i.wizard.icon
+      //-       button.ui.button(onclick="$('.ui.accordion').accordion('toggle', 0);")
+      //-         i.edit.icon
+      //-       button.ui.button
+      //-         i.remove.icon
+      //-   img.ui.avatar.image(src='https://source.unsplash.com/category/nature')
+      //-   .content Andreas Marbach
+      //-   .ui.accordion
+      //-     .title(style='height:0;padding:0')
+      //-     .content(style='margin-top:1%')
+      //-       .ui.grid
+      //-         .two.column.row.relaxed
+      //-           .column(style='margin-bottom:1%')
+      //-             .ui.fluid.left.icon.input
+      //-               input(type='text', placeholder='Name')
+      //-               i.tag.icon
+      //-           .column
+      //-             .ui.fluid.left.icon.input
+      //-               input(type='text', placeholder='EMail')
+      //-               i.home.icon
+      //-       .ui.two.buttons
+      //-             .ui.basic.button.fluid.green Apply
+      //-             .ui.basic.button.fluid.red Reset
+        //- script(type='text/javascript').
+        //-   $('.ui.accordion')
+        //-     .accordion()
+        //-   ;
+      //- .item
+      //-   .right.floated.content
+      //-     .ui.small.basic.icon.buttons
+      //-       button.ui.button
+      //-         .ui.radio.checkbox
+      //-           input(type='radio' name='wizard')
+      //-           label
+      //-             i.wizard.icon
+      //-       button.ui.button
+      //-         i.edit.icon
+      //-       button.ui.button
+      //-         i.remove.icon
+      //-   img.ui.avatar.image(src='https://source.unsplash.com/random')
+      //-   .content Matthis Töpfler
+    script.
+      get_general_settings_responsibles()
 
   .ui.segment
     h1.ui.header message presets

@@ -102,4 +102,5 @@ def init_sensor():
 import IoP.views.general
 import IoP.views.plants
 import IoP.views.get.plants
+import IoP.views.get.plants_ext
 import IoP.views.get.general
