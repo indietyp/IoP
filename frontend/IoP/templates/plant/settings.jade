@@ -154,7 +154,6 @@ block content
   //- .wrapper(style='display: flex;align-items:baseline;flex-direction:row;margin-top:2.5%;')
   .ui.segment
     h1.ui.header Notification Settings
-    p gonna be continued! JS and stuff!
     .ui.slider.checkbox.expand_create
       input(type='checkbox', name='customized')
       label create new message
@@ -165,7 +164,7 @@ block content
           onChange: function() {
             $('.preset_message.create_message_one').fadeToggle('slow')
             $('.custom_message.create_message_two').fadeToggle('slow')
-            $('.notification_message_content').html('')
+            $('.notification_message_content').val('')
             $('.custom_message.create_message_two input').val('')
             $('.ui.selection.dropdown')
               .dropdown('clear')
@@ -256,7 +255,7 @@ block content
             .slider("float");
     script.
       function submit_notification (that) {
-        message = $("textarea.notification_message_content").html()
+        message = $("textarea.notification_message_content").val()
         if ($(".create_message_two > .ui.form > .field > .ui.fluid.input > input").val() == '') {
           name = $(".create_message_one .selected").html()
         } else {

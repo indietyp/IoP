@@ -15,7 +15,6 @@ def getGeneralSettings():
   return render_template('general/settings.jade', content={'current_active': 'Global Settings', 'type': 'setting', 'get': False})
 
 
-# no mesh rest integration -> problematic!
 @app.route('/get/discover', methods=['POST'])
 def get_device_discover():
   with urllib.request.urlopen('http://localhost:2902/execute/discover') as response:

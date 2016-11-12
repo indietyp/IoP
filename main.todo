@@ -101,18 +101,25 @@ frontend:
     ✔ add sensordata if new data = [] - not access predicted @done (16-09-24 14:29)
   plant settings:
     ✔ message presets @done (16-10-31 17:18)
+      ✔ @critical [BUG] not writing if ever inserted @done (16-11-09 21:43)
+      ✔ @critical [BUG] not saving anymore @done (16-11-09 21:43)
   general settings:
     [ ] integrate
-      [ ] message presets
-      [ ] people management
+      ✔ message presets @done (16-11-09 21:43)
+      ✔ people management @done (16-11-08 21:28)
+        ✔ change wizard @done (16-11-07 18:51)
+        ✔ change information @done (16-11-07 18:51)
+        ✔ delete person @done (16-11-08 21:28)
+        ✔ add person @done (16-11-08 21:28)
       [ ] day/night cycle
         [ ] integrate also in tools
+      ✘ storage settings @cancelled (16-11-09 21:45)
 
 
  rest:
    discover:
-     [ ] discover
-     [ ] get discover
+     ✔ discover @done (16-11-09 21:46)
+     ✔ get discover @done (16-11-09 21:46)
    all:
      ✔ no database mode @done (16-09-17 14:40)
        ✔ -> detect change of database? @done (16-09-17 14:40)
@@ -122,13 +129,15 @@ frontend:
      ✔ add partial sensordata fetch -> 100 assets @done (16-09-27 18:38)
    create:
      [ ] plant
-       [ ] create all related tables entries -> mirror from localhost
+       [ ] create all related tables entries  -> mirror from localhost
          [ ] SensorStatus
          [ ] SensorCount
          [ ] SensorSatisfactionValue
+         [ ] PlantNetworkUptime
 
  sensor_scripts:
    daemon:
+     [ ] PID on file location
      ✔ check no database @done (16-09-17 14:00)
      ✔ check already running @done (16-09-17 14:00)
        ✔ if both is True start loop -> else not @done (16-09-17 14:00)
@@ -152,5 +161,7 @@ frontend:
    driver:
     [ ] to python 3
    tools:
-     [ ] integrate sat_streak and max_persistant
+     [ ] integrate sat_streak
+     ✔ integrate max_persistant @done (16-11-09 21:56)
      [ ] reintegrate SensorCount
+       [ ]  problem 2 same ids, why? Investigate! (test) and change

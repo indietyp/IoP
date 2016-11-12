@@ -5,105 +5,110 @@ block content
   .ui.segment
     h1.ui.header people managment
     .ui.middle.aligned.divided.list
-      //- .item
-      //-   .right.floated.content
-      //-     .ui.small.basic.icon.buttons
-      //-       button.ui.button
-      //-         .ui.radio.checkbox
-      //-           input(type='radio' name='wizard')
-      //-           label
-      //-             i.wizard.icon
-      //-       button.ui.button(onclick="$('.ui.accordion').accordion('toggle', 0);")
-      //-         i.edit.icon
-      //-       button.ui.button
-      //-         i.remove.icon
-      //-   img.ui.avatar.image(src='https://source.unsplash.com/category/nature')
-      //-   .content Andreas Marbach
-      //-   .ui.accordion
-      //-     .title(style='height:0;padding:0')
-      //-     .content(style='margin-top:1%')
-      //-       .ui.grid
-      //-         .two.column.row.relaxed
-      //-           .column(style='margin-bottom:1%')
-      //-             .ui.fluid.left.icon.input
-      //-               input(type='text', placeholder='Name')
-      //-               i.tag.icon
-      //-           .column
-      //-             .ui.fluid.left.icon.input
-      //-               input(type='text', placeholder='EMail')
-      //-               i.home.icon
-      //-       .ui.two.buttons
-      //-             .ui.basic.button.fluid.green Apply
-      //-             .ui.basic.button.fluid.red Reset
-        //- script(type='text/javascript').
-        //-   $('.ui.accordion')
-        //-     .accordion()
-        //-   ;
-      //- .item
-      //-   .right.floated.content
-      //-     .ui.small.basic.icon.buttons
-      //-       button.ui.button
-      //-         .ui.radio.checkbox
-      //-           input(type='radio' name='wizard')
-      //-           label
-      //-             i.wizard.icon
-      //-       button.ui.button
-      //-         i.edit.icon
-      //-       button.ui.button
-      //-         i.remove.icon
-      //-   img.ui.avatar.image(src='https://source.unsplash.com/random')
-      //-   .content Matthis Töpfler
+    .ui.form
+      .ui.header create new person
+      .ui.grid
+        .two.column.row.relaxed
+          .column
+            .item
+              .ui.fluid.left.icon.input
+                input.new.name(type='text', placeholder='Name')
+                i.tag.icon
+          .column
+            .ui.left.icon.fluid.action.input
+              input.new.email(type='text', placeholder='EMail')
+              i.mail.icon
+              button.ui.button.basic.green(onclick="create_new_general_settings_responsible()") Create
     script.
       get_general_settings_responsibles()
 
   .ui.segment
     h1.ui.header message presets
-    .ui.form
-       .field
-         label preset
-         .ui.selection.dropdown
-             input(type='hidden', name='person')
-             i.dropdown.icon
-             .default.text preset
-             .menu
-               .item(data-value='2') DE
-               .item(data-value='1') EN
-               .item(data-value='0')
-                i.add.icon
-                | create new
-       .field
-         label name
-         .ui.fluid.input(style='margin-bottom:2.5%')
-           input(type='text', placeholder='name')
+    .ui.slider.checkbox.expand_create
+      input(type='checkbox', name='customized')
+      label create new message
+    script(type='text/javascript').
+      $('.checkbox.expand_create')
+        .checkbox()
+        .first().checkbox({
+          onChange: function() {
+            $('.preset_message.create_message_one').fadeToggle('slow')
+            $('.custom_message.create_message_two').fadeToggle('slow')
+            $('.notification_message_content').val('')
+            $('.custom_message.create_message_two input').val('')
+            $('.ui.selection.dropdown')
+              .dropdown('clear')
+            ;
+          }
+        })
+      ;
+
+    .preset_message.create_message_one(style='position:absolute; width:98%; z-index: 1000;')
+      .ui.form
         .field
-          label heading
-          .ui.fluid.input(style='margin-bottom:2.5%')
-            input(type='text', placeholder='heading')
+          label Preset
+          .ui.selection.dropdown.notification_message
+              input(type='hidden', name='person')
+              i.dropdown.icon
+              .default.text Preset
+              .menu
+        script(type='text/javascript').
+          get_notification_messages(function (callback) {
+            $('.ui.selection.dropdown')
+            .dropdown({
+              onChange: function(value, text, $selectedItem) {
+                get_notification_message_content(value)
+              }
+            })
+          ;
+          })
+
+    .custom_message.create_message_two(style='position:absolute;; width:98%;display:none;z-index:2')
+      .ui.form
         .field
-         label content
-         p for your preset message you can use these tags to insert custom data
-         .usecases(style='margin-bottom:1%')
-           .ui.label.basic.violet [name]
-           .ui.label.basic.violet [current]
-           .ui.label.basic.violet [ideal_max]
-           .ui.label.basic.violet [ideal_min]
-           .ui.label.basic.violet [warning_max]
-           .ui.label.basic.violet [warning_min]
-           .ui.label.basic.violet [date]
-           .ui.label.basic.violet [eu_time]
-           .ui.label.basic.violet [us_time]
-           .ui.label.basic.violet [firstname]
-           .ui.label.basic.violet [lastname]
-         textarea
-        .ui.two.buttons(style='margin-top:1%')
-              .ui.basic.button.fluid.green Apply
-              .ui.basic.button.fluid.red Reset
+          label Heading
+          .ui.fluid.input
+            input(type='text', placeholder='Heading')
+    .ui.form(style='margin-top:5%')
+      .field
+        label Content
+        p for your customized message you can use these tags to insert custom data
+        .usecases(style='margin-bottom:1%')
+          .ui.label.basic.violet [sensor]
+          .ui.label.basic.violet [plant]
+          .ui.label.basic.violet [date]
+          .ui.label.basic.violet [current]
+          .ui.label.basic.violet [time (12h)]
+          .ui.label.basic.violet [time (24h)]
+          .ui.label.basic.violet [name]
+          .ui.label.basic.violet [email]
+          .ui.label.basic.violet [ideal_min]
+          .ui.label.basic.violet [ideal_max]
+          .ui.label.basic.violet [warning_min]
+          .ui.label.basic.violet [warning_max]
+          .ui.label.basic.violet [unit]
+        textarea.notification_message_content
+    script.
+      function submit_notification(that) {
+        message = $("textarea.notification_message_content").val()
+        if ($(".create_message_two > .ui.form > .field > .ui.fluid.input > input").val() == '') {
+          name = $(".create_message_one .selected").html()
+        } else {
+          name = $(".create_message_two > .ui.form > .field > .ui.fluid.input > input").val()
+        }
+
+        if (name != undefined && message != undefined && message != '') {
+          return submit_notification_message(that, message, name, undefined, false)
+        }
+      }
+    //- .ui.one.buttons(style='margin-top:5%')
+    .ui.basic.button.fluid.green(onclick='submit_notification(this)' style='margin-top:5%') Apply
 
   script(type='text/javascript').
             $('.ui.selection.dropdown')
               .dropdown()
             ;
-  .ui.segment
+  .ui.segment(style='margin-bottom: 5%')
     h1.ui.header day/night time
     .ui.slider.checkbox
       input(type='checkbox', name='cycle')
@@ -145,46 +150,3 @@ block content
     .ui.two.buttons
       .ui.basic.button.fluid.green Apply
       .ui.basic.button.fluid.red Reset
-
-  .ui.segment
-    h1.ui.header storage settings
-    p how long should the data be sensor data be saved?
-    #flat-slider-timer-interval(style='margin-top: 24px')
-    .spacer(style='margin-top:7.5%')
-    p#output You selected - plants
-    #flat-slider-plants-interval(style='margin-top: 24px')
-    script(type='text/javascript').
-      $("#flat-slider-timer-interval")
-          .slider({
-            max: 13,
-            min: 1,
-            range: 'min',
-            value: 2
-          })
-          .slider("pips", {
-            first: "pip",
-            last: 'label',
-            labels: {'last': '&infin;', 'first': '1'}
-          })
-      $("#flat-slider-plants-interval")
-        .slider({
-          max: 100,
-          min: 1,
-          range: 'min',
-          value: 2
-        })
-        .slider("pips", {
-          first: "pip",
-          last: "pip"
-        })
-        .on("slidechange", function(e,ui) {
-          var text='';
-          if (ui.value == 1) { text = 'plant'; } else { text = 'plants'; }
-          $("#output").text( "You selected " + ui.value + " " + text);
-        })
-        .on("slide", function(e,ui) {
-          var text='';
-          if (ui.value == 1) { text = 'plant'; } else { text = 'plants'; }
-          $("#output").text( "You selected " + ui.value + " " + text);
-        });
-

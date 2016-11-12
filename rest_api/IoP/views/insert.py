@@ -2,8 +2,10 @@ import json
 from IoP import app
 import urllib.request
 import urllib.request
-from flask import request
 from copy import deepcopy
+from flask import request
+from peewee import Expression
+from playhouse.shortcuts import model_to_dict
 from models.plant import Person, Plant, MessagePreset
 from mesh_network.dedicated import MeshDedicatedDispatch
 
@@ -17,6 +19,25 @@ def create_plant_name():
   person.save()
 
   return json.dumps({'info': 1})
+
+
+def copy_model_instace_from_localhost(target, model, *expressions):
+
+  originals = model.select()
+  for expression in expressions:
+    if not isinstance(expression, Expression):
+      raise ValueError('this is not exactly an expression, it\'s actually {}'.format(type(expression)))
+    originals.where(expression)
+
+  for original in originals:
+    copy = model_to_dict(original, recurse=False)
+
+    del copy['id']
+    copy['plant'] = target.id
+    sql_query = model.insert(copy)
+    print(sql_query.sql)
+
+  return True
 
 
 def create_plant(data):

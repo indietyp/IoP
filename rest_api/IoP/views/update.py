@@ -82,16 +82,27 @@ def update_plant_responsible(p_uuid):
 
 
 @app.route('/update/notification/message', methods=['POST'])
-def update_plant_notification_message():
+def update_notification_message():
   data = request.form
   preset, _ = MessagePreset.get_or_create(name=data['name'],
                                           defaults={'message': data['text']})
   preset.message = data['text']
   preset.save()
 
-  plant = Plant.get(Plant.uuid == data['plant'])
-  plant.person.preset = preset
-  plant.person.save()
+  if data['responsible'] is True:
+    plant = Plant.get(Plant.uuid == data['plant'])
+    plant.person.preset = preset
+    plant.person.save()
+
+  return json.dumps({'info': 'success'})
+
+
+@app.route('/update/responsible', methods=['POST'])
+def update_responsible():
+  person = Person.get(Person.uuid == request.form['uuid'])
+  person.name = request.form['name']
+  person.email = request.form['email']
+  person.save()
 
   return json.dumps({'info': 'success'})
 

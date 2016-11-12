@@ -28,14 +28,15 @@ get_notification_message_content = (uuid) ->
 
   request.done (msg) ->
     msg = JSON.parse msg
-    $('.notification_message_content').html msg
+    $('.notification_message_content').val msg
 window.get_notification_message_content = get_notification_message_content
 
-submit_notification_message = (that, message, name, uuid) ->
+submit_notification_message = (that, message, name, uuid, responsible=true) ->
   $(that).addClass 'disabled'
   $(that).addClass 'loading'
 
   data = {'message': message, 'name': name}
+  data.responsible = responsible
   if uuid is not null
     data.uuid = uuid
 
@@ -77,7 +78,7 @@ get_general_settings_responsibles = () ->
                     </button>
                     <button onclick="$(\'.[[identifier]]\').accordion(\'toggle\', 0);" class="ui button"><i class="edit icon"></i>
                     </button>
-                    <button class="ui button"><i class="remove icon"></i>
+                    <button class="ui button" onclick="delete_general_settings_responsible(\'[[identifier]]\')"><i class="remove icon"></i>
                     </button>
                   </div>
                 </div><img src="https://source.unsplash.com/category/nature" class="ui avatar image">
@@ -89,18 +90,18 @@ get_general_settings_responsibles = () ->
                       <div class="two column row relaxed">
                         <div style="margin-bottom:1%" class="column">
                           <div class="ui fluid left icon input">
-                            <input type="text" placeholder="Name" value="[[name]]"><i class="tag icon"></i>
+                            <input type="text" class="name-[[identifier]]" placeholder="Name" value="[[name]]"><i class="tag icon"></i>
                           </div>
                         </div>
                         <div class="column">
                           <div class="ui fluid left icon input">
-                            <input type="text" placeholder="EMail" value="[[email]]"><i class="home icon"></i>
+                            <input type="text" class="email-[[identifier]]" placeholder="EMail" value="[[email]]"><i class="mail icon"></i>
                           </div>
                         </div>
                       </div>
                     </div>
                     <div class="ui two buttons">
-                      <div class="ui basic button fluid green" onclick="submit_responsible_changes([[identifier]])">Apply</div>
+                      <div class="ui basic button fluid green" onclick="change_information_general_settings_responsible(this, \'[[identifier]]\')">Apply</div>
                       <div class="ui basic button fluid red">Reset</div>
                     </div>
                   </div>
@@ -155,3 +156,53 @@ change_wizard_general_settings_responsible = (that, uuid) ->
 
   return
 window.change_wizard_general_settings_responsible = change_wizard_general_settings_responsible
+
+change_information_general_settings_responsible = (that, uuid) ->
+  $(that).addClass 'disabled'
+  $(that).addClass 'loading'
+
+  name = $(".name-#{uuid}").val()
+  email = $(".email-#{uuid}").val()
+
+  request = $.ajax
+    url: '/change/responsible'
+    method: 'POST'
+    data:
+      uuid: uuid
+      name: name
+      email: email
+
+  request.done (msg) ->
+    msg = JSON.parse msg
+
+    console.log msg
+    $(that).removeClass 'disabled'
+    $(that).removeClass 'loading'
+    get_general_settings_responsibles()
+    return
+
+  return
+window.change_information_general_settings_responsible = change_information_general_settings_responsible
+
+create_new_general_settings_responsible = () ->
+  name = $(".new.name").val()
+  email = $(".new.email").val()
+
+  request = $.ajax
+    url: '/create/responsible/none'
+    method: 'POST'
+    data:
+      name: name
+      email: email
+      wizard: 'no'
+
+  request.done (msg) ->
+    msg = JSON.parse msg
+
+    console.log msg
+    $(".new.name").val('')
+    $(".new.email").val('')
+    get_general_settings_responsibles()
+
+  return
+window.create_new_general_settings_responsible = create_new_general_settings_responsible
