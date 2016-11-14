@@ -1,9 +1,9 @@
 from models.plant import Plant
-from models.sensor import SensorCount, Sensor
+from models.sensor import SensorStatus, Sensor
 from playhouse.shortcuts import model_to_dict
 from peewee import Expression
 
-plant = Plant.get(Plant.name == 'marta')
+plant = Plant.get(Plant.localhost == True)
 target = Plant.get(Plant.localhost == False)
 
 
@@ -13,7 +13,7 @@ def copy_model_instace_from_localhost(target, model, *expressions):
   for expression in expressions:
     if not isinstance(expression, Expression):
       raise ValueError('this is not exactly an expression')
-    originals.where(expression)
+    originals = originals.where(expression)
 
   for original in originals:
     copy = model_to_dict(original, recurse=False)
@@ -22,11 +22,12 @@ def copy_model_instace_from_localhost(target, model, *expressions):
     copy['plant'] = target.id
     sql_query = model.insert(copy)
     print(sql_query.sql)
+    sql_query.execute()
 
   return True
 
 
-copy_model_instace_from_localhost(target, SensorCount, SensorCount.plant == plant)
+copy_model_instace_from_localhost(target, SensorStatus, SensorStatus.plant == plant)
 # count = SensorCount.select()
 # proper_sensor = Sensor.get(Sensor.name == 'humidity')
 # replace = False

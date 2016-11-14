@@ -1,10 +1,10 @@
+import sys
+
 from models.sensor import SensorData
 from models.sensor import Sensor
 from models.sensor import Plant
 from models.sensor import SensorHardwareConnector
 from models.sensor import *
-
-from mesh_network.dedicated import MeshDedicatedDispatch
 
 # from tools.mesh import ToolChainMeshSender
 from tools.hardware import ToolChainHardware
@@ -90,7 +90,7 @@ class ToolChainSensor(object):
     """
     collection = self.get_sensor_satification_value(data)
 
-    current = [0]
+    current = [- sys.maxsize, '', '']
 
     for satisfaction in collection:
       if satisfaction.inherited is True:
@@ -106,6 +106,10 @@ class ToolChainSensor(object):
 
         if min_value >= current[0]:
           current[0] = min_value
+          current[1] = satisfaction
+          current[2] = SensorStatus.get(SensorStatus.sensor == data['sensor'],
+                                        SensorStatus.plant == data['plant'])
+
           status, result = SensorStatus.get_or_create(
               sensor=data['sensor'],
               plant=data['plant'],
@@ -116,13 +120,20 @@ class ToolChainSensor(object):
           status.save()
 
           # not rlly working?
-          # counter, result = SensorCount.get_or_create(
-          #     plant=data['plant'],
-          #     sensor=data['sensor'],
-          #     level=satisfaction.level,
-          #     defaults={'count': int(0)})
-          # counter.count += 1
-          # counter.save()
+          counter, result = SensorCount.get_or_create(
+              plant=data['plant'],
+              sensor=data['sensor'],
+              level=satisfaction.level,
+              defaults={'count': int(0)})
+          counter.count += 1
+          counter.save()
+
+    if current[2].level == current[1].level:
+      data['plant'].sat_streak = data['plant'].sat_streak + 1
+      data['plant'].save()
+    else:
+      data['plant'].sat_streak = 1
+      data['plant'].save()
 
     return 'success'
 
@@ -164,6 +175,7 @@ class ToolChainSensor(object):
     # --> is calling
     # --> add_sensor_current_status
 
+    from mesh_network.dedicated import MeshDedicatedDispatch
     if persistant is True:
       SensorDataForecast().run(data)
       MeshDedicatedDispatch().new_data(data['sensor'])

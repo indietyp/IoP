@@ -34,7 +34,6 @@ class SensorData(Model):
   class Meta:
     database  = db
 
-
 class SensorSatisfactionLevel(Model):
   label        = CharField()
   name_color   = CharField()

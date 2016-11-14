@@ -1,30 +1,31 @@
- mesh network:
-   test:
-     ✔ alive: register needed @done (16-09-14 21:26)
-     ✔ register @done (16-09-13 20:42)
-     ✔ discover @done (16-09-05 20:14)
-     ✔ discover with database integration @done (16-09-13 20:42)
-     ✔ notify_ip @done (16-09-13 20:43)
-     ✔ add_plant @done (16-09-21 18:18)]
-     [ ] simulated plant
-     [ ] completed add_plant
-     [ ] dedicated alive
-     [ ] rest_api create/plant
-     [ ] rest_api create/plant/register
-     ✔ dedicated deliver new_data @done (16-09-26 18:55)
-     ✔ deliver new_data @done (16-09-27 15:09)
-     ✔ dedicated register @done (16-09-21 18:18)
-     [ ] dedicated reboot
-     ✔ rest api change of underlying db in virtualbox -> does it work at all or do I need to restart the process? @done (16-09-18 13:38)
-     [ ] moisture
-     [ ] light
-     [ ] temperature + humidity
-     [ ] extensions
-       [ ] moisture bar
-       [ ] trafficlight
-       [ ] display
-       [ ] water_pump
-     ✔ multithreaded process deamon @done (16-09-15 20:31)
+test:
+  ✔ alive: register needed @done (16-09-14 21:26)
+  ✔ register @done (16-09-13 20:42)
+  ✔ discover @done (16-09-05 20:14)
+  ✔ discover with database integration @done (16-09-13 20:42)
+  ✔ notify_ip @done (16-09-13 20:43)
+  ✔ add_plant @done (16-09-21 18:18)]
+  [ ] create all related tables entries (rest-api | create plant)
+  [ ] simulated plant @critical @dad
+  [ ] completed add_plant
+  [ ] dedicated alive
+  [ ] rest_api create/plant
+  [ ] rest_api create/plant/register
+  ✔ dedicated deliver new_data @done (16-09-26 18:55)
+  ✔ deliver new_data @done (16-09-27 15:09)
+  ✔ dedicated register @done (16-09-21 18:18)
+  [ ] dedicated reboot
+  ✔ rest api change of underlying db in virtualbox -> does it work at all or do I need to restart the process? @done (16-09-18 13:38)
+  [ ] moisture
+  [ ] light
+  [ ] temperature + humidity
+  [ ] extensions
+    [ ] moisture bar
+    [ ] trafficlight
+    [ ] display
+    [ ] water_pump
+  ✔ multithreaded process deamon @done (16-09-15 20:31)
+mesh network:
    build register:
      ✔ add MeshObject @done (16-09-06 19:20)
      ✔ discovered into database @done (16-09-06 19:21)
@@ -54,7 +55,7 @@
      ✔ send done @new @done (16-09-13 15:11)
      ✔ send done @existing @done (16-09-13 15:11)
      ✔ registered change on @new @done (16-09-14 21:27)
-    build notify:
+   build notify:
       ip:
         ✔ detect if changes @done (16-09-13 20:43)
         ✔ reply with [3] == NOT_CHANGED, CHANGED @done (16-09-13 20:43)
@@ -66,29 +67,44 @@
             ✔ new trigger -> notify new_data @done (16-09-25 20:12)
           ✔ fetch data @target @done (16-09-25 20:12)
             ✔ get from plant! @done (16-09-25 20:12)
-
-    build register and alive:
+   build register and alive:
       ✔ database integration @done (16-09-14 21:27)
         ✔ different port and listen 120 (alive) or 320 (register) -> check if fail or not! Is better with that @done (16-09-14 21:27)
-    dedicated register:
-      [ ] last insert to all other plants
+   dedicated register:
+      [ ] last inserts to all other plants @high
       ✘ only inserts holger @cancelled (16-09-21 16:07)
       ✔ status @done (16-09-21 18:18)
       ✔ check if plant with ip already exists @done (16-09-21 18:18)
+  ✔ fix import @critical @critical @done (16-11-14 21:29)
 
 frontend:
   ✔ fix general links @done (16-09-21 20:15)
   ✔ add add_plant @done (16-09-21 21:33)
   ✔ add add_plant redirect @done (16-09-21 21:33)
-  [ ] add overview
-  [ ] add smiles
-  [ ] consider log view!
+  [ ] add overview @high @critical
+  ✔ add smiles @done (16-11-14 21:29)
+    ✔ rest api integration @done (16-11-13 22:31)
+    ✔ FIX HOLGER @critical @done (16-11-14 21:29)
+    ✔ HEALTHY @done (16-11-14 21:29)
+      ✔ slightly smiling face @done (16-11-13 22:05)
+      ✔ winking face @done (16-11-13 22:05)
+      ✔ smiling face with open mouth and smiling eyes @done (16-11-13 22:05)
+    ✔ MEDIUM @done (16-11-14 21:29)
+      ✔ neutral face @done (16-11-13 22:07)
+      ✔ thinking face @done (16-11-13 22:05)
+      ✔ disappointed but relieved face @done (16-11-13 22:05)
+    ✔ DANGER @done (16-11-14 21:29)
+      ✔ confused face @done (16-11-13 22:07)
+      ✔ anguished face @done (16-11-13 22:07)
+      ✔ loudly crying face @done (16-11-13 22:07)
+  [ ] consider log view! @low
   add plant:
-    [ ] add persistant duration
-    [ ] link from main page and redirect if done
+    [ ] add persistant duration @high
+    [ ] redirect if done
+    ✔ link from main page @done (16-11-12 14:53)
     ✔ layout @done (16-09-19 20:41)
     ✔ logic @done (16-09-20 20:42)
-    [ ] rest api to others
+    [ ] rest api to others @high
     ✘ only inserts holger @cancelled (16-09-21 16:07)
   sensordata:
     ✔ pie bug @done (16-09-21 21:36)
@@ -101,8 +117,9 @@ frontend:
     ✔ add sensordata if new data = [] - not access predicted @done (16-09-24 14:29)
   plant settings:
     ✔ message presets @done (16-10-31 17:18)
-      ✔ @critical [BUG] not writing if ever inserted @done (16-11-09 21:43)
-      ✔ @critical [BUG] not saving anymore @done (16-11-09 21:43)
+      ✔ not writing if ever inserted @critical @bug @done (16-11-12 14:54)
+      ✔ not saving anymore @critical @bug @done (16-11-12 14:54)
+   [ ] non-persistant duration setting
   general settings:
     [ ] integrate
       ✔ message presets @done (16-11-09 21:43)
@@ -114,8 +131,6 @@ frontend:
       [ ] day/night cycle
         [ ] integrate also in tools
       ✘ storage settings @cancelled (16-11-09 21:45)
-
-
  rest:
    discover:
      ✔ discover @done (16-11-09 21:46)
@@ -128,22 +143,29 @@ frontend:
      ✔ time also from datetime @done (16-09-26 18:56)
      ✔ add partial sensordata fetch -> 100 assets @done (16-09-27 18:38)
    create:
-     [ ] plant
-       [ ] create all related tables entries  -> mirror from localhost
-         [ ] SensorStatus
-         [ ] SensorCount
-         [ ] SensorSatisfactionValue
-         [ ] PlantNetworkUptime
-
+     ✔ plant @done (16-11-12 12:50)
+       ✔ create all related tables entries  -> mirror from localhost @done (16-11-12 12:50)
+         ✔ SensorStatus @done (16-11-12 12:50)
+         ✔ SensorCount @done (16-11-12 12:50)
+         ✔ SensorSatisfactionValue @done (16-11-12 12:50)
+         ✔ PlantNetworkUptime @done (16-11-12 12:50)
+   sensordata:
+     ✔ also use: @done (16-11-12 18:27)
+        ✔ SensorCount @done (16-11-12 18:27)
+        ✔ SensorStatus @done (16-11-12 18:27)
+        ✔ SensorSatisfactionValue @done (16-11-12 18:22)
+   settings:
+     [ ] integrate insert for them all! (redundancy settings!) @high
+       [ ] mesh_network?
  sensor_scripts:
    daemon:
-     [ ] PID on file location
+     ✔ PID on file location @done (16-11-12 14:51)
      ✔ check no database @done (16-09-17 14:00)
      ✔ check already running @done (16-09-17 14:00)
        ✔ if both is True start loop -> else not @done (16-09-17 14:00)
    core:
-    ✔ port moisture @done (16-09-16 15:35)
-    ✔ port light @done (16-09-16 15:35)
+     ✔ port moisture @done (16-09-16 15:35)
+     ✔ port light @done (16-09-16 15:35)
    extensions:
      water_pump:
        [ ] rethink with actual pump!
@@ -152,16 +174,19 @@ frontend:
       ✔ MoistureBar @done (16-09-18 13:37)
    tools + models:
      ✔ add persistant duration! @done (16-10-09 18:38)
-     [ ] add simulated plant!
-       [ ] generated in simulated
-       [ ] check if predicted < now
-         [ ] delete in predicted and insert in sensor data
-         [ ] if predicted.count() == 0
-           [ ] generate new
+     ✔ add simulated plant! @high @done (16-11-12 15:47)
+       ✔ insert in Daemon as settings option! (thx past Bilal) @done (16-11-12 15:47)
+       ✔ generated in simulated @done (16-11-12 15:41)
+       ✔ check if predicted < now @done (16-11-12 15:41)
+         ✔ delete in predicted and insert in sensor data @done (16-11-12 15:41)
+         ✔ if predicted.count() == 0 @done (16-11-12 15:41)
+           ✔ generate new @done (16-11-12 15:41)
    driver:
-    [ ] to python 3
+    [ ] to python 3 @critical
    tools:
-     [ ] integrate sat_streak
+     ✔ integrate sat_streak @done (16-11-12 18:21)
      ✔ integrate max_persistant @done (16-11-09 21:56)
-     [ ] reintegrate SensorCount
-       [ ]  problem 2 same ids, why? Investigate! (test) and change
+     ✔ reintegrate SensorCount @done (16-11-12 18:21)
+       ✔  problem 2 same ids, why? @done (16-11-12 18:21)
+         ✔ Investigate! (test) @done (16-11-12 18:21)
+         ✔ change @done (16-11-12 14:55)

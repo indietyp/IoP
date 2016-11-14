@@ -7,6 +7,7 @@ from tools.main import MeshString
 from models.mesh import MeshMessage, MeshObject
 from settings.mesh import MULTICAST_ADDRESS, EXTERNAL_PORT
 from settings.database import DATABASE_NAME
+from tools.sensor import ToolChainSensor
 from tools.mesh import MeshTools
 from bson import json_util
 
@@ -505,6 +506,11 @@ class MeshNetwork(object):
         new_data.value = dataset['value']
         new_data.persistant = dataset['persistant']
         new_data.save()
+
+        data = {'plant': rec_obj,
+                'sensor': sensor,
+                'value': dataset['value']}
+        ToolChainSensor().modify_sensor_status(data)
 
         self.send(50102, recipient=recipient, plant=plant)
 

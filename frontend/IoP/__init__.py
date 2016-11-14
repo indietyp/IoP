@@ -14,7 +14,14 @@ def init():
   # get smiles! YOYOYOYOYOYOYOYOYO! :D
   with urllib.request.urlopen('http://127.0.0.1:2902/get/plants/name') as response:
     plants = json.loads(response.read().decode('utf8'))
-  return {'plants': plants}
+
+  with urllib.request.urlopen('http://127.0.0.1:2902/get/plants/satisfaction') as response:
+    satisfaction = json.loads(response.read().decode('utf8'))
+
+  return {'plants': plants,
+          'satisfaction': satisfaction,
+          'int': int,
+          'str': str}
 
 
 def set_uuid():
@@ -46,7 +53,12 @@ def init_overview():
   with urllib.request.urlopen('http://127.0.0.1:2902/get/plant/' + session['p_uuid'] + '/status/online') as response:
     average_online = json.loads(response.read().decode('utf8'))
 
-  return {'created_at': created_at, 'location': location, 'survived': str(survived), 'responsible': responsible, 'average_percent': average_percent, 'average_online': average_online}
+  return {'created_at': created_at,
+          'location': location,
+          'survived': str(survived),
+          'responsible': responsible,
+          'average_percent': average_percent,
+          'average_online': average_online}
 
 
 def init_sensor():

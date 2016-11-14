@@ -13,7 +13,7 @@ class MeshDedicatedDispatch(object):
     receiver.bind((host, port))
     receiver.settimeout(timeout)
     # data mode is not considered right now, but built in
-    # because built in is better than if I ever wanted to use it, and it's not
+    # because builtin is better than if I ever wanted to use it, and it's not
     try:
       data = receiver.recvfrom(1024)
       data = data[0].decode('utf-8')

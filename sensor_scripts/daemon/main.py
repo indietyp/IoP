@@ -5,11 +5,13 @@ import atexit
 from datetime import datetime, timedelta
 
 from models.plant import Plant
-from settings.debug import DEBUG
+from models.sensor import Sensor
+from settings.debug import DEBUG, DUMMYPLANT
 
 # from sensor_scripts.core.dht import DHT22
 # from sensor_scripts.core.tsl2561 import TSL2561
 # from sensor_scripts.core.moisture import GenericMoisture
+from tools.simulate import PlantSimulate
 
 # from tools.debug import DebugInterrupt
 # loop
@@ -31,7 +33,10 @@ from settings.debug import DEBUG
 #   --> --> --> --> reset value to 0
 #   --> --> --> status 0: not triggered
 #   --> --> --> --> add value to + 5
-pid_file = './daemon.pid'
+
+real_path = os.path.realpath(__file__)
+pid_file = os.path.dirname(real_path) + '/daemon.pid'
+
 
 class SensorDaemon(object):
 
@@ -79,15 +84,30 @@ class SensorDaemon(object):
           sleep_seconds = self.next_execution_seconds()
           time.sleep(sleep_seconds)
           print('Hellou!')
+          if DUMMYPLANT is False:
+            # DHT22.run()
+            # GenericMoisture.run()
+            # TSL2561.run()
+            print('real data')
+          else:
+            samples_count = 0
+            for plant in Plant.select():
+              if plant.count() > samples_count:
+                samples_count = plant.count()
+                source = plant
 
-          # DHT22.run()
-          # GenericMoisture.run()
-          # TSL2561.run()
+            for sensor in Sensor.select():
+              target = Plant.get(Plant.localhost == True)
+              PlantSimulate.run(target, sensor, source)
+
       except KeyboardInterrupt:
         print('Bye!')
         sys.exit()
       except Exception as e:
-        self.run() if DEBUG is False else print(e)
+        if DEBUG is False:
+          self.run()
+        else:
+          print(e)
       finally:
         self.exit()
     else:
@@ -103,6 +123,10 @@ class SensorDaemon(object):
       return True
     except:
       return False
+
+
+# only for security! That the file is removed on termination
+atexit.register(SensorDaemon().exit)
 
 if __name__ == '__main__':
   SensorDaemon().run()

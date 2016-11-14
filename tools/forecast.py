@@ -167,6 +167,7 @@ class SensorDataForecast(object):
       data['prediction'] = self.predict(data, sd)
       self.insert_database(data)
 
+
 if __name__ == '__main__':
   from models.plant import Plant
   from models.sensor import Sensor

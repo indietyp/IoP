@@ -9,7 +9,7 @@ from playhouse.shortcuts import model_to_dict
 
 from models.mesh import MeshObject
 from models.plant import Plant, PlantNetworkUptime, Person, MessagePreset
-from models.sensor import Sensor, SensorData, SensorCount, SensorSatisfactionValue, SensorDataPrediction
+from models.sensor import Sensor, SensorData, SensorCount, SensorSatisfactionValue, SensorDataPrediction, SensorStatus
 
 
 # the frontend is dumb! only give data from database, scripts to the other stuff
@@ -474,6 +474,53 @@ def get_current_discover(registered):
     output.append(item.ip)
 
   return json.dumps(output)
+
+
+@app.route('/get/plants/satisfaction')
+def get_current_satifaction():
+  output = {}
+  sensors = Sensor.select()
+  for plant in Plant.select():
+    statuses = []
+    for sensor in sensors:
+      print(sensor.name)
+      print(plant.name)
+      status = SensorStatus.get(SensorStatus.sensor == sensor, SensorStatus.plant == plant)
+      inserted = 1
+      if status.level.label == 'threat':
+        inserted = 3
+      elif status.level.label == 'cautioning':
+        inserted = 2
+      statuses.append(inserted)
+
+    maximum = max(statuses)
+    label = 'optimum'
+    if maximum == 3:
+      label = 'threat'
+    elif maximum == 2:
+      label = 'cautioning'
+
+    output[str(plant.uuid)] = {'streak': plant.sat_streak, 'name': label}
+
+  return json.dumps(output)
+
+
+@app.route('/get/plants/sensors/satisfaction')
+def get_current_sensor_satifaction():
+  output = {}
+  sensors = Sensor.select()
+  for plant in Plant.select():
+    output[str(plant.uuid)] = {}
+    for sensor in sensors:
+      status = SensorStatus.get(SensorStatus.sensor == sensor, SensorStatus.plant == plant)
+      if status.level.label not in output[str(plant.uuid)]:
+        output[str(plant.uuid)][status.level.label] = []
+
+      output[str(plant.uuid)][status.level.label].append(sensor.name)
+
+  return json.dumps(output)
+
+
 
 # @app.route('/get/plants/random')
 

@@ -1,12 +1,12 @@
 import json
 from IoP import app
 import urllib.request
-import urllib.request
 from copy import deepcopy
 from flask import request
 from peewee import Expression
 from playhouse.shortcuts import model_to_dict
-from models.plant import Person, Plant, MessagePreset
+from models.plant import Person, Plant, MessagePreset, PlantNetworkUptime
+from models.sensor import SensorStatus, SensorCount, SensorSatisfactionValue
 from mesh_network.dedicated import MeshDedicatedDispatch
 
 
@@ -21,13 +21,13 @@ def create_plant_name():
   return json.dumps({'info': 1})
 
 
-def copy_model_instace_from_localhost(target, model, *expressions):
+def copy_model_instace_from_localhost(target, model, *search):
 
   originals = model.select()
-  for expression in expressions:
+  for expression in search:
     if not isinstance(expression, Expression):
       raise ValueError('this is not exactly an expression, it\'s actually {}'.format(type(expression)))
-    originals.where(expression)
+    originals = originals.where(expression)
 
   for original in originals:
     copy = model_to_dict(original, recurse=False)
@@ -36,6 +36,7 @@ def copy_model_instace_from_localhost(target, model, *expressions):
     copy['plant'] = target.id
     sql_query = model.insert(copy)
     print(sql_query.sql)
+    sql_query.execute()
 
   return True
 
@@ -54,6 +55,10 @@ def create_plant(data):
     plant.ip = request.form['ip']
     plant.sat_streak = 0
     plant.save()
+
+    local_plant = Plant.get(Plant.localhost == True)
+    for model in [SensorStatus, SensorCount, SensorSatisfactionValue, PlantNetworkUptime]:
+      copy_model_instace_from_localhost(plant, model, model.plant == local_plant)
 
 
 @app.route('/create/plant', methods=['POST'])
