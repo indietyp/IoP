@@ -18,8 +18,31 @@ def init():
   with urllib.request.urlopen('http://127.0.0.1:2902/get/plants/satisfaction') as response:
     satisfaction = json.loads(response.read().decode('utf8'))
 
+  with urllib.request.urlopen('http://127.0.0.1:2902/get/plants/sensors/satisfaction') as response:
+    detailed = json.loads(response.read().decode('utf8'))
+
+  # dirty hotfix (don't like it at all)
+  head = "<div class='header'>Overview!</div><div class='content'>"
+  tail = "</div>"
+
+  for plant in plants:
+    overview = head
+    levels = detailed[plant[0]]
+    for level in [['optimum', '#21ba45'], ['cautioning', '#fbbd08'], ['threat', '#db2828']]:
+      if level[0] in levels:
+        overview += """<div style='display:flex; align-items:center'>
+                          <svg style='padding-right:10px;margin-right:10px' height='20' width='20'>
+                            <circle cx='10' cy='10' r='8' fill='""" + level[1] + """'></circle>
+                          </svg>"""
+        for sensor in levels[level[0]]:
+          overview += sensor + ", "
+        overview = overview[:-2] + "<div style='flex-grow:1' /></div>"
+    overview += tail
+    detailed[plant[0]] = overview
+
   return {'plants': plants,
           'satisfaction': satisfaction,
+          'satisfaction_level': detailed,
           'int': int,
           'str': str}
 

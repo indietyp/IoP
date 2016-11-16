@@ -81,7 +81,7 @@ frontend:
   ✔ fix general links @done (16-09-21 20:15)
   ✔ add add_plant @done (16-09-21 21:33)
   ✔ add add_plant redirect @done (16-09-21 21:33)
-  [ ] add overview @high @critical
+  ✔ add overview @high @critical @done (16-11-16 20:06)
   ✔ add smiles @done (16-11-14 21:29)
     ✔ rest api integration @done (16-11-13 22:31)
     ✔ FIX HOLGER @critical @done (16-11-14 21:29)

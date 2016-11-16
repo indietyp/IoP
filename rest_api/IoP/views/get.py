@@ -483,8 +483,6 @@ def get_current_satifaction():
   for plant in Plant.select():
     statuses = []
     for sensor in sensors:
-      print(sensor.name)
-      print(plant.name)
       status = SensorStatus.get(SensorStatus.sensor == sensor, SensorStatus.plant == plant)
       inserted = 1
       if status.level.label == 'threat':
