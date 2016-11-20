@@ -34,19 +34,19 @@ class Plant(Model):
   name        = CharField()
   location    = CharField()
   species     = CharField()
-  interval    = IntegerField()
+  interval    = IntegerField(default=6)  # hours (messaging interval)
   uuid        = UUIDField(default=uuid.uuid4, unique=True)
 
   person      = ForeignKeyField(Person)
-
   role        = CharField(default='master')
   ip          = CharField()
   localhost   = BooleanField(default=False)
 
+  sat_streak  = IntegerField()  # satisfactionstreak
+  persistant_hold = IntegerField(default=2016)  # times (5 minute interval)
+  connection_lost = IntegerField(default=5)  # minutes (notification to wizard after plant lost)
+
   created_at  = DateTimeField(default=datetime.datetime.now)
-  # Satisfactionstreak
-  sat_streak  = IntegerField()
-  persistant_hold   = IntegerField(default=2016)
 
   class Meta:
     database  = db

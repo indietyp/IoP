@@ -26,6 +26,7 @@ MODE
   5       [NOTIFY]
     1       [NEW_DATA]  - [A_MESSAGE - UUID sensor]
     2       [IP]
+    3       [CHANGE]    - [A_MESSAGE - OBJECT, B_MESSAGE - UUID]
   8       [SUCCESS]
   9       [FAIL]
 (mode in CODE ex. alive: 10100 response: 10200)
@@ -44,6 +45,7 @@ RETURN
 INIT + END
   1       [MASTER <-> MASTER]
   2       [MASTER --> SLAVE]
+  3       [MASTER <-- SLAVE]
 
 PLANT_UUID
   UUID4   [SENDER UUID]
@@ -77,3 +79,11 @@ C_MESSAGE
 
 D_MESSAGE
   255CHAR [EXTRA INFORMATION]
+
+
+NOTIFY CHANGE OBJECTS
+  0 - Plant
+  1 - Sensor
+  2 - Person
+  3 - SensorSatisfactionValue
+  4 - Message

@@ -20,6 +20,26 @@ get_notification_messages = (callback) ->
     callback('finished' )
 window.get_notification_messages = get_notification_messages
 
+get_current_notification_message = (that) ->
+  if that != undefined
+    $(that).addClass 'disabled'
+    $(that).addClass 'loading'
+
+  request = $.ajax
+    url: '/get/plant/notification/message'
+    method: 'POST'
+
+  request.done (msg) ->
+    msg = JSON.parse msg
+    $('.notification_message_content').val msg.message
+    $('.ui.selection.dropdown').dropdown('set selected', msg.uuid)
+
+    if that != undefined
+      $(that).removeClass 'disabled'
+      $(that).removeClass 'loading'
+  return
+window.get_current_notification_message = get_current_notification_message
+
 get_notification_message_content = (uuid) ->
   request = $.ajax
     url: '/get/notification/message/content'
@@ -206,3 +226,22 @@ create_new_general_settings_responsible = () ->
 
   return
 window.create_new_general_settings_responsible = create_new_general_settings_responsible
+
+modify_plant_durations = (that) ->
+  $(that).addClass 'disabled'
+  $(that).addClass 'loading'
+
+  request = $.ajax
+    url: '/change/plant/intervals'
+    method: 'POST'
+    data:
+      notification: $("#flat-slider-general-interval").slider("option", "value");
+      connection: $("#flat-slider-dead-interval").slider("option", "value");
+      non_persistant: $("#flat-slider-non-persistant-interval").slider("option", "value");
+
+  request.done (msg) ->
+    msg = JSON.parse msg
+    $(that).removeClass 'disabled'
+    $(that).removeClass 'loading'
+  return
+window.modify_plant_durations = modify_plant_durations

@@ -90,7 +90,7 @@ block content
 
     .spacer(style='flex-grow:0.2')
   .ui.segment#__rsps_segment(style='width:100%;display:none')
-    hi.ui.header Symbiose! Select - if no result create?
+    hi.ui.header Responsible Person
     .ui.two.column.middle.aligned.very.relaxed.stackable.grid
       .column
         .ui.form
@@ -193,13 +193,13 @@ block content
           ;
           })
 
-    .custom_message.create_message_two(style='position:absolute;; width:98%;display:none;z-index:2')
+    .custom_message.create_message_two(style='position:absolute; width:98%;display:none;z-index:2')
       .ui.form
         .field
           label Heading
           .ui.fluid.input
             input(type='text', placeholder='Heading')
-    .ui.form(style='margin-top:5%')
+    .ui.form(style='margin-top:7%')
       .field
         label Content
         p for your customized message you can use these tags to insert custom data
@@ -218,6 +218,45 @@ block content
           .ui.label.basic.violet [warning_max]
           .ui.label.basic.violet [unit]
         textarea.notification_message_content
+        script(type='text/javascript').
+          get_current_notification_message()
+      script.
+        function submit_notification (that) {
+          message = $("textarea.notification_message_content").val()
+          if ($(".create_message_two > .ui.form > .field > .ui.fluid.input > input").val() == '') {
+            name = $(".create_message_one .selected").html()
+          } else {
+            name = $(".create_message_two > .ui.form > .field > .ui.fluid.input > input").val()
+          }
+
+          if (name != undefined && message != undefined && message != '') {
+            return submit_notification_message(that, message, name)
+          }
+        }
+      .ui.two.buttons(style='margin-top:5%')
+        .ui.basic.button.fluid.green(onclick='submit_notification(this)') Apply
+        .ui.basic.button.fluid.red(onclick='get_current_notification_message(this)') Reset
+
+  .ui.segment
+    h1.ui.header Notification settings
+    .interval
+      p(style='margin-bottom:3%') connection lost notification interval (minutes)
+      #flat-slider-dead-interval(style='margin-top: 24px;margin-bottom:24px')
+        .spacer(style='flex-grow:0.5')
+      script(type='text/javascript').
+        $("#flat-slider-dead-interval")
+            .slider({
+                max: 120,
+                min: 5,
+                range: 'min',
+                value: #{content['intervals']['connection_lost']},
+                step: 5
+            })
+            .slider("pips", {
+                first: "pip",
+                last: "pip"
+            })
+            .slider("float");
     .interval(style='margin-top:5%')
       p(style='margin-bottom:3%') sensor notification interval (hours)
       #flat-slider-general-interval(style='margin-top: 24px;margin-bottom:24px')
@@ -228,7 +267,7 @@ block content
                 max: 12,
                 min: 1,
                 range: 'min',
-                value: 2
+                value: #{content['intervals']['notification']}
             })
             .slider("pips", {
                 first: "pip",
@@ -236,38 +275,24 @@ block content
             })
             .slider("float");
     .interval(style='margin-top:5%')
-      p(style='margin-bottom:3%') connection lost notification interval (minutes)
-      #flat-slider-dead-interval(style='margin-top: 24px;margin-bottom:24px')
+      p(style='margin-bottom:3%') detailed data duration (days)
+      #flat-slider-non-persistant-interval(style='margin-top: 24px;margin-bottom:24px')
         .spacer(style='flex-grow:0.5')
       script(type='text/javascript').
-        $("#flat-slider-dead-interval")
+        $("#flat-slider-non-persistant-interval")
             .slider({
-                max: 120,
-                min: 5,
+                max: 30,
+                min: 7,
                 range: 'min',
-                value: 10,
-                step: 5
+                value: #{content['intervals']['non_persistant']}
             })
             .slider("pips", {
                 first: "pip",
                 last: "pip"
             })
             .slider("float");
-    script.
-      function submit_notification (that) {
-        message = $("textarea.notification_message_content").val()
-        if ($(".create_message_two > .ui.form > .field > .ui.fluid.input > input").val() == '') {
-          name = $(".create_message_one .selected").html()
-        } else {
-          name = $(".create_message_two > .ui.form > .field > .ui.fluid.input > input").val()
-        }
-
-        if (name != undefined && message != undefined && message != '') {
-          return submit_notification_message(that, message, name)
-        }
-      }
     .ui.two.buttons(style='margin-top:5%')
-          .ui.basic.button.fluid.green(onclick='submit_notification(this)') Apply
+          .ui.basic.button.fluid.green(onclick='modify_plant_durations(this)') Apply
           .ui.basic.button.fluid.red Reset
 
   script(type='text/javascript').

@@ -109,6 +109,7 @@
 
 #flat-slider-dead-interval .ui-slider-range,
 #flat-slider-general-interval .ui-slider-range,
+#flat-slider-non-persistant-interval .ui-slider-range,
 #flat-slider-time-interval .ui-slider-range,
 #flat-slider-timer-interval .ui-slider-range,
 #flat-slider-plants-interval .ui-slider-range {

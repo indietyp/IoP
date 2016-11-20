@@ -22,11 +22,20 @@ def get_plants_name():
 
 
 @app.route('/get/plant/<p_uuid>')
-def get_hole_plant(p_uuid):
+def get_whole_plant(p_uuid):
   plant = model_to_dict(Plant.get(Plant.uuid == p_uuid))
   del plant['id']
   plant['uuid'] = str(plant['uuid'])
   return json.dumps(plant, default=json_util.default)
+
+
+@app.route('/get/plant/<p_uuid>/intervals')
+def get_plant_intervals(p_uuid):
+  plant = Plant.get(Plant.uuid == p_uuid)
+  plant
+  return json.dumps({'connection_lost': plant.connection_lost,
+                     'non_persistant': int(plant.persistant_hold * 5 / 60 / 24),
+                     'notification': plant.interval})
 
 
 @app.route('/get/plant/<p_uuid>/sensor/<s_uuid>/latest')
@@ -441,6 +450,14 @@ def get_plant_count(p_uuid, sensor):
   return json.dumps({'count': sensor_data_set.count()})
 
 
+@app.route('/get/plant/<p_uuid>/message')
+def get_plant_message(p_uuid):
+  plant = Plant.get(Plant.uuid == p_uuid)
+  message = plant.person.preset
+
+  return json.dumps({'uuid': str(message.uuid), 'message': message.message})
+
+
 @app.route('/get/messages/names')
 def get_message_names():
   messages = MessagePreset.select()
@@ -450,6 +467,12 @@ def get_message_names():
     output.append({'name': message.name, 'uuid': str(message.uuid)})
 
   return json.dumps(output)
+
+
+@app.route('/get/message/<m_uuid>')
+def get_message(m_uuid):
+  message = MessagePreset.get(MessagePreset.uuid == m_uuid)
+  return json.dumps(message.message)
 
 
 @app.route('/get/message/<m_uuid>/content')

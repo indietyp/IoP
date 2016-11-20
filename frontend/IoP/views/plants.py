@@ -1,5 +1,7 @@
 from IoP import app, init, init_overview, init_sensor, set_uuid
 from flask import render_template, session
+import urllib.request
+import json
 import random
 
 
@@ -20,7 +22,12 @@ def plantSettings(plant):
   session['plant'] = plant
   set_uuid()
 
+  with urllib.request.urlopen('http://localhost:2902/get/plant/' + session['p_uuid'] + '/intervals') as response:
+    intervals = json.loads(response.read().decode('utf8'))
+  print(intervals)
+
   content = init()
+  content['intervals'] = intervals
   content.update({'current': 'plant_settings', 'get': True, 'current_active': plant, 'type': 'plant'})
   return render_template('plant/settings.jade', content=content)
 

@@ -69,6 +69,26 @@ def change_responsible_wizard():
   return data
 
 
+@app.route('/change/plant/intervals', methods=['POST'])
+def change_plant_intervals():
+  data = urllib.parse.urlencode({'minutes': request.form['connection']}).encode('ascii')
+  req = urllib.request.Request('http://localhost:2902/update/plant/' + session['p_uuid'] + '/connection-lost/duration', data)
+  with urllib.request.urlopen(req) as response:
+    data = response.read().decode('utf8')
+
+  data = urllib.parse.urlencode({'hours': request.form['notification']}).encode('ascii')
+  req = urllib.request.Request('http://localhost:2902/update/plant/' + session['p_uuid'] + '/notification/duration', data)
+  with urllib.request.urlopen(req) as response:
+    data = response.read().decode('utf8')
+
+  data = urllib.parse.urlencode({'days': request.form['non_persistant']}).encode('ascii')
+  req = urllib.request.Request('http://localhost:2902/update/plant/' + session['p_uuid'] + '/non-persistant/duration', data)
+  with urllib.request.urlopen(req) as response:
+    data = response.read().decode('utf8')
+
+  return json.dumps({'info': 'success'})
+
+
 @app.route('/create/responsible/none', methods=['POST'])
 def createResponsible():
   wizard = True if request.form['wizard'] == 'yes' else False
@@ -78,3 +98,9 @@ def createResponsible():
     data = response.read().decode('utf8')
 
   return json.dumps({'info': 'success'})
+
+
+@app.route('/get/plant/notification/message', methods=['POST'])
+def get_plant_notification_message():
+  with urllib.request.urlopen('http://localhost:2902/get/plant/' + session['p_uuid'] + '/message') as response:
+    return response.read().decode('utf8')

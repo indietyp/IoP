@@ -3,6 +3,7 @@ from flask import request
 from playhouse.shortcuts import model_to_dict
 import json
 import sys
+from copy import deepcopy
 
 # UPDATE
 # PLANT:
@@ -16,6 +17,7 @@ import sys
 from models.plant import Plant, Person
 from models.sensor import SensorSatisfactionValue, SensorSatisfactionLevel, Sensor
 from models.plant import MessagePreset
+
 
 @app.route('/update/plant/<p_uuid>/name', methods=['POST'])
 def update_plant_name(p_uuid):
@@ -77,6 +79,55 @@ def update_plant_responsible(p_uuid):
   person = Person.get(Person.email == request.form['email'], Person.name == request.form['name'])
 
   plant.person = person
+  plant.save()
+  return json.dumps({'info': 1})
+
+
+def time_request_from_converter(data):
+  data = deepcopy(data)
+
+  seconds = 0
+  if 'seconds' in data:
+    seconds += int(data['seconds'])
+
+  if 'minutes' in data:
+    seconds += int(data['minutes']) * 60
+
+  if 'hours' in data:
+    seconds += int(data['hours']) * 60 * 60
+
+  if 'days' in data:
+    seconds += int(data['days']) * 24 * 60 * 60
+
+  minutes = seconds / 60
+  hours = minutes / 60
+
+  return seconds, minutes, hours
+
+
+@app.route('/update/plant/<p_uuid>/notification/duration', methods=['POST'])
+def update_plant_notification_duration(p_uuid):
+  _, _, hours = time_request_from_converter(request.form)
+  plant = Plant.get(Plant.uuid == p_uuid)
+  plant.interval = int(hours)
+  plant.save()
+  return json.dumps({'info': 1})
+
+
+@app.route('/update/plant/<p_uuid>/connection-lost/duration', methods=['POST'])
+def update_plant_connection_lost(p_uuid):
+  _, minutes, _ = time_request_from_converter(request.form)
+  plant = Plant.get(Plant.uuid == p_uuid)
+  plant.connection_lost = int(minutes)
+  plant.save()
+  return json.dumps({'info': 1})
+
+
+@app.route('/update/plant/<p_uuid>/non-persistant/duration', methods=['POST'])
+def update_plant_persistant_hold(p_uuid):
+  _, minutes, _ = time_request_from_converter(request.form)
+  plant = Plant.get(Plant.uuid == p_uuid)
+  plant.persistant_hold = minutes / 5
   plant.save()
   return json.dumps({'info': 1})
 

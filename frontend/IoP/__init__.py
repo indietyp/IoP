@@ -7,6 +7,7 @@ from bson import json_util
 
 app = Flask(__name__)
 app.jinja_env.add_extension('pyjade.ext.jinja.PyJadeExtension')
+app.jinja_env.auto_reload = True
 app.secret_key = 'uyfo2346tr3r3urey8f138r9pfr1vy3ofydv'
 
 

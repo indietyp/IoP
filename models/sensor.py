@@ -69,9 +69,10 @@ class SensorCount(Model):
 
 class SensorSatisfactionValue(Model):
   """Satisfactionlevel min and max value"""
-  sensor        = ForeignKeyField(Sensor)
-  plant         = ForeignKeyField(Plant)
-  level         = ForeignKeyField(SensorSatisfactionLevel)
+  sensor       = ForeignKeyField(Sensor)
+  plant        = ForeignKeyField(Plant)
+  level        = ForeignKeyField(SensorSatisfactionLevel)
+  uuid         = UUIDField(default=uuid.uuid4)
 
   inherited    = BooleanField(default=False)
 

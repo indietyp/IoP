@@ -116,14 +116,18 @@ frontend:
       ✘ progress bar @cancelled (16-09-27 18:37)
     ✔ add sensordata if new data = [] - not access predicted @done (16-09-24 14:29)
   plant settings:
-    ✔ message presets @done (16-10-31 17:18)
-      ✔ not writing if ever inserted @critical @bug @done (16-11-12 14:54)
-      ✔ not saving anymore @critical @bug @done (16-11-12 14:54)
-   [ ] non-persistant duration setting
+    ✔ preselect current message
+      ✔ reset @done (16-11-19 15:03)
+    ✔ notification sensor duration @done (16-11-20 16:04)
+    ✔ notification interval @done (16-11-20 16:04)
+     ✔ message presets @done (16-10-31 17:18)
+       ✔ not writing if ever inserted @critical @bug @done (16-11-12 14:54)
+       ✔ not saving anymore @critical @bug @done (16-11-12 14:54)
+     ✔ non-persistant duration setting @done (16-11-20 16:04)
   general settings:
     [ ] integrate
       ✔ message presets @done (16-11-09 21:43)
-      ✔ people management @done (16-11-08 21:28)
+      ✔ people management @done (16-11-16 22:02)
         ✔ change wizard @done (16-11-07 18:51)
         ✔ change information @done (16-11-07 18:51)
         ✔ delete person @done (16-11-08 21:28)
@@ -156,7 +160,13 @@ frontend:
         ✔ SensorSatisfactionValue @done (16-11-12 18:22)
    settings:
      [ ] integrate insert for them all! (redundancy settings!) @high
-       [ ] mesh_network?
+       [ ] everything in update folder -> mirror command
+         [ ] -> get from rest
+       [ ] mesh_network
+         [ ] SensorSatisfactionValue
+         [ ] plant information
+         [ ] responsible persons
+         [ ] messages
  sensor_scripts:
    daemon:
      ✔ PID on file location @done (16-11-12 14:51)

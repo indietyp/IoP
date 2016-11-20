@@ -113,7 +113,9 @@ def getPlantSettingsDataSensorRange():
 
 @app.route('/get/plant/settings', methods=['POST'])
 def getPlantSettings():
-  return render_template('plant/settings.jade', content={'get': False, 'current': 'settings'})
+  with urllib.request.urlopen('http://localhost:2902/get/plant/' + session['p_uuid'] + '/intervals') as response:
+    intervals = json.loads(response.read().decode('utf8'))
+  return render_template('plant/settings.jade', content={'get': False, 'current': 'settings', 'intervals': intervals})
 
 
 @app.route('/get/plant/responsible', methods=['POST'])
