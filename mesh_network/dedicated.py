@@ -1,5 +1,8 @@
 import socket
+import urllib.request
+from models.plant import Plant
 from mesh_network.daemon import MeshNetwork
+from playhouse.shortcuts import model_to_dict
 
 
 class MeshDedicatedDispatch(object):
@@ -70,6 +73,17 @@ class MeshDedicatedDispatch(object):
       obj = MeshObject.get(MeshObject.ip == plant.ip)
       obj.registered = True
       obj.save()
+
+      dict_plant = model_to_dict(plant)
+      dict_plant['email'] = plant.person.email
+      del dict_plant['id']
+      del dict_plant['person']
+
+      for rest in Plant.select().where(Plant.ip != plant.ip, Plant.localhost == False):
+        data = urllib.parse.urlencode().encode('ascii')
+        req = urllib.request.Request('http://' + rest.ip + ':2902/create/plant', data)
+        with urllib.request.urlopen(req) as response:
+          return response.read().decode('utf8')
     else:
       raise BaseException('something went from: error code: ' + str(status))
 

@@ -1,4 +1,6 @@
 import sys
+import json
+import urllib.request
 
 from models.sensor import SensorData
 from models.sensor import Sensor
@@ -131,9 +133,16 @@ class ToolChainSensor(object):
     if current[2].level == current[1].level:
       data['plant'].sat_streak = data['plant'].sat_streak + 1
       data['plant'].save()
+      url = 'add'
     else:
       data['plant'].sat_streak = 1
       data['plant'].save()
+      url = 'reset'
+
+    for external in Plant.select().where(Plant.localhost == False):
+      with urllib.request.urlopen('http://{}:2902/update/plant/{}/satisfaction/level/{}'.format(external.ip, str(plant.uuid), url)) as response:
+        data = json.loads(response.read().decode('utf8'))
+        print(data)
 
     return 'success'
 

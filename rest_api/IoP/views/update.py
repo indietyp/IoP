@@ -83,6 +83,22 @@ def update_plant_responsible(p_uuid):
   return json.dumps({'info': 1})
 
 
+@app.route('/update/plant/<p_uuid>/satisfaction/level/reset', methods=['POST'])
+def update_plant_satisfaction_level_reset(p_uuid):
+  plant = Plant.get(Plant.uuid == p_uuid)
+  plant.sat_streak = 1
+  plant.save()
+  return json.dumps({'info': 1})
+
+
+@app.route('/update/plant/<p_uuid>/satisfaction/level/add', methods=['POST'])
+def update_plant_satisfaction_level_add(p_uuid):
+  plant = Plant.get(Plant.uuid == p_uuid)
+  plant.sat_streak = plant.sat_streak + 1
+  plant.save()
+  return json.dumps({'info': 1})
+
+
 def time_request_from_converter(data):
   data = deepcopy(data)
 

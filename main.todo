@@ -14,6 +14,7 @@ test:
   ✔ dedicated deliver new_data @done (16-09-26 18:55)
   ✔ deliver new_data @done (16-09-27 15:09)
   ✔ dedicated register @done (16-09-21 18:18)
+  [ ] dedicated register
   [ ] dedicated reboot
   ✔ rest api change of underlying db in virtualbox -> does it work at all or do I need to restart the process? @done (16-09-18 13:38)
   [ ] moisture
@@ -24,6 +25,7 @@ test:
     [ ] trafficlight
     [ ] display
     [ ] water_pump
+  [ ] toolchain sensor
   ✔ multithreaded process deamon @done (16-09-15 20:31)
 mesh network:
    build register:
@@ -104,7 +106,7 @@ frontend:
     ✔ link from main page @done (16-11-12 14:53)
     ✔ layout @done (16-09-19 20:41)
     ✔ logic @done (16-09-20 20:42)
-    [ ] rest api to others @high
+    ✔ rest api to others @high @done (16-11-20 18:33)
     ✘ only inserts holger @cancelled (16-09-21 16:07)
   sensordata:
     ✔ pie bug @done (16-09-21 21:36)
@@ -153,6 +155,8 @@ frontend:
          ✔ SensorCount @done (16-11-12 12:50)
          ✔ SensorSatisfactionValue @done (16-11-12 12:50)
          ✔ PlantNetworkUptime @done (16-11-12 12:50)
+   update:
+      ✔ sat_streak @done (16-11-20 18:35)
    sensordata:
      ✔ also use: @done (16-11-12 18:27)
         ✔ SensorCount @done (16-11-12 18:27)
@@ -161,6 +165,7 @@ frontend:
    settings:
      [ ] integrate insert for them all! (redundancy settings!) @high
        [ ] everything in update folder -> mirror command
+         [ ] not everything! - except satisfaction
          [ ] -> get from rest
        [ ] mesh_network
          [ ] SensorSatisfactionValue
@@ -195,6 +200,7 @@ frontend:
     [ ] to python 3 @critical
    tools:
      ✔ integrate sat_streak @done (16-11-12 18:21)
+       ✔ mirror to others @done (16-11-20 18:43)
      ✔ integrate max_persistant @done (16-11-09 21:56)
      ✔ reintegrate SensorCount @done (16-11-12 18:21)
        ✔  problem 2 same ids, why? @done (16-11-12 18:21)

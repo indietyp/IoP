@@ -50,10 +50,17 @@ def create_plant(data):
     plant.location = data['location']
     plant.species = data['species']
     plant.interval = data['interval']
-
     plant.person = Person.get(Person.email == data['email'])
     plant.ip = request.form['ip']
     plant.sat_streak = 0
+
+    if 'uuid' in data:
+      plant.uuid = data['uuid']
+    if 'persistant_hold' in data:
+      plant.persistant_hold = data['persistant_hold']
+    if 'role' in data:
+      plant.role = data['role']
+
     plant.save()
 
     local_plant = Plant.get(Plant.localhost == True)
