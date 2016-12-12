@@ -101,3 +101,27 @@ class MeshDedicatedDispatch(object):
 
     for plant in Plant.select().where(Plant.localhost == False):
       daemon.deliver(2, sub=1, recipient=plant)
+
+    return True
+
+  def update(self, name, uuid):
+    from models.plant import Plant
+    if name.lower() == 'plant':
+      counter = 0
+    elif name.lower() == 'sensor':
+      counter = 1
+    elif name.lower() == 'person':
+      counter = 2
+    elif name.lower() == 'satisfaction':
+      counter = 3
+    elif name.lower() == 'message':
+      counter = 4
+    else:
+      return False
+
+    daemon = MeshNetwork()
+
+    for plant in Plant.select().where(Plant.localhost == False):
+      daemon.deliver(3, sub=1, recipient=plant, message=[counter, str(uuid)])
+
+    return True

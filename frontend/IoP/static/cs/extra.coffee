@@ -245,3 +245,71 @@ modify_plant_durations = (that) ->
     $(that).removeClass 'loading'
   return
 window.modify_plant_durations = modify_plant_durations
+
+get_day_night = () ->
+  request = $.ajax
+    url: '/get/day_night'
+    method: 'POST'
+
+  request.done (msg) ->
+    msg = JSON.parse msg
+
+    if msg.ledbar
+      $('.field.ledbar > .ui.checkbox > input').prop 'checked', true
+    if msg.display
+      $('.field.display > .ui.checkbox > input').prop 'checked', true
+    if msg.generalleds
+      $('.field.generalleds > .ui.checkbox > input').prop 'checked', true
+    if msg.notification
+      $('.field.notification > .ui.checkbox > input').prop 'checked', true
+
+    start = msg.start.toString()
+
+    if start.length == 3
+      start = start.slice 0, 1
+    else
+      start = start.slice 0, 2
+
+    stop = msg.stop.toString()
+
+    if stop.length == 3
+      stop = stop.slice 0, 1
+    else
+      stop = stop.slice 0, 2
+
+    $("#flat-slider-time-interval")
+        .slider({
+            max: 24,
+            min: 0,
+            range: true,
+            values: [parseInt(start), parseInt(stop)]
+        })
+        .slider("pips", {
+            first: "pip",
+            last: "pip"
+        })
+  return
+window.get_day_night = get_day_night
+
+modify_day_night = (that) ->
+  $(that).addClass 'disabled'
+  $(that).addClass 'loading'
+  time = $("#flat-slider-time-interval").slider "option", "values"
+
+  request = $.ajax
+    url: '/change/day_night'
+    method: 'POST'
+    data:
+      stop: parseInt(time[1].toString() + '00')
+      start: parseInt(time[0].toString() + '00')
+      ledbar: $('.field.ledbar > .ui.checkbox > input').prop 'checked'
+      display: $('.field.display > .ui.checkbox > input').prop 'checked'
+      generalleds: $('.field.generalleds > .ui.checkbox > input').prop 'checked'
+      notification: $('.field.notification > .ui.checkbox > input').prop 'checked'
+
+  request.done (msg) ->
+    msg = JSON.parse msg
+    $(that).removeClass 'disabled'
+    $(that).removeClass 'loading'
+  return
+window.modify_day_night = modify_day_night

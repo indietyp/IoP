@@ -3,9 +3,11 @@
 # from ...tools.main import Tools
 import time
 # import smbus
-# from sensor_scripts.driver.mcp23017 import MCP230XX_GPIO
+from tools.main import VariousTools
+from sensor_scripts.driver.mcp23017 import MCP230XX_GPIO
 from models.sensor import Sensor, SensorStatus
 from models.plant import Plant
+
 
 class MoistureBar:
   def __init__(self):
@@ -38,36 +40,38 @@ class MoistureBar:
 
   @staticmethod
   def run():
-    sensor = Sensor.get(Sensor.name == 'moisture')
-    plant = Plant.get(Plant.localhost == True)
-    status = SensorStatus.get(SensorStatus.sensor == sensor,
-                              SensorStatus.plant == plant)
-    print(status.level.label)
+    result = VariousTools.offline_check('ledbar', hardware=True, pins=[0, 1, 2, 3, 4, 5], mcp=True)
+    if result is True:
+      sensor = Sensor.get(Sensor.name == 'moisture')
+      plant = Plant.get(Plant.localhost == True)
+      status = SensorStatus.get(SensorStatus.sensor == sensor,
+                                SensorStatus.plant == plant)
+      print(status.level.label)
 
-    # init MCP230xx GPIO adapter.
-    # mcp = MCP230XX_GPIO(1, 32, 16)
+      # init MCP230xx GPIO adapter.
+      mcp = MCP230XX_GPIO(1, 32, 16)
 
-    # GREEN 5/6
-    # YELLOW 3/4
-    # RED 1/2
-    led = 0
-    for i in [['threat', 1, 2], ['cautioning', 3, 4], ['optimum', 5, 6]]:
-      if status.level.label == i[0]:
-        led = i[2] if status.status is True else i[1]
+      # GREEN 5/6
+      # YELLOW 3/4
+      # RED 1/2
+      led = 0
+      for i in [['threat', 1, 2], ['cautioning', 3, 4], ['optimum', 5, 6]]:
+        if status.level.label == i[0]:
+          led = i[2] if status.status is True else i[1]
 
-    pins = [0, 1, 2, 3, 4, 5]
-    # for pin in pins:
-    #   mcp.setup(pin, mcp.OUT)
+      pins = [0, 1, 2, 3, 4, 5]
+      # for pin in pins:
+      #   mcp.setup(pin, mcp.OUT)
 
-    for i in range(6, led, -1):
-      # mcp.output(i, 0)  # Pin 0 Low
-      print('-'*i)
-      time.sleep(round((1.35**i) / 10, 3))
+      for i in range(6, led, -1):
+        mcp.output(i, 0)  # Pin 0 Low
+        # print('-' * i)
+        time.sleep(round((1.35**i) / 10, 3))
 
-    for i in range(0, led + 1):
-      # mcp.output(i, 1)  # Pin 0 High
-      print('#'*i)
-      time.sleep(round((1.35**i) / 10, 3))
+      for i in range(0, led + 1):
+        mcp.output(i, 1)  # Pin 0 High
+        # print('#' * i)
+        time.sleep(round((1.35**i) / 10, 3))
 
 if __name__ == "__main__":
   MoistureBar.run()

@@ -110,43 +110,33 @@ block content
             ;
   .ui.segment(style='margin-bottom: 5%')
     h1.ui.header day/night time
-    .ui.slider.checkbox
-      input(type='checkbox', name='cycle')
-      label active day/night cycle?
+    //- .ui.slider.checkbox
+    //-   input(type='checkbox', name='cycle')
+    //-   label active day/night cycle?
     p select the time the device is <b> online </b>
     #flat-slider-time-interval(style='margin-top: 24px')
-    script(type='text/javascript').
-      $("#flat-slider-time-interval")
-          .slider({
-              max: 24,
-              min: 0,
-              range: true,
-              values: [2,12]
-          })
-          .slider("pips", {
-              first: "pip",
-              last: "pip"
-          })
     .spacer(style='margin-top:5%')
     .ui.form
       .inline.fields
-        label what should be deactivated when offline?
-        .field
+        label what should be deactivated when <b>offline</b>?
+        .field.display
           .ui.checkbox
             input(type='checkbox', name='cycle')
             label Display
-        .field
+        .field.ledbar
           .ui.checkbox
             input(type='checkbox', name='cycle')
             label led-bar
-        .field
+        .field.generalleds
           .ui.checkbox
             input(type='checkbox', name='cycle')
             label general leds
-        .field
+        .field.notification
           .ui.checkbox
             input(type='checkbox', name='cycle')
             label email notification
     .ui.two.buttons
-      .ui.basic.button.fluid.green Apply
-      .ui.basic.button.fluid.red Reset
+      .ui.basic.button.fluid.green(onclick='modify_day_night(this)') Apply
+      .ui.basic.button.fluid.red(onclick='get_day_night()') Reset
+    script.
+      get_day_night()

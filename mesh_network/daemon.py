@@ -78,6 +78,9 @@ class MeshNetwork(object):
         elif int(code[1:3]) == 2:
           sub = int(code[3:]) + 1
           self.deliver(2, sub=sub, recipient=target)
+        elif int(code[1:3]) == 3:
+          sub = int(code[3:]) + 1
+          self.deliver(3, sub=sub, recipient=target, message=message)
     else:
       print('same IP')
 
@@ -93,11 +96,14 @@ class MeshNetwork(object):
 
     client.bind((host, port))
     while True:
-      received = client.recvfrom(65000)
+      try:
+        received = client.recvfrom(65000)
 
-      p = Process(target=self.daemon_process, args=(received, ))
-      p.daemon = True
-      p.start()
+        p = Process(target=self.daemon_process, args=(received, ))
+        p.daemon = True
+        p.start()
+      except Exception as e:
+        print(e)
 
   def create_message_object(self, plant, code, messages, received=False,
                             recipient=None, muuid=None, priority=255):
@@ -481,7 +487,7 @@ class MeshNetwork(object):
       self.send_local(mode=4, code=1)
       self.send(30900, recipient=recipient, plant=plant)
 
-  def deliver(self, mode, recipient=None, sub=None, sensor=None, message=[]):
+  def deliver(self, mode, recipient=None, sub=None, sensor=None, message=[], change={}):
     plant = Plant.get(Plant.localhost == True)
     if mode == 1:
       if sub == 1:
@@ -528,6 +534,67 @@ class MeshNetwork(object):
           message = 'NOT_CHANGED'
 
         self.send(50202, recipient=recipient, plant=plant, messages=['', '', '', message])
+    elif mode == 3:
+      if sub == 1:
+        if 'object' in change and 'uuid' in change:
+          self.send(50301, recipient=recipient, plant=plant, messages=[change['object'], str(change['uuid'])])
+        else:
+          raise ValueError('no full change object')
+      if sub == 2:
+        import json
+        import urllib.request
+        from bson import json_util
+        from models.plant import Plant, Person
+        from models.plant import MessagePreset
+
+        if int(message[0]) == 0:
+          with urllib.request.urlopen('http://{}:2902/get/plant/{}'.format(recipient[1], message[1])) as response:
+            data = json.loads(response.read().decode('utf8'), object_hook=json_util.object_hook)
+
+          del data['uuid']
+          del data['person']
+          del data['preset']
+          del data['localhost']
+          del data['created_at']
+
+          plant = Plant.get(Plant.uuid == message[1])
+          for key in data.keys():
+            setattr(plant, key, plant[key])
+          plant.save()
+
+        elif int(message[0]) == 1:
+          with urllib.request.urlopen('http://{}:2902/get/sensor/{}'.format(recipient[1], message[1])) as response:
+            data = json.loads(response.read().decode('utf8'))
+          del data['uuid']
+
+          sensor = Sensor.get(Sensor.uuid == message[1])
+          for key in data.keys():
+            setattr(sensor, key, sensor[key])
+          sensor.save()
+
+        elif int(message[0]) == 2:
+          # person
+          with urllib.request.urlopen('http://{}:2902/get/responsible/{}'.format(recipient[1], message[1])) as response:
+            data = json.loads(response.read().decode('utf8'))
+          del data['uuid']
+
+          person = Person.get(Person.uuid == message[1])
+          for key in data.keys():
+            setattr(person, key, person[key])
+          person.save()
+        elif int(message[0]) == 3:
+          # sensor satisfaction
+          pass
+        elif int(message[0]) == 4:
+          with urllib.request.urlopen('http://{}:2902/get/message/{}'.format(recipient[1], message[1])) as response:
+            data = json.loads(response.read().decode('utf8'))
+          del data['uuid']
+
+          message_preset = MessagePreset.get(MessagePreset.uuid == message[1])
+          for key in data.keys():
+            setattr(message_preset, key, message_preset[key])
+          message_preset.save()
+        # notify
 
 
 if __name__ == '__main__':

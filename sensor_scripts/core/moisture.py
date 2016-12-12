@@ -3,7 +3,7 @@ from models.plant import Plant
 from models.sensor import Sensor
 
 from tools.sensor import ToolChainSensor
-from sensor_scripts.dricer.mcp3008 import mcp3008
+from sensor_scripts.driver.mcp3008 import mcp3008
 
 
 class GenericMoisture(object):

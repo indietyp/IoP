@@ -3,6 +3,7 @@ import datetime
 from collections import OrderedDict
 from models.sensor import Sensor, SensorData, SensorHardware
 from models.plant import Plant
+from tools.main import VariousTools
 # from pymongo import MongoClient
 # import pymongo
 # from sensor_scripts.driver.char_lcd import Adafruit_CharLCD
@@ -86,43 +87,53 @@ class Display:
     return self
 
   def set(self):
-    execute = False
-    sensor = SensorHardware.get(label='display')
+    result = VariousTools.offline_check('display', hardware=False)
+    if result is True:
+      execute = False
+      sensor = SensorHardware.get(label='display')
 
-    if sensor.last_execution is not None:
-      offset = datetime.datetime.now() - sensor.last_execution
-      if offset.seconds >= 30 * 60:
+      if sensor.last_execution is not None:
+        offset = datetime.datetime.now() - sensor.last_execution
+        if offset.seconds >= 30 * 60:
+          execute = True
+      else:
         execute = True
+
+      if execute is True:
+        sensor.last_execution = datetime.datetime.now()
+        sensor.save()
+
+        print('Display set')
+
+        bus = 1
+        gpio_count = 16
+        address = 32
+
+        self.get()
+        self.calculate()
+
+        # # Create MCP230xx GPIO adapter.
+        # mcp = MCP230XX_GPIO(bus, address, gpio_count)
+
+        # # Create LCD, passing in MCP GPIO adapter.
+        # # lcd = Adafruit_CharLCD(pin_rs=11, pin_e=10, pins_db=pins['pins_db'], GPIO=mcp)
+        # lcd = Adafruit_CharLCD(pin_rs=11, pin_e=10, pins_db=[12,13,14,15])
+
+        # lcd.clear()
+        # lcd.message(self.data['display']['text'])
+      else:
+        print('Display not set')
+
+      # print self.data['display']['text']
     else:
-      execute = True
-
-    if execute is True:
-      sensor.last_execution = datetime.datetime.now()
-      sensor.save()
-
-      print('Display set')
-
-      bus = 1
-      gpio_count = 16
-      address = 32
-
-      self.get()
-      self.calculate()
-
       # # Create MCP230xx GPIO adapter.
       # mcp = MCP230XX_GPIO(bus, address, gpio_count)
-
-      # # Create LCD, passing in MCP GPIO adapter.
-      # # lcd = Adafruit_CharLCD(pin_rs=11, pin_e=10, pins_db=pins['pins_db'], GPIO=mcp)
       # lcd = Adafruit_CharLCD(pin_rs=11, pin_e=10, pins_db=[12,13,14,15])
-
       # lcd.clear()
-      # lcd.message(self.data['display']['text'])
+      print('test')
+      pass
 
-    else:
-      print('Display not set')
 
-    # print self.data['display']['text']
 if __name__ == "__main__":
   # Display().get().calculate()
   Display().set()

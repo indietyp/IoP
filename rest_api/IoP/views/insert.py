@@ -21,7 +21,7 @@ def create_plant_name():
   return json.dumps({'info': 1})
 
 
-def copy_model_instace_from_localhost(target, model, *search):
+def copy_model_instance_from_localhost(target, model, *search):
 
   originals = model.select()
   for expression in search:
@@ -65,7 +65,7 @@ def create_plant(data):
 
     local_plant = Plant.get(Plant.localhost == True)
     for model in [SensorStatus, SensorCount, SensorSatisfactionValue, PlantNetworkUptime]:
-      copy_model_instace_from_localhost(plant, model, model.plant == local_plant)
+      copy_model_instance_from_localhost(plant, model, model.plant == local_plant)
 
 
 @app.route('/create/plant', methods=['POST'])

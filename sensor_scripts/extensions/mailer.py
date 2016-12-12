@@ -3,6 +3,7 @@ from tools.mail import NotificationMailer
 from models.sensor import SensorSatisfactionLevel
 from models.sensor import SensorSatisfactionValue, SensorDangerMessage
 from models.message import MessagePreset
+from tools.main import VariousTools
 
 
 class PlantMailer(object):
@@ -79,70 +80,74 @@ class PlantMailer(object):
           value - current value
           satisfaction - current satisfaction
     """
+    result = VariousTools.offline_check('notification', hardware=False)
+    if result is True:
 
-    if data['satisfaction'].level.label == 'threat':
-      message = SensorDangerMessage()
-      message.plant = data['plant']
-      message.sensor = data['sensor']
-      message.level = data['satisfaction'].level
+      if data['satisfaction'].level.label == 'threat':
+        message = SensorDangerMessage()
+        message.plant = data['plant']
+        message.sensor = data['sensor']
+        message.level = data['satisfaction'].level
 
-      message.message = '---'
-      message.value = data['value']
+        message.message = '---'
+        message.value = data['value']
 
-      message.save()
+        message.save()
 
-    now = datetime.datetime.now()
+      now = datetime.datetime.now()
 
-    se = SensorDangerMessage.select()\
-                            .where(SensorDangerMessage.sent == True)\
-                            .where(SensorDangerMessage.plant == data['plant'])\
-                            .order_by(SensorDangerMessage.created_at.desc())
-    sent = se
+      se = SensorDangerMessage.select()\
+                              .where(SensorDangerMessage.sent == True)\
+                              .where(SensorDangerMessage.plant == data['plant'])\
+                              .order_by(SensorDangerMessage.created_at.desc())
+      sent = se
 
-    us = SensorDangerMessage.select()\
-                            .where(SensorDangerMessage.sent == False)\
-                            .where(SensorDangerMessage.plant == data['plant'])\
-                            .order_by(SensorDangerMessage.created_at.asc())
-    unsent = us
+      us = SensorDangerMessage.select()\
+                              .where(SensorDangerMessage.sent == False)\
+                              .where(SensorDangerMessage.plant == data['plant'])\
+                              .order_by(SensorDangerMessage.created_at.asc())
+      unsent = us
 
-    if unsent.count() != 0 and (now - unsent[0].created_at).seconds > 5 * 60:
+      if unsent.count() != 0 and (now - unsent[0].created_at).seconds > 5 * 60:
 
-      interval = data['plant'].interval * 60 * 60
-      if sent.count() == 0 or (now - se[0].created_at).seconds >= interval:
-        message = ''
-        # for part in unsent:
-        #   s = SensorSatisfactionLevel.get(SensorSatisfactionLevel.label == 'cautioning')
-        #   c = SensorSatisfactionValue.select()\
-        #                              .where(SensorSatisfactionValue.level == s)\
-        #                              .where(SensorSatisfactionValue.plant == data['plant'])\
-        #                              .where(SensorSatisfactionValue.sensor == part.sensor)[0]
-        #   message +=
-        #               {0}
-        #               Sensor: {1}
-        #               Plant: {5}
-        #               Level: threat
-        #               current: {2}{6}
-        #               cautioning at {3}{6} to {4}{6}
+        interval = data['plant'].interval * 60 * 60
+        if sent.count() == 0 or (now - se[0].created_at).seconds >= interval:
+          message = ''
+          # for part in unsent:
+          #   s = SensorSatisfactionLevel.get(SensorSatisfactionLevel.label == 'cautioning')
+          #   c = SensorSatisfactionValue.select()\
+          #                              .where(SensorSatisfactionValue.level == s)\
+          #                              .where(SensorSatisfactionValue.plant == data['plant'])\
+          #                              .where(SensorSatisfactionValue.sensor == part.sensor)[0]
+          #   message +=
+          #               {0}
+          #               Sensor: {1}
+          #               Plant: {5}
+          #               Level: threat
+          #               current: {2}{6}
+          #               cautioning at {3}{6} to {4}{6}
 
 
-        #              .format(part.created_at.strftime('%H:%M'),
-        #                         part.sensor.name,
-        #                         round(part.value, 2),
-        #                         c.min_value,
-        #                         c.max_value,
-        #                         data['plant'].name,
-        #                         part.sensor.unit)
+          #              .format(part.created_at.strftime('%H:%M'),
+          #                         part.sensor.name,
+          #                         round(part.value, 2),
+          #                         c.min_value,
+          #                         c.max_value,
+          #                         data['plant'].name,
+          #                         part.sensor.unit)
 
-        message += self.format_messages(data, unsent)
+          message += self.format_messages(data, unsent)
 
-        self.send_message(data, message)
+          self.send_message(data, message)
 
-        for part in unsent:
-          part.sent = True
-          part.sent_time = now
-          part.save()
+          for part in unsent:
+            part.sent = True
+            part.sent_time = now
+            part.save()
 
-    return True
+      return True
+    else:
+      return False
 
 
 if __name__ == "__main__":

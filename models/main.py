@@ -13,7 +13,7 @@ if __name__ == '__main__':
   db = SqliteDatabase(DATABASE_NAME)
   models = []
 
-  for module in ['plant', 'sensor', 'security']:
+  for module in ['plant', 'sensor', 'security', 'context']:
     exec('import ' + module)
     models.extend([
       obj for name, obj in inspect.getmembers(

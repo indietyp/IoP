@@ -17,6 +17,8 @@ from copy import deepcopy
 from models.plant import Plant, Person
 from models.sensor import SensorSatisfactionValue, SensorSatisfactionLevel, Sensor
 from models.plant import MessagePreset
+from models.context import DayNightTime
+from mesh_network.dedicated import MeshDedicatedDispatch
 
 
 @app.route('/update/plant/<p_uuid>/name', methods=['POST'])
@@ -25,6 +27,7 @@ def update_plant_name(p_uuid):
   plant.name = request.form['new'].lower()
   plant.save()
 
+  MeshDedicatedDispatch().update('plant', plant.uuid)
   return json.dumps({'info': 1})
 
 
@@ -34,6 +37,7 @@ def update_plant_type(p_uuid):
   plant.species = request.form['new'].lower()
   plant.save()
 
+  MeshDedicatedDispatch().update('plant', plant.uuid)
   return json.dumps({'info': 1})
 
 
@@ -43,6 +47,7 @@ def update_plant_location(p_uuid):
   plant.location = request.form['new'].lower()
   plant.save()
 
+  MeshDedicatedDispatch().update('plant', plant.uuid)
   return json.dumps({'info': 1})
 
 
@@ -70,6 +75,7 @@ def update_plant_ranges(p_uuid):
   value_green.save()
   value_yellow.save()
 
+  MeshDedicatedDispatch().update('plant', plant.uuid)
   return json.dumps({'info': 'success'})
 
 
@@ -80,6 +86,8 @@ def update_plant_responsible(p_uuid):
 
   plant.person = person
   plant.save()
+
+  MeshDedicatedDispatch().update('plant', plant.uuid)
   return json.dumps({'info': 1})
 
 
@@ -88,6 +96,7 @@ def update_plant_satisfaction_level_reset(p_uuid):
   plant = Plant.get(Plant.uuid == p_uuid)
   plant.sat_streak = 1
   plant.save()
+
   return json.dumps({'info': 1})
 
 
@@ -127,6 +136,8 @@ def update_plant_notification_duration(p_uuid):
   plant = Plant.get(Plant.uuid == p_uuid)
   plant.interval = int(hours)
   plant.save()
+
+  MeshDedicatedDispatch().update('plant', plant.uuid)
   return json.dumps({'info': 1})
 
 
@@ -136,6 +147,8 @@ def update_plant_connection_lost(p_uuid):
   plant = Plant.get(Plant.uuid == p_uuid)
   plant.connection_lost = int(minutes)
   plant.save()
+
+  MeshDedicatedDispatch().update('plant', plant.uuid)
   return json.dumps({'info': 1})
 
 
@@ -145,6 +158,8 @@ def update_plant_persistant_hold(p_uuid):
   plant = Plant.get(Plant.uuid == p_uuid)
   plant.persistant_hold = minutes / 5
   plant.save()
+
+  MeshDedicatedDispatch().update('plant', plant.uuid)
   return json.dumps({'info': 1})
 
 
@@ -161,6 +176,7 @@ def update_notification_message():
     plant.person.preset = preset
     plant.person.save()
 
+  MeshDedicatedDispatch().update('message', preset.uuid)
   return json.dumps({'info': 'success'})
 
 
@@ -171,6 +187,7 @@ def update_responsible():
   person.email = request.form['email']
   person.save()
 
+  MeshDedicatedDispatch().update('person', person.uuid)
   return json.dumps({'info': 'success'})
 
 
@@ -186,4 +203,20 @@ def update_responsible_wizard():
   person.wizard = True
   person.save()
 
+  MeshDedicatedDispatch().update('person', person.uuid)
+  return json.dumps({'info': 'success'})
+
+
+# add to mesh?
+@app.route('/update/day/night/time', methods=['POST'])
+def update_day_night():
+  data = deepcopy(request.form)
+  for day_night in DayNightTime.select():
+    day_night.stop = data['stop']
+    day_night.start = data['start']
+    day_night.ledbar = data['ledbar']
+    day_night.display = data['display']
+    day_night.generalleds = data['generalleds']
+    day_night.notification = data['notification']
+    day_night.save()
   return json.dumps({'info': 'success'})

@@ -309,6 +309,21 @@ def get_plant_sensor_data_high_today(sensor, p_uuid, mode, if_no_data_days_befor
 
 # @app.route('/get/sensor/<sensor>/range/min')
 # @app.route('/get/sensor/<sensor>/range/max')
+# @app.route('/get/sensor/uuid')
+# def get_sensor_overall(s_uuid):
+#   sensor = Sensor.get(Sensor.uuid == s_uuid)
+#   return json.dumps({'max': sensor.max_value, 'min': sensor.min_value})
+
+@app.route('/get/sensor/<s_uuid>')
+def get_sensor_overall(s_uuid):
+  sensor = Sensor.get(Sensor.uuid == s_uuid)
+  sensor = model_to_dict(sensor)
+  del sensor['id']
+  sensor['uuid'] = str(sensor['uuid'])
+
+  return json.dumps(sensor)
+
+
 @app.route('/get/sensor/<sensor>/range')
 def get_sensor_range(sensor):
   sensor = Sensor.get(Sensor.name == sensor)
@@ -394,6 +409,17 @@ def get_plant_sensors_range(p_uuid):
   return json.dumps(output)
 
 
+@app.route('/get/responsible/<r_uuid>')
+def get_responsible(r_uuid):
+  person = Person.get(Person.uuid == r_uuid)
+  person = model_to_dict(person)
+  del person['id']
+  del person['preset']
+  person['uuid'] = str(person['uuid'])
+
+  return json.dumps(person)
+
+
 @app.route('/get/responsible/persons')
 def get_responsible_persons():
   people = Person.select()
@@ -472,7 +498,13 @@ def get_message_names():
 @app.route('/get/message/<m_uuid>')
 def get_message(m_uuid):
   message = MessagePreset.get(MessagePreset.uuid == m_uuid)
-  return json.dumps(message.message)
+  message = model_to_dict(message)
+
+  del message['id']
+  del message['created_at']
+  message['uuid'] = str(message['uuid'])
+
+  return json.dumps(message)
 
 
 @app.route('/get/message/<m_uuid>/content')
@@ -541,6 +573,16 @@ def get_current_sensor_satifaction():
 
   return json.dumps(output)
 
+
+@app.route('/get/day/night/time')
+def get_day_night_time():
+  from models.context import DayNightTime
+  output = []
+  for daynight in DayNightTime.select():
+    dn = model_to_dict(daynight)
+    dn['uuid'] = str(dn['uuid'])
+    output.append(dn)
+  return json.dumps(output)
 
 
 # @app.route('/get/plants/random')

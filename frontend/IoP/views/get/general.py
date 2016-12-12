@@ -37,3 +37,21 @@ def create_new_plant():
     data = response.read().decode('utf8')
 
   return data
+
+
+@app.route('/get/day_night', methods=['POST'])
+def get_day_night():
+  with urllib.request.urlopen('http://localhost:2902/get/day/night/time') as response:
+    output = json.loads(response.read().decode('utf8'))
+
+  return json.dumps(output[0])
+
+
+@app.route('/change/day_night', methods=['POST'])
+def change_day_night():
+  data = urllib.parse.urlencode(request.form).encode('ascii')
+  req = urllib.request.Request('http://localhost:2902/update/day/night/time', data)
+  with urllib.request.urlopen(req) as response:
+    data = response.read().decode('utf8')
+
+  return data

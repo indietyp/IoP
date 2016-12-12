@@ -91,8 +91,8 @@ class PlantSimulate:
       print(information)
 
     predicted = SensorDataPrediction.select().where(SensorDataPrediction.plant == target,
-                                                    SensorDataPrediction.sensor == sensor)\
-                                             .order_by(SensorDataPrediction.created_at.asc())\
+                                                    SensorDataPrediction.sensor == sensor) \
+                                             .order_by(SensorDataPrediction.created_at.asc()) \
                                              .limit(1)
 
     for sample in predicted:
