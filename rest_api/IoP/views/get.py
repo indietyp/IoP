@@ -583,27 +583,4 @@ def get_day_night_time():
     dn['uuid'] = str(dn['uuid'])
     output.append(dn)
   return json.dumps(output)
-
-
-# @app.route('/get/plants/random')
-
-# @app.route('/get/plant/name') - ---
-# @app.route('/get/plant/created_at') - done
-# @app.route('/get/plant/location') - done
-# @app.route('/get/plant/sensor/data') - done
-# @app.route('/get/plant/sensor/data/forecast')
-# @app.route('/get/plant/sensor/data/current') -- done
-# @app.route('/get/plant/sensor/<sensor>/high/today') - done (modified)
-# @app.route('/get/plant/sensor/<sensor>/difference/today') - ---
-# @app.route('/get/plant/sensor/<sensor>/low/today') - done (modified)
-
-# @app.route('/get/plant/sensor/<sensor>/high/ever') - done
-# @app.route('/get/plant/sensor/<sensor>/difference/ever') - ---
-# @app.route('/get/plant/sensor/<sensor>/low/ever') - done
-
-# @app.route('/get/plant/sensors/overall') - done (path modified)
-# @app.route('/get/plant/online') # TRUE if online FALSE if online time!
-# @app.route('/get/plant/responsible') - done
-
-# @app.route('/get/responsible/<responsible>/wizard') # get TRUE or FALSE - done
-# @app.route('/get/responsible/wizard')
+  
