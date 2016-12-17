@@ -101,8 +101,12 @@ class SensorDataForecast(object):
 
     for entry in sd:
       created_at = entry.created_at
-      str_entry = created_at.replace('+00:00', '')
-      dt_date = datetime.datetime.strptime(str_entry, '%Y-%m-%d %H:%M:%S')
+      if isinstance(created_at, str):
+        str_entry = created_at.replace('+00:00', '')
+        dt_date = datetime.datetime.strptime(str_entry, '%Y-%m-%d %H:%M:%S')
+      else:
+        # print(type(created_at))
+        dt_date = created_at
       data['date'].append(dt_date)
 
       data['value'].append(entry.value)
@@ -152,7 +156,7 @@ class SensorDataForecast(object):
                                  .where(SensorDataPrediction.sensor == data['sensor']) \
                                  .execute()
 
-    print(data)
+    # print(data)
     for key, prediction in enumerate(data['prediction']['prediction']):
       entry = SensorDataPrediction()
       entry.plant = data['plant']
