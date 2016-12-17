@@ -55,6 +55,7 @@ class MoistureBar:
 
       # Create MCP230xx GPIO adapter.
       mcp = MCP230XX_GPIO(bus, address, gpio_count)
+      mcp.setmode(mcp.BCM)
 
       # GREEN 5/6
       # YELLOW 3/4
@@ -65,14 +66,15 @@ class MoistureBar:
           led = i[2] if status.status is True else i[1]
 
       pins = [0, 1, 2, 3, 4, 5]
-      for i in range(6, led, -1):
+      for pin in pins:
+        mcp.setup(pin, mcp.OUT)
+
+      for i in range(5, led - 1, -1):
         mcp.output(i, 0)  # Pin 0 Low
-        print('triggered')
         time.sleep(round((1.35**i) / 10, 3))
 
-      for i in range(0, led + 1):
+      for i in range(0, led):
         mcp.output(i, 1)  # Pin 0 High
-        print('triggered!')
         time.sleep(round((1.35**i) / 10, 3))
 
 if __name__ == "__main__":
