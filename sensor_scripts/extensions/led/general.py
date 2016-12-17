@@ -22,7 +22,7 @@ class TrafficLight(object):
       for status in all_status:
         setting[status.level.label] += 1
 
-      # GPIO.setup
+      GPIO.setmode(GPIO.BCM)
       # GREEN
       GPIO.setup(3, GPIO.OUT)
       GPIO.output(3, False)
