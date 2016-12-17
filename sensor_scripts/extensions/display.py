@@ -86,7 +86,6 @@ class Display:
 
   def set(self):
     result = VariousTools.offline_check('display', hardware=False)
-    print(result)
     if result is True:
       execute = False
       sensor = SensorHardware.get(label='display')

@@ -1,8 +1,7 @@
 from sensor_scripts.extensions.display import Display
 from sensor_scripts.extensions.mailer import PlantMailer
-
-# from sensor_scripts.extensions.led.general import TrafficLight
-# from sensor_scripts.extensions.led.moisture_bar import MoistureBar
+from sensor_scripts.extensions.led.general import TrafficLight
+from sensor_scripts.extensions.led.moisture_bar import MoistureBar
 
 
 class ToolChainHardware(object):
@@ -12,12 +11,12 @@ class ToolChainHardware(object):
     pass
 
   def execute_led_traffic_light(self, data):
-    pass
-    # TrafficLight.run()
+    print('TrafficLight')
+    TrafficLight.run()
 
   def execute_led_bar(self, data):
-    pass
-    # MoistureBar.run()
+    print('MoistureBar')
+    MoistureBar.run()
 
   def execute_display(self, data):
     Display().set()
