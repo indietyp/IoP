@@ -24,9 +24,9 @@ test:
     [ ] moisture
     [ ] display
   ✔ rest api change of underlying db in virtualbox -> does it work at all or do I need to restart the process? @done (16-09-18 13:38)
-  [ ] moisture
-  [ ] light
-  [ ] temperature + humidity
+  ✔ moisture @done (16-12-17 14:53)
+  ✔ light @done (16-12-17 14:53)
+  ✔ temperature + humidity @done (16-12-17 14:53)
   [ ] extensions
     [ ] moisture bar
     [ ] trafficlight

@@ -46,39 +46,14 @@ class DHT22:
 
       tools = ToolChainSensor()
 
-      # print('temp ' + str(tools.insert_data(temperature)))
+      print('temp ' + str(tools.insert_data(temperature)))
       # print('humi ' + str(tools.insert_data(humidity)))
-
-      # print('ligh ' + str(tools.insert_data(light)))
-      # print('mois ' + str(tools.insert_data(moisture)))
 
       # tools.set_hardware(temperature)
       # tools.set_hardware(humidity)
-
-      # t_id = self.db.Sensor.find_one({'t': 'temperature'})['s_id']
-      # h_id = self.db.Sensor.find_one({'t': 'humidity'})['s_id']
-
-      # # INSERT IN DATABASE
-      # tool_chain = Tools(self.db, plant_id)
-      # tool_chain.notify_sensor([t_id, h_id], [temperature, humidity], mode)
-
-      # # ACTIVATE MAILER
-      # mailer = Mailer(self.db)
-      # mailer.plant(plant_id, [t_id, h_id])
-
-      # # INSERT DATA IN GENERAL STATUS LEDS
-      # general_status(plant_id, [t_id, h_id], [temperature, humidity]).insert().set()
-
-      # # IF == 1 insert also in legacy database else 100 records..
-      # return tool_chain.change_detector([t_id, h_id], [temperature, humidity])
 
     # else:
     #   return -1
 
 if __name__ == '__main__':
-  # DHT22().get_data()
-  import time
-  # while True:
-  DHT22().run()
-  # print('done')
-  # time.sleep(.5)
+  DHT22.run()
