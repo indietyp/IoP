@@ -46,11 +46,11 @@ class DHT22:
 
       tools = ToolChainSensor()
 
-      print('temp ' + str(tools.insert_data(temperature)))
-      print('humi ' + str(tools.insert_data(humidity)))
+      if tools.insert_data(temperature) is True:
+        tools.set_hardware(temperature)
 
-      tools.set_hardware(temperature)
-      # tools.set_hardware(humidity)
+      if tools.insert_data(humidity) is True:
+        tools.set_hardware(humidity)
 
     # else:
     #   return -1

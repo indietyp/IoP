@@ -496,6 +496,7 @@ class MeshNetwork(object):
         import json
         import urllib.request
         from models.sensor import SensorData, Sensor
+        from models.plant import Plant
 
         plant = Plant.get(Plant.localhost == True)
         print('http://{0}:2902/get/plant/{1}/sensor/{2}/latest'.format(recipient[1], recipient[0], message[0]))
