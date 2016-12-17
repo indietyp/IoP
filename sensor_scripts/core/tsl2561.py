@@ -63,8 +63,8 @@ class TSL2561(object):
              'plant': plant,
              'value': lux}
 
-    if tools.insert_data(moisture):
-      tools.set_hardware(moisture)
+    if tools.insert_data(light):
+      tools.set_hardware(light)
     print(light)
 
 if __name__ == '__main__':
