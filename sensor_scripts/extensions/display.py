@@ -57,7 +57,7 @@ class Display:
 
       self.data['display']['text'] += ''.join(display_list)
 
-    print(self.data['display']['text'])
+    # print(self.data['display']['text'])
 
     return self
 
@@ -86,7 +86,7 @@ class Display:
 
   def set(self):
     result = VariousTools.offline_check('display', hardware=False)
-    result = True
+    print(result)
     if result is True:
       execute = False
       sensor = SensorHardware.get(label='display')
@@ -98,7 +98,6 @@ class Display:
       else:
         execute = True
 
-      execute = True
       if execute is True:
         sensor.last_execution = datetime.datetime.now()
         sensor.save()
@@ -120,19 +119,19 @@ class Display:
 
         lcd.clear()
         lcd.message(self.data['display']['text'])
-
-        print(self.data['display']['text'])
       else:
         print('Display not set')
 
       # print self.data['display']['text']
     else:
-      # # Create MCP230xx GPIO adapter.
-      # mcp = MCP230XX_GPIO(bus, address, gpio_count)
-      # lcd = Adafruit_CharLCD(pin_rs=11, pin_e=10, pins_db=[12,13,14,15])
-      # lcd.clear()
-      print('test')
-      pass
+      print('not in time')
+      bus = 1
+      gpio_count = 16
+      address = 32
+
+      mcp = MCP230XX_GPIO(bus, address, gpio_count)
+      lcd = Adafruit_CharLCD(pin_rs=11, pin_e=10, pins_db=[12, 13, 14, 15], GPIO=mcp)
+      lcd.clear()
 
 
 if __name__ == "__main__":
