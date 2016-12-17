@@ -105,7 +105,7 @@ class Display:
 
         bus = 1
         gpio_count = 16
-        address = 32
+        address = 0x20
 
         self.get()
         self.calculate()

@@ -29,8 +29,8 @@ test:
   ✔ temperature + humidity @done (16-12-17 14:53)
   [ ] extensions
     [ ] moisture bar
-    [ ] trafficlight
-    [ ] display
+    ✔ trafficlight @done (16-12-17 21:45)
+    ✔ display @done (16-12-17 21:45)
     [ ] water_pump
   [ ] toolchain sensor
   ✔ multithreaded process deamon @done (16-09-15 20:31)

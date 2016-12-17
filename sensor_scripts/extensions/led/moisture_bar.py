@@ -49,7 +49,12 @@ class MoistureBar:
       print(status.level.label)
 
       # init MCP230xx GPIO adapter.
-      mcp = MCP230XX_GPIO(1, 32, 16)
+      bus = 1
+      gpio_count = 16
+      address = 0x20
+
+      # Create MCP230xx GPIO adapter.
+      mcp = MCP230XX_GPIO(bus, address, gpio_count)
 
       # GREEN 5/6
       # YELLOW 3/4
@@ -60,9 +65,7 @@ class MoistureBar:
           led = i[2] if status.status is True else i[1]
 
       pins = [0, 1, 2, 3, 4, 5]
-      # for pin in pins:
-      #   mcp.setup(pin, mcp.OUT)
-
+      print(led)
       for i in range(6, led, -1):
         mcp.output(i, 0)  # Pin 0 Low
         # print('-' * i)
