@@ -65,15 +65,14 @@ class MoistureBar:
           led = i[2] if status.status is True else i[1]
 
       pins = [0, 1, 2, 3, 4, 5]
-      print(led)
       for i in range(6, led, -1):
         mcp.output(i, 0)  # Pin 0 Low
-        # print('-' * i)
+        print('triggered')
         time.sleep(round((1.35**i) / 10, 3))
 
       for i in range(0, led + 1):
         mcp.output(i, 1)  # Pin 0 High
-        # print('#' * i)
+        print('triggered!')
         time.sleep(round((1.35**i) / 10, 3))
 
 if __name__ == "__main__":
