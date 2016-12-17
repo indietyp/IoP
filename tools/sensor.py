@@ -140,7 +140,7 @@ class ToolChainSensor(object):
       url = 'reset'
 
     for external in Plant.select().where(Plant.localhost == False):
-      with urllib.request.urlopen('http://{}:2902/update/plant/{}/satisfaction/level/{}'.format(external.ip, str(plant.uuid), url)) as response:
+      with urllib.request.urlopen('http://{}:2902/update/plant/{}/satisfaction/level/{}'.format(external.ip, str(data['plant'].uuid), url)) as response:
         data = json.loads(response.read().decode('utf8'))
         print(data)
 
