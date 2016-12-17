@@ -49,8 +49,8 @@ class DHT22:
       print(tools.insert_data(temperature))
       print(tools.set_hardware(temperature))
 
-      if tools.insert_data(temperature) is True:
-        tools.set_hardware(temperature)
+      # if tools.insert_data(temperature) is True:
+      #   tools.set_hardware(temperature)
 
       if tools.insert_data(humidity) is True:
         tools.set_hardware(humidity)

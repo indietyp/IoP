@@ -1,11 +1,11 @@
 import re
 import datetime
 from models.plant import Plant
-from tools.main import VariousTools
 from collections import OrderedDict
+from tools.main import VariousTools
 from models.sensor import Sensor, SensorData, SensorHardware
-from sensor_scripts.driver.char_lcd import Adafruit_CharLCD
 from sensor_scripts.driver.mcp23017 import MCP230XX_GPIO
+from sensor_scripts.driver.char_lcd import Adafruit_CharLCD
 
 
 class Display:
@@ -86,6 +86,7 @@ class Display:
 
   def set(self):
     result = VariousTools.offline_check('display', hardware=False)
+    result = True
     if result is True:
       execute = False
       sensor = SensorHardware.get(label='display')
@@ -115,7 +116,7 @@ class Display:
         mcp = MCP230XX_GPIO(bus, address, gpio_count)
 
         # Create LCD, passing in MCP GPIO adapter.
-        lcd = Adafruit_CharLCD(pin_rs=11, pin_e=10, pins_db=[12,13,14,15])
+        lcd = Adafruit_CharLCD(pin_rs=11, pin_e=10, pins_db=[12, 13, 14, 15], GPIO=mcp)
 
         lcd.clear()
         lcd.message(self.data['display']['text'])

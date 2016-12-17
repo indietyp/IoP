@@ -33,6 +33,7 @@ class TrafficLight(object):
       GPIO.setup(13, GPIO.OUT)
       GPIO.output(13, False)
 
+      print(setting)
       if setting['threat'] > 0:
         GPIO.output(13, True)
       elif setting['cautioning'] > 0:

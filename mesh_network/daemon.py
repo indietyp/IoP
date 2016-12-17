@@ -488,6 +488,7 @@ class MeshNetwork(object):
       self.send(30900, recipient=recipient, plant=plant)
 
   def deliver(self, mode, recipient=None, sub=None, sensor=None, message=[], change={}):
+    from models.plant import Plant
     plant = Plant.get(Plant.localhost == True)
     if mode == 1:
       if sub == 1:
@@ -496,7 +497,6 @@ class MeshNetwork(object):
         import json
         import urllib.request
         from models.sensor import SensorData, Sensor
-        from models.plant import Plant
 
         plant = Plant.get(Plant.localhost == True)
         print('http://{0}:2902/get/plant/{1}/sensor/{2}/latest'.format(recipient[1], recipient[0], message[0]))
