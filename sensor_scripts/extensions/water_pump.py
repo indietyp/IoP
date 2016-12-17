@@ -13,6 +13,7 @@ class WaterPumpChecker:
     self.plant = self.db.Plant.find_one({"abbreviation": plant})
 
     self.tools = Tools(self.db, self.plant)
+
   def calculate(self, sensorData):
     now = sensorData[0]
     before = sensorData[1]
@@ -25,6 +26,7 @@ class WaterPumpChecker:
         status = True
 
     return status
+
   def set(self):
     sensorData = self.db.SensorData.find({'p': self.plant['abbreviation'], 's': 'm'}).sort([('_id', pymongo.DESCENDING)])
     status = self.calculate(sensorData)

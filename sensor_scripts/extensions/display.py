@@ -1,13 +1,11 @@
 import re
 import datetime
-from collections import OrderedDict
-from models.sensor import Sensor, SensorData, SensorHardware
 from models.plant import Plant
 from tools.main import VariousTools
-# from pymongo import MongoClient
-# import pymongo
-# from sensor_scripts.driver.char_lcd import Adafruit_CharLCD
-# from sensor_scripts.driver.mcp23017 import MCP230XX_GPIO
+from collections import OrderedDict
+from models.sensor import Sensor, SensorData, SensorHardware
+from sensor_scripts.driver.char_lcd import Adafruit_CharLCD
+from sensor_scripts.driver.mcp23017 import MCP230XX_GPIO
 
 
 class Display:
@@ -99,6 +97,7 @@ class Display:
       else:
         execute = True
 
+      execute = True
       if execute is True:
         sensor.last_execution = datetime.datetime.now()
         sensor.save()
@@ -112,15 +111,16 @@ class Display:
         self.get()
         self.calculate()
 
-        # # Create MCP230xx GPIO adapter.
-        # mcp = MCP230XX_GPIO(bus, address, gpio_count)
+        # Create MCP230xx GPIO adapter.
+        mcp = MCP230XX_GPIO(bus, address, gpio_count)
 
-        # # Create LCD, passing in MCP GPIO adapter.
-        # # lcd = Adafruit_CharLCD(pin_rs=11, pin_e=10, pins_db=pins['pins_db'], GPIO=mcp)
-        # lcd = Adafruit_CharLCD(pin_rs=11, pin_e=10, pins_db=[12,13,14,15])
+        # Create LCD, passing in MCP GPIO adapter.
+        lcd = Adafruit_CharLCD(pin_rs=11, pin_e=10, pins_db=[12,13,14,15])
 
-        # lcd.clear()
-        # lcd.message(self.data['display']['text'])
+        lcd.clear()
+        lcd.message(self.data['display']['text'])
+
+        print(self.data['display']['text'])
       else:
         print('Display not set')
 
