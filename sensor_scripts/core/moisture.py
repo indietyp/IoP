@@ -16,7 +16,7 @@ class GenericMoisture(object):
   def run(samples=10):
     values = []
     for i in range(0, samples):
-      values.append(mcp3008.read_pct(5))
+      values.append(mcp3008().read_pct(5))
       time.sleep(.2)
 
     average = sum(values) / float(len(values))
@@ -28,5 +28,9 @@ class GenericMoisture(object):
                   'plant': plant,
                   'value': average}
 
-      tools.insert_data(moisture)
-      tools.set_hardware(moisture)
+      # tools.insert_data(moisture)
+      # tools.set_hardware(moisture)
+      print(moisture)
+
+if __name__ == '__main__':
+  GenericMoisture.run()

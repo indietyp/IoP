@@ -1,6 +1,6 @@
 import sys
 import random
-# import Adafruit_DHT
+import Adafruit_DHT
 
 # from pymongo import MongoClient
 from models.plant import Plant
@@ -29,30 +29,24 @@ class DHT22:
     humidity = {'sensor': Sensor.select().where(Sensor.name == 'humidity')[0],
                 'plant': plant}
 
-    light = {'sensor': Sensor.select().where(Sensor.name == 'light')[0],
-             'plant': plant}
-    moisture = {'sensor': Sensor.select().where(Sensor.name == 'moisture')[0],
-                'plant': plant}
-
     if temperature['sensor'].model == humidity['sensor'].model:
-      pass
-      # sensor = Adafruit_DHT.DHT22 if temperature['semsor'].name == 'DHT22' else Adafruit_DHT11
+      sensor = Adafruit_DHT.DHT22 if temperature['sensor'].model == 'DHT22' else Adafruit_DHT.DHT11
     pin = 18
 
-    humidity['value'], temperature['value'] = random.random() * 100, random.random() * 20 + 10
-    light['value'], moisture['value'] = random.random() * 100, random.random() * 100,
     # FETCH DATA FROM SENSOR
-    # humidity, temperature = Adafruit_DHT.read_retry(sensor, pin)
-
+    humidity['value'], temperature['value'] = Adafruit_DHT.read_retry(sensor, pin)
+    print(humidity)
+    print(temperature)
     if humidity is not None and temperature is not None:
       # print(str(temperature))
+      pass
       # print(str(humidity))
       # temperature = round(temperature, 2)
       # humidity = round(humidity, 2)
 
       tools = ToolChainSensor()
 
-      print('temp ' + str(tools.insert_data(temperature)))
+      # print('temp ' + str(tools.insert_data(temperature)))
       # print('humi ' + str(tools.insert_data(humidity)))
 
       # print('ligh ' + str(tools.insert_data(light)))
