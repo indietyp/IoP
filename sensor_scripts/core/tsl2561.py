@@ -44,15 +44,15 @@ class TSL2561(object):
 
     # (calulation according to the datasheet)
     if 0 < ratio <= 0.50:
-        lux = 0.0304 * ambiance - 0.062 * ambiance * (ratio**1.4)
+      lux = 0.0304 * ambiance - 0.062 * ambiance * (ratio**1.4)
     elif 0.50 < ratio <= 0.61:
-        lux = 0.0224 * ambiance - 0.031 * ir
+      lux = 0.0224 * ambiance - 0.031 * ir
     elif 0.61 < ratio <= 0.80:
-        lux = 0.0128 * ambiance - 0.0153 * ir
+      lux = 0.0128 * ambiance - 0.0153 * ir
     elif 0.80 < ratio <= 1.3:
-        lux = 0.00146 * ambiance - 0.00112 * ir
+      lux = 0.00146 * ambiance - 0.00112 * ir
     else:
-        lux = 0
+      lux = 0
 
 
 
@@ -63,8 +63,8 @@ class TSL2561(object):
              'plant': plant,
              'value': lux}
 
-    # tools.insert_data(moisture)
-    # tools.set_hardware(moisture)
+    if tools.insert_data(moisture):
+      tools.set_hardware(moisture)
     print(light)
 
 if __name__ == '__main__':
