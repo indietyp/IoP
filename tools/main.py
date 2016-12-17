@@ -47,7 +47,9 @@ class VariousTools(object):
     for time in DayNightTime.select():
       mode = getattr(time, mode)
       if mode is True:
-        if not (datetime.time.(str(time.stop), '%-H%M') <= datetime.time.now() >= datetime.time.strptime(str(time.start), '%-H%M')):
+        stop = str(time.stop) if len(time.stop) > 3 else '0' + str(time.stop)
+        start = str(time.start) if len(time.start) > 3 else '0' + str(time.start)
+        if not (datetime.time(hour=int(start[0:2]), minute=int(start[2:4])) <= datetime.datetime.now().time() <= datetime.time(hour=int(stop[0:2]), minute=int(stop[2:4]))):
           online = False
 
     if online is False:
