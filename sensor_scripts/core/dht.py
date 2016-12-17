@@ -46,6 +46,9 @@ class DHT22:
 
       tools = ToolChainSensor()
 
+      print(tools.insert_data(temperature))
+      print(tools.set_hardware(temperature))
+
       if tools.insert_data(temperature) is True:
         tools.set_hardware(temperature)
 
