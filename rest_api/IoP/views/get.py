@@ -166,11 +166,12 @@ def get_plant_sensor_data(p_uuid, sensor):
   content = []
   for data in sensor_data_set:
     data = model_to_dict(data)
-    try:
-      data['timestamp'] = data['created_at'].replace('+00:00', '')
-      data['timestamp'] = datetime.datetime.strptime(data['timestamp'], '%Y-%m-%d %H:%M:%S')
-    except:
-      data['timestamp'] = datetime.datetime.strptime(data['timestamp'], "%Y-%m-%d %H:%M:%S.%f")
+    if isinstance(data['timestamp'], str):
+      try:
+        data['timestamp'] = data['created_at'].replace('+00:00', '')
+        data['timestamp'] = datetime.datetime.strptime(data['timestamp'], '%Y-%m-%d %H:%M:%S')
+      except:
+        data['timestamp'] = datetime.datetime.strptime(data['timestamp'], "%Y-%m-%d %H:%M:%S.%f")
     data['timestamp'] = data['timestamp'].timestamp()
 
     del data['id']
@@ -195,11 +196,12 @@ def get_plant_sensor_data_after(p_uuid, sensor, until):
   content = []
   for data in sensor_data_set:
     data = model_to_dict(data)
-    try:
-      data['timestamp'] = data['created_at'].replace('+00:00', '')
-      data['timestamp'] = datetime.datetime.strptime(data['timestamp'], '%Y-%m-%d %H:%M:%S')
-    except:
-      data['timestamp'] = datetime.datetime.strptime(data['timestamp'], "%Y-%m-%d %H:%M:%S.%f")
+    if isinstance(data['timestamp'], str):
+      try:
+        data['timestamp'] = data['created_at'].replace('+00:00', '')
+        data['timestamp'] = datetime.datetime.strptime(data['timestamp'], '%Y-%m-%d %H:%M:%S')
+      except:
+        data['timestamp'] = datetime.datetime.strptime(data['timestamp'], "%Y-%m-%d %H:%M:%S.%f")
     data['timestamp'] = data['timestamp'].timestamp()
 
     del data['id']
@@ -267,11 +269,12 @@ def get_sensor_data_high_low(p_uuid, sensor, high, date_time=None):
 
   raw = sensor_data_set[0]
   data = model_to_dict(raw)
-  data['t'] = data['created_at'].replace('+00:00', '')
-  try:
-    data['t'] = datetime.datetime.strptime(data['t'], '%Y-%m-%d %H:%M:%S')
-  except:
-    data['t'] = datetime.datetime.strptime(data['t'], "%Y-%m-%d %H:%M:%S.%f")
+  if isinstance(data['t'], str):
+    data['t'] = data['created_at'].replace('+00:00', '')
+    try:
+      data['t'] = datetime.datetime.strptime(data['t'], '%Y-%m-%d %H:%M:%S')
+    except:
+      data['t'] = datetime.datetime.strptime(data['t'], "%Y-%m-%d %H:%M:%S.%f")
   data['t'] = data['t'].timestamp()
 
   data['v'] = data['value']
@@ -451,11 +454,13 @@ def get_plant_data_selective(p_uuid, sensor, start, stop):
   content = []
   for data in sensor_data_set:
     data = model_to_dict(data)
-    try:
-      data['timestamp'] = data['created_at'].replace('+00:00', '')
-      data['timestamp'] = datetime.datetime.strptime(data['timestamp'], '%Y-%m-%d %H:%M:%S')
-    except:
-      data['timestamp'] = datetime.datetime.strptime(data['timestamp'], "%Y-%m-%d %H:%M:%S.%f")
+
+    if isinstance(data['timestamp'], str):
+      try:
+        data['timestamp'] = data['created_at'].replace('+00:00', '')
+        data['timestamp'] = datetime.datetime.strptime(data['timestamp'], '%Y-%m-%d %H:%M:%S')
+      except:
+        data['timestamp'] = datetime.datetime.strptime(data['timestamp'], "%Y-%m-%d %H:%M:%S.%f")
     data['timestamp'] = data['timestamp'].timestamp()
 
     del data['id']
