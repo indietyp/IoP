@@ -180,7 +180,7 @@ def get_plant_sensor_data(p_uuid, sensor):
     del data['plant']
     del data['sensor']
     content.append(data)
-  return json.dumps(content)
+  return json.dumps(content, default=json_util.default)
 
 
 @app.route('/get/plant/<p_uuid>/sensor/<sensor>/data/<float:until>')
@@ -212,7 +212,7 @@ def get_plant_sensor_data_after(p_uuid, sensor, until):
     del data['plant']
     del data['sensor']
     content.append(data)
-  return json.dumps(content)
+  return json.dumps(content, default=json_util.default)
 
 
 @app.route('/get/plant/<p_uuid>/sensor/<sensor>/data/current')
@@ -475,7 +475,7 @@ def get_plant_data_selective(p_uuid, sensor, start, stop):
     del data['plant']
     del data['sensor']
     content.append(data)
-  return json.dumps(content)
+  return json.dumps(content, default=json_util.default)
 
 
 @app.route('/get/plant/<p_uuid>/sensor/<sensor>/data/count')
