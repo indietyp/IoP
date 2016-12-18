@@ -166,12 +166,14 @@ def get_plant_sensor_data(p_uuid, sensor):
   content = []
   for data in sensor_data_set:
     data = model_to_dict(data)
-    if isinstance(data['timestamp'], str):
+    if isinstance(data['created_at'], str):
       try:
         data['timestamp'] = data['created_at'].replace('+00:00', '')
         data['timestamp'] = datetime.datetime.strptime(data['timestamp'], '%Y-%m-%d %H:%M:%S')
       except:
         data['timestamp'] = datetime.datetime.strptime(data['timestamp'], "%Y-%m-%d %H:%M:%S.%f")
+    else:
+      data['timestamp'] = data['created_at']
     data['timestamp'] = data['timestamp'].timestamp()
 
     del data['id']
@@ -196,12 +198,14 @@ def get_plant_sensor_data_after(p_uuid, sensor, until):
   content = []
   for data in sensor_data_set:
     data = model_to_dict(data)
-    if isinstance(data['timestamp'], str):
+    if isinstance(data['created_at'], str):
       try:
         data['timestamp'] = data['created_at'].replace('+00:00', '')
         data['timestamp'] = datetime.datetime.strptime(data['timestamp'], '%Y-%m-%d %H:%M:%S')
       except:
         data['timestamp'] = datetime.datetime.strptime(data['timestamp'], "%Y-%m-%d %H:%M:%S.%f")
+    else:
+      data['timestamp'] = data['created_at']
     data['timestamp'] = data['timestamp'].timestamp()
 
     del data['id']
@@ -457,12 +461,14 @@ def get_plant_data_selective(p_uuid, sensor, start, stop):
   for data in sensor_data_set:
     data = model_to_dict(data)
 
-    if isinstance(data['timestamp'], str):
+    if isinstance(data['created_at'], str):
       try:
         data['timestamp'] = data['created_at'].replace('+00:00', '')
         data['timestamp'] = datetime.datetime.strptime(data['timestamp'], '%Y-%m-%d %H:%M:%S')
       except:
         data['timestamp'] = datetime.datetime.strptime(data['timestamp'], "%Y-%m-%d %H:%M:%S.%f")
+    else:
+      data['timestamp'] = data['created_at']
     data['timestamp'] = data['timestamp'].timestamp()
 
     del data['id']
