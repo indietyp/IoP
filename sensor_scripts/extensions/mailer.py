@@ -15,12 +15,15 @@ class PlantMailer(object):
 
     for part in messages:
       preset = part.plant.person.preset
-
-      created_at = part.created_at.replace('+00:00', '')
-      try:
-        created_at = datetime.datetime.strptime(created_at, '%Y-%m-%d %H:%M:%S')
-      except:
-        created_at = datetime.datetime.strptime(created_at, "%Y-%m-%d %H:%M:%S.%f")
+      
+      if isinstance(part.created_at, str):
+        created_at = part.created_at.replace('+00:00', '')
+        try:
+          created_at = datetime.datetime.strptime(created_at, '%Y-%m-%d %H:%M:%S')
+        except:
+          created_at = datetime.datetime.strptime(created_at, "%Y-%m-%d %H:%M:%S.%f")
+      else:
+        created_at = part.created_at
 
 
       s = SensorSatisfactionLevel.get(SensorSatisfactionLevel.label == 'cautioning')
@@ -57,6 +60,7 @@ class PlantMailer(object):
       output += tmp + '\n\n'
 
     print(output)
+    return output
 
 
 
@@ -136,7 +140,9 @@ class PlantMailer(object):
           #                         data['plant'].name,
           #                         part.sensor.unit)
 
-          message += self.format_messages(data, unsent)
+          print(type(unsent))
+          print(type(data))
+          message += self.format_messages(unsent)
 
           self.send_message(data, message)
 

@@ -24,8 +24,8 @@ class TrafficLight(object):
 
       GPIO.setmode(GPIO.BCM)
       # GREEN
-      GPIO.setup(3, GPIO.OUT)
-      GPIO.output(3, False)
+      GPIO.setup(5, GPIO.OUT)
+      GPIO.output(5, False)
       # YELLOW
       GPIO.setup(6, GPIO.OUT)
       GPIO.output(6, False)
@@ -39,7 +39,7 @@ class TrafficLight(object):
       elif setting['cautioning'] > 0:
         GPIO.output(6, True)
       elif setting['optimum'] > 0:
-        GPIO.output(3, True)
-
+        GPIO.output(5, True)
+      # GPIO.cleanup()
 if __name__ == "__main__":
   TrafficLight.run()

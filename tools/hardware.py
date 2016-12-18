@@ -19,12 +19,14 @@ class ToolChainHardware(object):
     MoistureBar.run()
 
   def execute_display(self, data):
+    print('Display')
     Display().set()
 
   def execute_water_pump(self, data):
     print('WATER_PUMP')
 
   def execute_mailer(self, data):
+    print('mailer')
     PlantMailer().execute(data)
 
   def unicorn(self, data):

@@ -29,7 +29,7 @@ class GenericMoisture(object):
                   'value': average}
 
 
-      tools.insert_data(moisture)
+      # tools.insert_data(moisture)
       tools.set_hardware(moisture)
       # if tools.insert_data(moisture):
         # tools.set_hardware(moisture)
