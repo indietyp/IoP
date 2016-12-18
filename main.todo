@@ -29,7 +29,7 @@ test:
   ✔ temperature + humidity @done (16-12-17 14:53)
   [ ] extensions
     ✔ moisture bar @done (16-12-17 22:44)
-      [ ] crashing with main module? INVESTIGATE @critical
+      ✔ crashing with main module? INVESTIGATE @critical @done (16-12-18 19:10)
     ✔ trafficlight @done (16-12-17 21:45)
     ✔ display @done (16-12-17 21:45)
     [ ] water_pump

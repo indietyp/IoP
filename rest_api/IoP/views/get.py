@@ -223,7 +223,7 @@ def get_plant_current_sensor_data(p_uuid, sensor):
   del latest['plant']
   del latest['sensor']
 
-  return json.dumps(latest)
+  return json.dumps(latest, default=json_util.default)
 
 
 @app.route('/get/plant/<p_uuid>/sensor/<sensor>/range')
@@ -583,4 +583,4 @@ def get_day_night_time():
     dn['uuid'] = str(dn['uuid'])
     output.append(dn)
   return json.dumps(output)
-  
+

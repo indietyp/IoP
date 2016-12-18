@@ -90,7 +90,7 @@ def init_sensor():
   # ms = datetime.datetime.now().timestamp()
   # get current_data
   with urllib.request.urlopen('http://127.0.0.1:2902/get/plant/' + session['p_uuid'] + '/sensor/' + session['sensor'] + '/data/current') as response:
-    current_data = json.loads(response.read().decode('utf8'))
+    current_data = json.loads(response.read().decode('utf8'), object_hook=json_util.object_hook)
 
   with urllib.request.urlopen('http://127.0.0.1:2902/get/sensor/' + session['sensor'] + '/range') as response:
     sensor_range = json.loads(response.read().decode('utf8'))
