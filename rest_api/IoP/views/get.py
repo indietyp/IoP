@@ -269,12 +269,14 @@ def get_sensor_data_high_low(p_uuid, sensor, high, date_time=None):
 
   raw = sensor_data_set[0]
   data = model_to_dict(raw)
-  if isinstance(data['t'], str):
+  if isinstance(data['created_at'], str):
     data['t'] = data['created_at'].replace('+00:00', '')
     try:
       data['t'] = datetime.datetime.strptime(data['t'], '%Y-%m-%d %H:%M:%S')
     except:
       data['t'] = datetime.datetime.strptime(data['t'], "%Y-%m-%d %H:%M:%S.%f")
+  else:
+    data['t'] = data['created_at']
   data['t'] = data['t'].timestamp()
 
   data['v'] = data['value']
