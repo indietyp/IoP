@@ -55,7 +55,6 @@ class MoistureBar:
 
       # Create MCP230xx GPIO adapter.
       mcp = MCP230XX_GPIO(bus, address, gpio_count)
-      mcp.setmode(mcp.BCM)
 
       # GREEN 5/6
       # YELLOW 3/4
