@@ -445,8 +445,10 @@ def get_responsible_persons():
   return json.dumps(output)
 
 
+import datetime
 @app.route('/get/plant/<p_uuid>/sensor/<sensor>/data/start/<int:start>/stop/<int:stop>')
 def get_plant_data_selective(p_uuid, sensor, start, stop):
+  now = datetime.datetime.now()
   plant = Plant.get(Plant.uuid == p_uuid)
   sensor = Sensor.get(Sensor.name == sensor)
   sensor_data_set = SensorData.select() \
@@ -475,6 +477,7 @@ def get_plant_data_selective(p_uuid, sensor, start, stop):
     del data['plant']
     del data['sensor']
     content.append(data)
+  print(datetime.datetime.now() - now)
   return json.dumps(content, default=json_util.default)
 
 
