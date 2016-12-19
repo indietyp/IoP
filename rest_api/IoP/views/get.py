@@ -125,33 +125,25 @@ def get_responsible_wizard(p_uuid):
 # def get_location(plant):
 #   return json.dumps(db.Plant.find_one({'name': plant})['location'], default=json_util.default)
 
-
+import datetime
 @app.route('/get/plant/<p_uuid>/sensor/<sensor>/prediction')
 def get_plant_sensor_prediction(p_uuid, sensor):
+  now = datetime.datetime.now()
   plant = Plant.get(Plant.uuid == p_uuid)
   sensor = Sensor.get(Sensor.name == sensor)
 
-  sensor_prediction_set = SensorDataPrediction.select() \
+  sensor_prediction_set = SensorDataPrediction.select(SensorDataPrediction.value, SensorDataPrediction.time) \
                                               .where(SensorDataPrediction.plant == plant) \
                                               .where(SensorDataPrediction.sensor == sensor) \
-                                              .order_by(SensorDataPrediction.created_at.asc())
+                                              .order_by(SensorDataPrediction.created_at.asc()).dicts()
+  sensor_prediction_set = list(sensor_prediction_set)
 
-  output = []
   for prediction in sensor_prediction_set:
-    prediction = model_to_dict(prediction)
-
     prediction['timestamp'] = prediction['time'].timestamp()
+    del prediction['time']
 
-    del prediction['id']
-    del prediction['plant']
-    del prediction['sensor']
-
-    prediction['created_at'] = str(prediction['created_at'])
-    prediction['time'] = str(prediction['time'])
-
-    output.append(prediction)
-
-  return json.dumps(output)
+  print(datetime.datetime.now() - now)
+  return json.dumps(sensor_prediction_set)
 
 
 @app.route('/get/plant/<p_uuid>/sensor/<sensor>/data')
