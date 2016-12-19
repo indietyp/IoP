@@ -451,18 +451,15 @@ def get_plant_data_selective(p_uuid, sensor, start, stop):
   now = datetime.datetime.now()
   plant = Plant.get(Plant.uuid == p_uuid)
   sensor = Sensor.get(Sensor.name == sensor)
-  sensor_data_set = SensorData.select() \
+  sensor_data_set = SensorData.select([SensorData.value, SensorData.value]) \
                               .where(SensorData.plant == plant) \
                               .where(SensorData.sensor == sensor) \
                               .order_by(SensorData.created_at.desc()) \
                               .offset(start) \
-                              .limit(stop - start)
+                              .limit(stop - start) \
+                              .dicts()
 
-
-  content = []
   for data in sensor_data_set:
-    data = model_to_dict(data)
-
     if isinstance(data['created_at'], str):
       try:
         data['timestamp'] = data['created_at'].replace('+00:00', '')
@@ -472,13 +469,10 @@ def get_plant_data_selective(p_uuid, sensor, start, stop):
     else:
       data['timestamp'] = data['created_at']
     data['timestamp'] = data['timestamp'].timestamp()
+    del data['created_at']
 
-    del data['id']
-    del data['plant']
-    del data['sensor']
-    content.append(data)
   print(datetime.datetime.now() - now)
-  return json.dumps(content, default=json_util.default)
+  return json.dumps(sensor_data_set, default=json_util.default)
 
 
 @app.route('/get/plant/<p_uuid>/sensor/<sensor>/data/count')
