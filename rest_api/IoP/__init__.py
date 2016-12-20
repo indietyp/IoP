@@ -1,8 +1,19 @@
 from flask import Flask, session, render_template
+import datetime
 
 app = Flask(__name__)
 app.jinja_env.add_extension('pyjade.ext.jinja.PyJadeExtension')
 app.secret_key = 'n2u2ienei3rJDSAUo2jaid3KFOsnwof123'
+
+
+@app.before_request
+def time_start():
+  session['now'] = datetime.datetime.now()
+
+
+@app.after_request
+def time_stop():
+  print(datetime.datetime.now())
 
 
 import IoP.views.get

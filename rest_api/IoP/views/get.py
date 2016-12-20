@@ -125,24 +125,22 @@ def get_responsible_wizard(p_uuid):
 # def get_location(plant):
 #   return json.dumps(db.Plant.find_one({'name': plant})['location'], default=json_util.default)
 
-import datetime
+
 @app.route('/get/plant/<p_uuid>/sensor/<sensor>/prediction')
 def get_plant_sensor_prediction(p_uuid, sensor):
-  now = datetime.datetime.now()
   plant = Plant.get(Plant.uuid == p_uuid)
   sensor = Sensor.get(Sensor.name == sensor)
 
   sensor_prediction_set = SensorDataPrediction.select(SensorDataPrediction.value, SensorDataPrediction.time) \
                                               .where(SensorDataPrediction.plant == plant) \
                                               .where(SensorDataPrediction.sensor == sensor) \
-                                              .order_by(SensorDataPrediction.created_at.asc()).dicts()
+                                              .order_by(SensorDataPrediction.created_at.asc()) \
+                                              .dicts()
   sensor_prediction_set = list(sensor_prediction_set)
-
   for prediction in sensor_prediction_set:
     prediction['timestamp'] = prediction['time'].timestamp()
     del prediction['time']
 
-  print(datetime.datetime.now() - now)
   return json.dumps(sensor_prediction_set)
 
 
@@ -437,10 +435,8 @@ def get_responsible_persons():
   return json.dumps(output)
 
 
-import datetime
 @app.route('/get/plant/<p_uuid>/sensor/<sensor>/data/start/<int:start>/stop/<int:stop>')
 def get_plant_data_selective(p_uuid, sensor, start, stop):
-  now = datetime.datetime.now()
   plant = Plant.get(Plant.uuid == p_uuid)
   sensor = Sensor.get(Sensor.name == sensor)
   sensor_data_set = SensorData.select(SensorData.value, SensorData.created_at) \
