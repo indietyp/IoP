@@ -600,9 +600,6 @@ class MeshNetwork(object):
 
 if __name__ == '__main__':
   import sys
-  # plant = Plant.get(Plant.name == 'marta')
-  # MeshNetwork().send(plant, 10100, ['', '', '', ''])
-  # MeshNetwork().discover(1)
   if sys.argv[1] == 'daemon':
     MeshNetwork().daemon()
   elif sys.argv[1] == 'register':
@@ -626,3 +623,10 @@ if __name__ == '__main__':
       MeshNetwork().deliver(2, sub=1, recipient=plant)
     elif sys.argv[2] == 'data':
       pass
+  else:
+    print('nothing selected, starting daemon')
+    try:
+      MeshNetwork().daemon()
+    except KeyBoardInterrupt as e:
+      print(e)
+      
