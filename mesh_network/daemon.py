@@ -600,33 +600,39 @@ class MeshNetwork(object):
 
 if __name__ == '__main__':
   import sys
-  if sys.argv[1] == 'daemon':
-    MeshNetwork().daemon()
-  elif sys.argv[1] == 'register':
-    plant = Plant.get(Plant.name == 'Holger')
-    MeshNetwork().register(1, origin=plant)
-  elif sys.argv[1] == 'alive':
-    plant = Plant.get(Plant.name == 'marta')
-    i = 0
-    import datetime
-    now = datetime.datetime.now()
-    try:
-      while True:
-        i += 1
-        MeshNetwork().alive(plant, 1, additional_information=str(i))
-    except KeyboardInterrupt:
-      print(datetime.datetime.now() - now)
-
-  elif sys.argv[1] == 'notify':
-    if sys.argv[2] == 'ip':
+  if len(sys.argv) > 1:
+    if sys.argv[1] == 'daemon':
+      MeshNetwork().daemon()
+    elif sys.argv[1] == 'register':
       plant = Plant.get(Plant.name == 'Holger')
-      MeshNetwork().deliver(2, sub=1, recipient=plant)
-    elif sys.argv[2] == 'data':
-      pass
+      MeshNetwork().register(1, origin=plant)
+    elif sys.argv[1] == 'alive':
+      plant = Plant.get(Plant.name == 'marta')
+      i = 0
+      import datetime
+      now = datetime.datetime.now()
+      try:
+        while True:
+          i += 1
+          MeshNetwork().alive(plant, 1, additional_information=str(i))
+      except KeyboardInterrupt:
+        print(datetime.datetime.now() - now)
+
+    elif sys.argv[1] == 'notify':
+      if sys.argv[2] == 'ip':
+        plant = Plant.get(Plant.name == 'Holger')
+        MeshNetwork().deliver(2, sub=1, recipient=plant)
+      elif sys.argv[2] == 'data':
+        pass
   else:
     print('nothing selected, starting daemon')
-    try:
-      MeshNetwork().daemon()
-    except KeyBoardInterrupt as e:
-      print(e)
-      
+
+    def startup():
+      try:
+        MeshNetwork().daemon()
+      except KeyboardInterrupt as e:
+        print(e)
+      except Exception as e:
+        print(e)
+        return startup()
+    startup()
