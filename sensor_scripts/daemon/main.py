@@ -53,6 +53,11 @@ class SensorDaemon(object):
 
     return next_execution.seconds
 
+  def execute(self):
+    DHT22.run()
+    GenericMoisture.run()
+    TSL2561.run()
+
   def run(self):
     if not os.path.isfile(pid_file) and self.verify() is True:
       with open(pid_file, 'w') as output:
@@ -63,21 +68,9 @@ class SensorDaemon(object):
           sleep_seconds = self.next_execution_seconds()
           time.sleep(sleep_seconds)
           if not DUMMYPLANT:
-            dht = Process(target=DHT22.run)
-            dht.daemon = True
-            dht.start()
-
-            moi = Process(target=GenericMoisture.run)
-            moi.daemon = True
-            moi.start()
-
-            tsl = Process(target=TSL2561.run)
-            tsl.daemon = True
-            tsl.start()
-
-            # DHT22.run()
-            # GenericMoisture.run()
-            # TSL2561.run()
+            exc = Process(target=self.execute)
+            exc.daemon = True
+            exc.start()
             print('real data')
           else:
             # samples_count = 0
