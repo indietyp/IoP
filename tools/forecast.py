@@ -156,14 +156,23 @@ class SensorDataForecast(object):
                                  .where(SensorDataPrediction.sensor == data['sensor']) \
                                  .execute()
 
-    # print(data)
+    prepared = []
     for key, prediction in enumerate(data['prediction']['prediction']):
-      entry = SensorDataPrediction()
-      entry.plant = data['plant']
-      entry.sensor = data['sensor']
-      entry.value = prediction
-      entry.time = data['prediction']['date'][key]
-      entry.save()
+      prepared.append({'plant': data['plant'],
+                       'sensor': data['sensor'],
+                       'value': prediction,
+                       'time': data['prediction']['date'][key]})
+
+      # entry = SensorDataPrediction()
+      # entry.plant = data['plant']
+      # entry.sensor = data['sensor']
+      # entry.value = prediction
+      # entry.time = data['prediction']['date'][key]
+      # entry.save()
+    from models.plant import db
+
+    with db.atomic():
+      SensorDataPrediction.insert_many(prepared).execute()
 
   def run(self, data):
     sd = self.get_sensor_data(data)
