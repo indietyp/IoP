@@ -63,9 +63,21 @@ class SensorDaemon(object):
           sleep_seconds = self.next_execution_seconds()
           time.sleep(sleep_seconds)
           if not DUMMYPLANT:
-            DHT22.run()
-            GenericMoisture.run()
-            TSL2561.run()
+            dht = Process(target=DHT22.run)
+            dht.daemon = True
+            dht.start()
+
+            moi = Process(target=GenericMoisture.run)
+            moi.daemon = True
+            moi.start()
+
+            tsl = Process(target=TSL2561.run)
+            tsl.daemon = True
+            tsl.start()
+
+            # DHT22.run()
+            # GenericMoisture.run()
+            # TSL2561.run()
             print('real data')
           else:
             # samples_count = 0
