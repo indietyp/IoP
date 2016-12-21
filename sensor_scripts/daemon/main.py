@@ -7,32 +7,12 @@ from datetime import datetime, timedelta
 from models.plant import Plant
 from models.sensor import Sensor
 from settings.debug import DEBUG, DUMMYPLANT
+from multiprocessing import Process
 
 from sensor_scripts.core.dht import DHT22
 from sensor_scripts.core.tsl2561 import TSL2561
 from sensor_scripts.core.moisture import GenericMoisture
 from tools.simulate import PlantSimulate
-
-# from tools.debug import DebugInterrupt
-# loop
-#   --> current time
-#   --> current time + 5
-#   --> wait until
-#   --> --> execute 4 scripts (if 30 min use *args for trigger persitant)
-#   --> --> --> get data
-#   --> --> --> execute helper
-#   --> --> --> --> insert into database (mySQL - peewee)
-#   --> --> --> --> --> insert into 5 min
-#   --> --> --> --> --> check if 30 min or change of (in database - persistant_offset_trigger)
-#   --> --> --> --> --> if persistant == True (passed var - don't check)
-#   --> --> --> --> --> return if so
-#   --> --> --> --> send signal to mesh
-#   --> --> --> --> do hardware stuff (hardware id gets transmitted - saved in database)
-#   --> --> --> return status insertation
-#   --> --> --> status 1: triggered
-#   --> --> --> --> reset value to 0
-#   --> --> --> status 0: not triggered
-#   --> --> --> --> add value to + 5
 
 real_path = os.path.realpath(__file__)
 pid_file = os.path.dirname(real_path) + '/daemon.pid'

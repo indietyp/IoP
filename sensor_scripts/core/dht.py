@@ -35,15 +35,7 @@ class DHT22:
 
     # FETCH DATA FROM SENSOR
     humidity['value'], temperature['value'] = Adafruit_DHT.read_retry(sensor, pin)
-    print(humidity)
-    print(temperature)
     if humidity is not None and temperature is not None:
-      # print(str(temperature))
-      pass
-      # print(str(humidity))
-      # temperature = round(temperature, 2)
-      # humidity = round(humidity, 2)
-
       tools = ToolChainSensor()
 
       if tools.insert_data(temperature):

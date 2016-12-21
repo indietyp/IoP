@@ -28,12 +28,8 @@ class GenericMoisture(object):
                   'plant': plant,
                   'value': average}
 
-
-      # tools.insert_data(moisture)
-      tools.set_hardware(moisture)
-      # if tools.insert_data(moisture):
-        # tools.set_hardware(moisture)
-      print(moisture)
+      if tools.insert_data(moisture):
+        tools.set_hardware(moisture)
 
 if __name__ == '__main__':
   GenericMoisture.run()
