@@ -608,15 +608,15 @@ if __name__ == '__main__':
       MeshNetwork().register(1, origin=plant)
     elif sys.argv[1] == 'alive':
       plant = Plant.get(Plant.name == 'marta')
-      i = 0
-      import datetime
-      now = datetime.datetime.now()
-      try:
-        while True:
-          i += 1
-          MeshNetwork().alive(plant, 1, additional_information=str(i))
-      except KeyboardInterrupt:
-        print(datetime.datetime.now() - now)
+      # i = 0
+      # import datetime
+      # now = datetime.datetime.now()
+      # try:
+      #   while True:
+      #     i += 1
+      MeshNetwork().alive(plant, 1)
+      # except KeyboardInterrupt:
+      #   print(datetime.datetime.now() - now)
 
     elif sys.argv[1] == 'notify':
       if sys.argv[2] == 'ip':
