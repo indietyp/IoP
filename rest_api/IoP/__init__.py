@@ -12,8 +12,9 @@ def time_start():
 
 
 @app.after_request
-def time_stop():
-  print(datetime.datetime.now())
+def time_stop(response_class):
+  print(datetime.datetime.now() - session['now'])
+  return response_class
 
 
 import IoP.views.get
