@@ -8,9 +8,9 @@ from models.plant import Plant
 from models.sensor import Sensor
 from settings.debug import DEBUG, DUMMYPLANT
 
-# from sensor_scripts.core.dht import DHT22
-# from sensor_scripts.core.tsl2561 import TSL2561
-# from sensor_scripts.core.moisture import GenericMoisture
+from sensor_scripts.core.dht import DHT22
+from sensor_scripts.core.tsl2561 import TSL2561
+from sensor_scripts.core.moisture import GenericMoisture
 from tools.simulate import PlantSimulate
 
 # from tools.debug import DebugInterrupt
@@ -67,7 +67,6 @@ class SensorDaemon(object):
                                future_datetime.hour,
                                minute,
                                0)
-    print(str(future_datetime))
 
     next_execution = future_datetime - current_time
     print(next_execution)
@@ -83,22 +82,23 @@ class SensorDaemon(object):
         while True:
           sleep_seconds = self.next_execution_seconds()
           time.sleep(sleep_seconds)
-          print('Hellou!')
-          if DUMMYPLANT is False:
-            # DHT22.run()
-            # GenericMoisture.run()
-            # TSL2561.run()
+          if not DUMMYPLANT:
+            DHT22.run()
+            GenericMoisture.run()
+            TSL2561.run()
             print('real data')
           else:
-            samples_count = 0
-            for plant in Plant.select():
-              if plant.count() > samples_count:
-                samples_count = plant.count()
-                source = plant
+            # samples_count = 0
+            # for plant in Plant.select():
+            #  if plant.count() > samples_count:
+            #    samples_count = plant.count()
+            #    source = plant
 
-            for sensor in Sensor.select():
-              target = Plant.get(Plant.localhost == True)
-              PlantSimulate.run(target, sensor, source)
+            # for sensor in Sensor.select():
+            #  target = Plant.get(Plant.localhost == True)
+            #  PlantSimulate.run(target, sensor, source)
+            pass
+            # needs to be reconsidered
 
       except KeyboardInterrupt:
         print('Bye!')
