@@ -172,7 +172,9 @@ class SensorDataForecast(object):
     from models.plant import db
 
     with db.atomic():
-      SensorDataPrediction.insert_many(prepared).execute()
+      for idx in range(0, len(prepared), 100):
+        SensorDataPrediction.insert_many(prepared[idx:idx + 100]).execute()
+      # SensorDataPrediction.insert_many(prepared).execute()
 
   def run(self, data):
     sd = self.get_sensor_data(data)
