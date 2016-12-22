@@ -125,3 +125,6 @@ class MeshDedicatedDispatch(object):
       daemon.deliver(3, sub=1, recipient=plant, message=[counter, str(uuid)])
 
     return True
+
+if __name__ == '__main__':
+  MeshDedicatedDispatch().reboot()

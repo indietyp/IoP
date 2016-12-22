@@ -45,7 +45,7 @@ class Display:
       value = round(sensor_values[i]['value'], 0)
       value = int(value)
       display_list += str(value)
-      display_list += sensor_values[i]['unit']
+      display_list += re.sub(r'\W+', '', sensor_values[i]['unit'])
 
       if len(display_list) < self.data['display']['length']:
         rest = self.data['display']['length'] - len(display_list)
