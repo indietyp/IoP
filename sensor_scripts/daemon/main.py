@@ -73,18 +73,9 @@ class SensorDaemon(object):
             exc.start()
             print('real data')
           else:
-            # samples_count = 0
-            # for plant in Plant.select():
-            #  if plant.count() > samples_count:
-            #    samples_count = plant.count()
-            #    source = plant
-
-            # for sensor in Sensor.select():
-            #  target = Plant.get(Plant.localhost == True)
-            #  PlantSimulate.run(target, sensor, source)
-            pass
-            # needs to be reconsidered
-
+            target = Plant.get(Plant.localhost == True)
+            source = Plant.get(Plant.name == 'marta')
+            PlantSimulate().run()
       except KeyboardInterrupt:
         print('Bye!')
         sys.exit()

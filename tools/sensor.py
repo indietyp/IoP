@@ -183,20 +183,14 @@ class ToolChainSensor(object):
     self.delete_non_persistant_overflow(data['sensor'], data['plant'])
     data['satisfaction'] = self.modify_sensor_status(data)
 
-    # CALL modify_sensor_satisfaction MARKING
-    # --> is calling
-    # --> add_sensor_current_status
-
     from mesh_network.dedicated import MeshDedicatedDispatch
     if persistant is True:
       SensorDataForecast().run(data)
       MeshDedicatedDispatch().new_data(data['sensor'])
-    # SensorDataForecast().run(data)
 
     return persistant
 
   def set_hardware(self, data):
-    pass
     hardware = SensorHardware.select()
 
     hardware = SensorHardwareConnector.select() \
@@ -209,5 +203,3 @@ class ToolChainSensor(object):
     hardware_toolchain = ToolChainHardware()
     for piece in hardware:
       exec('hardware_toolchain.{}(data)'.format(piece.hardware.function))
-
-    # get hardware -> call function (in database?)
