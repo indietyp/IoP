@@ -9,8 +9,11 @@ test:
   [ ] simulated plant @critical @dad
   [ ] completed add_plant
   [ ] dedicated alive
+    [ ] cronjob! (5min?)
   [ ] dedicated register
+  [ ] daemon testing
   [ ] rest_api create/plant
+    [ ] delete holger and insert! (finish first setup)
   [ ] rest_api create/plant/register
   ✔ dedicated deliver new_data @done (16-09-26 18:55)
   ✔ deliver new_data @done (16-09-27 15:09)
@@ -77,6 +80,7 @@ mesh network:
           ✔ send new trigger @origin @done (16-09-25 20:12)
             ✔ new trigger -> notify new_data @done (16-09-25 20:12)
           ✔ fetch data @target @done (16-09-25 20:12)
+            ✔ use insert_sensor method? YEAH! @done (16-12-25 00:21)
             ✔ get from plant! @done (16-09-25 20:12)
    build register and alive:
       ✔ database integration @done (16-09-14 21:27)
@@ -189,6 +193,7 @@ frontend:
        ✔ mesh_network @done (16-12-03 16:53)
          ✔ dedicated @done (16-12-03 16:53)
          [ ] SensorSatisfactionValue
+         [ ] host - used for mail sending determination
          ✔ plant information @done (16-12-03 16:53)
          ✔ responsible persons @done (16-12-03 16:53)
          ✔ messages @done (16-12-03 16:53)

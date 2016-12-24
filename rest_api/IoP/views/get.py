@@ -240,29 +240,23 @@ def get_plant_sensor_range(p_uuid, sensor):
   return json.dumps(output)
 
 
-def get_sensor_data_high_low(p_uuid, sensor, high, date_time=None):
-  plant = Plant.get(Plant.uuid == p_uuid)
-  sensor = Sensor.get(Sensor.name == sensor)
-  # sensor_id = db.Sensor.find_one({'t': sensor})['s_id']
-  mode = SensorData.created_at.asc() if high is False else SensorData.created_at.desc()
+def get_sensor_data_high_low(plant, sensor, configuration, target=None):
+  mode = SensorData.created_at.asc() if configuration is False else SensorData.created_at.desc()
 
-  sensor_data_set = SensorData.select() \
-                              .where(SensorData.plant == plant) \
-                              .where(SensorData.sensor == sensor) \
-                              .order_by(mode)
+  dataset = SensorData.select(SensorData.value, SensorData.created_at) \
+                      .where(SensorData.plant == plant) \
+                      .where(SensorData.sensor == sensor) \
+                      .order_by(mode) \
+                      .dicts()
 
-  if date_time is not None:
-    sensor_data_set = SensorData.select() \
-                                .where(SensorData.plant == plant) \
-                                .where(SensorData.sensor == sensor) \
-                                .where(SensorData.created_at >= date_time) \
-                                .order_by(mode)
+  if target is not None:
+    dataset = dataset.where(SensorData.created_at >= date_time)
 
-  if sensor_data_set.count() == 0:
+  if dataset.count() == 0:
     return None
+  dataset = list(dataset)
 
-  raw = sensor_data_set[0]
-  data = model_to_dict(raw)
+  data = dataset[0]
   if isinstance(data['created_at'], str):
     data['t'] = data['created_at'].replace('+00:00', '')
     try:
@@ -277,31 +271,33 @@ def get_sensor_data_high_low(p_uuid, sensor, high, date_time=None):
 
   del data['created_at']
   del data['value']
-  del data['id']
-  del data['plant']
-  del data['sensor']
 
   return data
 
 
 @app.route('/get/plant/<p_uuid>/sensor/<sensor>/<any(high,low):mode>/ever')
 def get_plant_sensor_data_high_ever(sensor, p_uuid, mode):
-  stuff = True if mode == 'high' else False
-  return json.dumps(get_sensor_data_high_low(p_uuid, sensor, stuff))
+  configuration = True if mode == 'high' else False
+  plant = Plant.get(Plant.uuid == p_uuid)
+  sensor = Sensor.get(Sensor.name == sensor)
+
+  return json.dumps(get_sensor_data_high_low(plant, sensor, configuration))
 
 
 @app.route('/get/plant/<p_uuid>/sensor/<sensor>/<any(high, low):mode>/today/<any(yes,no):if_no_data_days_before>')
 def get_plant_sensor_data_high_today(sensor, p_uuid, mode, if_no_data_days_before):
-  stuff = True if mode == 'high' else False
-  today = datetime.date.today()
-  dateToDatetime = datetime.datetime.combine(today, datetime.time())
+  configuration = True if mode == 'high' else False
+  plant = Plant.get(Plant.uuid == p_uuid)
+  sensor = Sensor.get(Sensor.name == sensor)
+  target = datetime.combine(datetime.date.today(), datetime.datetime.min.time())
+
   if if_no_data_days_before == 'yes':
     data = None
     while data is None:
-      data = get_sensor_data_high_low(p_uuid, sensor, stuff, dateToDatetime)
-      dateToDatetime = dateToDatetime - datetime.timedelta(days=1)
+      data = get_sensor_data_high_low(plant, sensor, configuration, target)
+      target = target - datetime.timedelta(days=1)
   elif if_no_data_days_before == 'no':
-    data = get_sensor_data_high_low(p_uuid, sensor, stuff, dateToDatetime)
+    data = get_sensor_data_high_low(plant, sensor, configuration, target)
 
   return json.dumps(data)
 

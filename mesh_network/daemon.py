@@ -497,27 +497,32 @@ class MeshNetwork(object):
         import json
         import urllib.request
         from models.sensor import SensorData, Sensor
+        from tools.sensor import ToolChainSensor
 
         plant = Plant.get(Plant.localhost == True)
         print('http://{0}:2902/get/plant/{1}/sensor/{2}/latest'.format(recipient[1], recipient[0], message[0]))
         with urllib.request.urlopen('http://{0}:2902/get/plant/{1}/sensor/{2}/latest'.format(recipient[1], recipient[0], message[0])) as response:
           dataset = json.loads(response.read().decode('utf8'), object_hook=json_util.object_hook)
 
+        # consider insert_sensor? - created_at only differs and predication not needed! - would solve a load of problems
+        # tesing!
+
         rec_obj = Plant.get(Plant.uuid == recipient[0])
         sensor = Sensor.get(Sensor.name == message[0])
 
-        new_data = SensorData()
-        new_data.plant = rec_obj
-        new_data.sensor = sensor
-        new_data.created_at = dataset['created_at']
-        new_data.value = dataset['value']
-        new_data.persistant = dataset['persistant']
-        new_data.save()
+        # new_data = SensorData()
+        # new_data.plant = rec_obj
+        # new_data.sensor = sensor
+        # new_data.created_at = dataset['created_at']
+        # new_data.value = dataset['value']
+        # new_data.persistant = dataset['persistant']
+        # new_data.save()
 
         data = {'plant': rec_obj,
                 'sensor': sensor,
                 'value': dataset['value']}
-        ToolChainSensor().modify_sensor_status(data)
+        ToolChainSensor().insert_sensor(data, mesh=False)
+        # ToolChainSensor().modify_sensor_status(data)
 
         self.send(50102, recipient=recipient, plant=plant)
 

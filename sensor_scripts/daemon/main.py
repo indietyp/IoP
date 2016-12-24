@@ -58,6 +58,12 @@ class SensorDaemon(object):
     GenericMoisture.run()
     TSL2561.run()
 
+  def simulate(self):
+    target = Plant.get(Plant.localhost == True)
+    source = Plant.get(Plant.name == 'marta')
+    for sensor in Sensor.select():
+      PlantSimulate().run(target, sensor, source)
+
   def run(self):
     if not os.path.isfile(pid_file) and self.verify() is True:
       with open(pid_file, 'w') as output:
@@ -73,17 +79,10 @@ class SensorDaemon(object):
             exc.start()
             print('real data')
           else:
-            # samples_count = 0
-            # for plant in Plant.select():
-            #  if plant.count() > samples_count:
-            #    samples_count = plant.count()
-            #    source = plant
-
-            # for sensor in Sensor.select():
-            #  target = Plant.get(Plant.localhost == True)
-            #  PlantSimulate.run(target, sensor, source)
-            pass
-            # needs to be reconsidered
+            exc = Process(target=self.simulate)
+            exc.daemon = True
+            exc.start()
+            print('simulated data')
 
       except KeyboardInterrupt:
         print('Bye!')
