@@ -157,10 +157,10 @@ frontend:
    general:
      [ ] improvement (und 1 second)
        [ ] /get/sensor/range
-       [ ] high today
-       [ ] low today
-       [ ] high ever
-       [ ] low ever
+       ✔ high today @done (16-12-25 00:47)
+       ✔ low today @done (16-12-25 00:47)
+       ✔ high ever @done (16-12-25 00:47)
+       ✔ low ever @done (16-12-25 00:47)
    discover:
      ✔ discover @done (16-11-09 21:46)
      ✔ get discover @done (16-11-09 21:46)

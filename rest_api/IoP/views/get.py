@@ -250,7 +250,7 @@ def get_sensor_data_high_low(plant, sensor, configuration, target=None):
                       .dicts()
 
   if target is not None:
-    dataset = dataset.where(SensorData.created_at >= date_time)
+    dataset = dataset.where(SensorData.created_at >= target)
 
   if dataset.count() == 0:
     return None
@@ -289,7 +289,7 @@ def get_plant_sensor_data_high_today(sensor, p_uuid, mode, if_no_data_days_befor
   configuration = True if mode == 'high' else False
   plant = Plant.get(Plant.uuid == p_uuid)
   sensor = Sensor.get(Sensor.name == sensor)
-  target = datetime.combine(datetime.date.today(), datetime.datetime.min.time())
+  target = datetime.datetime.combine(datetime.date.today(), datetime.datetime.min.time())
 
   if if_no_data_days_before == 'yes':
     data = None
