@@ -1,5 +1,7 @@
 from models.sensor import *
 from models.context import DayNightTime
+from settings.database import DATABASE_NAME
+import os
 import sys
 import datetime
 
@@ -64,3 +66,7 @@ class VariousTools(object):
           mcp.output(pin, False)
 
     return online
+  
+  @staticmethod
+  def verify_database():
+    return os.path.isfile(DATABASE_NAME)

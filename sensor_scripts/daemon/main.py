@@ -7,12 +7,16 @@ from datetime import datetime, timedelta
 from models.plant import Plant
 from models.sensor import Sensor
 from settings.debug import DEBUG, DUMMYPLANT
+from settings.database import DATABASE_NAME
+from tools.main import VariousTools
 from multiprocessing import Process
 
-from sensor_scripts.core.dht import DHT22
-from sensor_scripts.core.tsl2561 import TSL2561
-from sensor_scripts.core.moisture import GenericMoisture
-from tools.simulate import PlantSimulate
+if not DUMMYPLANT:
+  from sensor_scripts.core.dht import DHT22
+  from sensor_scripts.core.tsl2561 import TSL2561
+  from sensor_scripts.core.moisture import GenericMoisture
+else:
+  from tools.simulate import PlantSimulate
 
 real_path = os.path.realpath(__file__)
 pid_file = os.path.dirname(real_path) + '/daemon.pid'
@@ -65,7 +69,7 @@ class SensorDaemon(object):
       PlantSimulate().run(target, sensor, source)
 
   def run(self):
-    if not os.path.isfile(pid_file) and self.verify() is True:
+    if not os.path.isfile(pid_file) and VariousTools.verify_database():
       with open(pid_file, 'w') as output:
         output.write(str(os.getpid()))
 
@@ -95,7 +99,11 @@ class SensorDaemon(object):
       finally:
         self.exit()
     else:
-      print('process already running')
+      if not VariousTools.verify_database():
+        print('aborted action - database required - no database provided')
+
+      if os.path.isfile(pid_file):
+        print('process already running')
 
   def exit(self):
     if os.path.isfile(pid_file):
@@ -105,7 +113,8 @@ class SensorDaemon(object):
     try:
       Plant.get(Plant.localhost == True)
       return True
-    except:
+    except Exception as e:
+      print(e)
       return False
 
 
@@ -113,4 +122,10 @@ class SensorDaemon(object):
 atexit.register(SensorDaemon().exit)
 
 if __name__ == '__main__':
-  SensorDaemon().run()
+  if len(sys.argv) < 2:
+    print('running standard configuration')
+    SensorDaemon().run()
+  elif sys.argv[1] == 'force':
+    print('forcing start - deleting ' + pid_file + ' if found')
+    SensorDaemon().exit()
+    SensorDaemon().run()

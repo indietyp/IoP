@@ -1,6 +1,8 @@
 import socket
+import sys
 import urllib.request
 from models.plant import Plant
+from tools.main import VariousTools
 from mesh_network.daemon import MeshNetwork
 from playhouse.shortcuts import model_to_dict
 
@@ -127,4 +129,15 @@ class MeshDedicatedDispatch(object):
     return True
 
 if __name__ == '__main__':
-  MeshDedicatedDispatch().reboot()
+  if VariousTools.verify_database():
+    if len(sys.argv) < 2:
+      print('executed standard action - reboot')
+      MeshDedicatedDispatch().reboot()
+    elif sys.argv[1] == 'alive':
+      print('executed argument action - alive')
+      MeshDedicatedDispatch().alive()
+    elif sys.argv[1] == 'reboot':
+      print('executed argument action - reboot')
+      MeshDedicatedDispatch().reboot()
+  else:
+    print('aborted action - database required - no database provided')

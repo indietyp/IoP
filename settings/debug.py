@@ -1,3 +1,3 @@
 DEBUG = True
 GRAPH = False
-DUMMYPLANT = False
+DUMMYPLANT = True

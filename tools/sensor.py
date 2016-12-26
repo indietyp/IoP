@@ -9,7 +9,7 @@ from models.sensor import SensorHardwareConnector
 from models.sensor import *
 
 # from tools.mesh import ToolChainMeshSender
-from tools.hardware import ToolChainHardware
+# from tools.hardware import ToolChainHardware
 from tools.forecast import SensorDataForecast
 
 
@@ -201,6 +201,7 @@ class ToolChainSensor(object):
         SensorStatus.sensor == data['sensor'],
         SensorStatus.plant == data['plant'])
 
+    from tools.hardware import ToolChainHardware
     hardware_toolchain = ToolChainHardware()
     for piece in hardware:
       exec('hardware_toolchain.{}(data)'.format(piece.hardware.function))
