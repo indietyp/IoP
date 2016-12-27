@@ -220,3 +220,18 @@ def update_day_night():
     day_night.notification = data['notification']
     day_night.save()
   return json.dumps({'info': 'success'})
+
+
+@app.route('/update/current/host/to/localhost')
+def update_current_plant_host():
+  local = Plant.get(Plant.localhost == True)
+  if not local.host:
+    host = Plant.get(Plant.host == True)
+    host.host = False
+    host.save()
+    local.host = True
+    local.save()
+
+    MeshDedicatedDispatch().update('host', local.uuid)
+    return response
+  return json.dumps({'info': 'processing'})

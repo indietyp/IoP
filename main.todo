@@ -155,8 +155,8 @@ frontend:
       ✘ storage settings @cancelled (16-11-09 21:45)
  rest:
    general:
-     [ ] improvement (und 1 second)
-       [ ] /get/sensor/range
+     ✔ improvement (under 1 second) @done (16-12-27 21:14)
+       ✔ /get/sensor/range @done (16-12-27 21:14)
        ✔ high today @done (16-12-25 00:47)
        ✔ low today @done (16-12-25 00:47)
        ✔ high ever @done (16-12-25 00:47)

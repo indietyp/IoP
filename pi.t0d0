@@ -1,8 +1,8 @@
-[x] create python startup script to remove daemon file -> sys.argv (attr force)
-[X] DONE create folder /var/log/iop
+✔ create python startup script to remove daemon file -> sys.argv (attr force) @done (16-12-27 16:55)
+✔ DONE create folder /var/log/iop @done (16-12-27 16:55)
 [ ] order important
-  [x] 1. copy crontabs from iop-master-1
-    [x] 1.1 comment daemon
+  ✔ 1. copy crontabs from iop-master-1 @done (16-12-27 16:55)
+    ✔ 1.1 comment daemon @done (16-12-27 16:55)
       REASON: for further sensor simulation testing
   [ ] 2. add field host
     [ ] 2.1 integrate into frontend and backend

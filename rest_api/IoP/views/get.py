@@ -578,3 +578,10 @@ def get_day_night_time():
     output.append(dn)
   return json.dumps(output)
 
+
+@app.route('/get/plant/current/host')
+def get_current_plant_host():
+  host = Plant.get(Plant.host == True)
+  del host['created_at']
+
+  return json_dumps(host)

@@ -118,6 +118,8 @@ class MeshDedicatedDispatch(object):
       counter = 3
     elif name.lower() == 'message':
       counter = 4
+    elif name.lower() == 'host':
+      counter = 5
     else:
       return False
 

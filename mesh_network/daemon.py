@@ -600,6 +600,14 @@ class MeshNetwork(object):
           for key in data.keys():
             setattr(message_preset, key, message_preset[key])
           message_preset.save()
+        elif int(message[0]) == 5:
+          current = Plant.get(Plant.host == True)
+          current.host = False
+          current.save()
+
+          new = Plant.get(Plant.uuid == message[1])
+          new.host = True
+          current.save()
         # notify
 
 

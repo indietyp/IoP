@@ -41,6 +41,7 @@ class Plant(Model):
   role        = CharField(default='master')
   ip          = CharField()
   localhost   = BooleanField(default=False)
+  host        = BooleanField(default=False)
 
   sat_streak  = IntegerField()  # satisfactionstreak
   persistant_hold = IntegerField(default=2016)  # times (5 minute interval)
