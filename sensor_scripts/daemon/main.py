@@ -122,10 +122,11 @@ class SensorDaemon(object):
 atexit.register(SensorDaemon().exit)
 
 if __name__ == '__main__':
+  print('start')
   if len(sys.argv) < 2:
     print('running standard configuration')
     SensorDaemon().run()
-  elif sys.argv[1] == 'force':
+  elif sys.argv[1] == 'force' or True:
     print('forcing start - deleting ' + pid_file + ' if found')
     SensorDaemon().exit()
     SensorDaemon().run()

@@ -12,8 +12,8 @@ app.secret_key = 'uyfo2346tr3r3urey8f138r9pfr1vy3ofydv'
 
 
 # not rest api compliant? - speed?
-@app.before_request
-def host_verification():
+@app.after_request
+def host_verification(response):
   if 'host' not in request.cookies:
     from mesh_network.dedicated import MeshDedicatedDispatch
     from models.plant import Plant
@@ -27,7 +27,8 @@ def host_verification():
       local.save()
 
       MeshDedicatedDispatch().update('host', local.uuid)
-    request.set_cookie('host', True, max_age=5 * 60)
+    response.set_cookie('host', 'easteregg', max_age=5 * 60)
+  return response
 
 
 def init():

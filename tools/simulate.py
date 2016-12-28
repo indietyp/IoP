@@ -68,7 +68,7 @@ class PlantSimulate:
     for sample in predicted:
       if sample.time >= datetime.datetime.now():
         releaser = True
-        ToolChainSensor().insert_sensor({'sensor': sensor, 'plant': target, 'value': sample.value})
+        ToolChainSensor().insert_data({'sensor': sensor, 'plant': target, 'value': sample.value})
         # insert hardware? -- test if DUMMYPLANT hardware?
         sample.delete_instance()
       else:
