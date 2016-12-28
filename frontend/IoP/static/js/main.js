@@ -231,10 +231,11 @@
             }
             return db.real.bulkAdd(bulkadd).then(function(result) {
               bulkadd = [];
+              console.log(jsonmsg['predicted'].length)
               if (jsonmsg['predicted'].length < 0) {
-                return db.predicted.clear().then(function(result) {
+                db.predicted.clear().then(function(result) {
+                  console.log('terminating predicted table');
                   setuppredicted(db, jsonmsg, plant, sensor, graphName);
-                  return console.log('terminating predicted table');
                 });
               } else {
                 console.log('continuing');

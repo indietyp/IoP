@@ -48,9 +48,7 @@ def getCustomSensorDataset():
   with urllib.request.urlopen('http://localhost:2902/get/plant/' + uuid + '/sensor/' + sensor + '/data/' + str(float(request.form['latest_timestamp']))) as response:
     output['real'] = json.loads(response.read().decode('utf8'))
 
-  print(str(output), file=sys.stderr)
-
-  if output['real'] == []:
+  if len(output['real']) == 0:
     output['predicted'] = []
   else:
     with urllib.request.urlopen('http://localhost:2902/get/plant/' + uuid + '/sensor/' + sensor + '/prediction') as response:
