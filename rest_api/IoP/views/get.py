@@ -185,7 +185,7 @@ def get_plant_sensor_data_after(p_uuid, sensor, until):
                               .where(SensorData.created_at > date_time) \
                               .order_by(SensorData.created_at.asc()) \
                               .dicts()
-  
+
   sensor_data_set = list(sensor_data_set)
   for data in sensor_data_set:
     if isinstance(data['created_at'], str):
