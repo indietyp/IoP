@@ -233,5 +233,4 @@ def update_current_plant_host():
     local.save()
 
     MeshDedicatedDispatch().update('host', local.uuid)
-    return response
   return json.dumps({'info': 'processing'})

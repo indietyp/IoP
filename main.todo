@@ -6,6 +6,7 @@ test:
   ✔ notify_ip @done (16-09-13 20:43)
   ✔ add_plant @done (16-09-21 18:18)]
   ✔ create all related tables entries (rest-api | create plant) @done (16-12-22 16:25)
+  [ ] host before request hotfix - potential getting a lot worse!\
   [ ] simulated plant @critical @dad
   [ ] completed add_plant
   [ ] dedicated alive
@@ -40,6 +41,8 @@ test:
   ✔ multithreaded process deamon @done (16-09-15 20:31)
 
 mesh network:
+  [ ] local connection lost?
+    [ ] potential too few data simulated recover?
    build register:
      ✔ add MeshObject @done (16-09-06 19:20)
      ✔ discovered into database @done (16-09-06 19:21)

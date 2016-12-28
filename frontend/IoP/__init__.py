@@ -1,4 +1,4 @@
-from flask import Flask, session, render_template
+from flask import Flask, session, render_template, request
 import urllib.request
 import sys
 import json
@@ -9,6 +9,25 @@ app = Flask(__name__)
 app.jinja_env.add_extension('pyjade.ext.jinja.PyJadeExtension')
 app.jinja_env.auto_reload = True
 app.secret_key = 'uyfo2346tr3r3urey8f138r9pfr1vy3ofydv'
+
+
+# not rest api compliant? - speed?
+@app.before_request
+def host_verification():
+  if 'host' not in request.cookies:
+    from mesh_network.dedicated import MeshDedicatedDispatch
+    from models.plant import Plant
+
+    local = Plant.get(Plant.localhost == True)
+    if not local.host:
+      host = Plant.get(Plant.host == True)
+      host.host = False
+      host.save()
+      local.host = True
+      local.save()
+
+      MeshDedicatedDispatch().update('host', local.uuid)
+    request.set_cookie('host', True, max_age=5 * 60)
 
 
 def init():
