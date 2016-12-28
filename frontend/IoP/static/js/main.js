@@ -127,7 +127,8 @@
           while (stop < count) {
             i += 1;
             start = i === 1 ? 0 : stop;
-            stop = Math.floor(Math.pow(i, 3));
+            // stop = Math.floor(Math.pow(i, 3));
+            stop = Math.floor(Math.pow(i, 2.8))
             console.log(stop - start);
             if (i === 1) {
               smoothPlotter.smoothing = 0.33;
@@ -161,6 +162,9 @@
                   timestamp: data['timestamp']
                 });
               }
+              display.sort(function(a, b) {
+                return a[0] - b[0];
+              });
               db.real.bulkAdd(bulkadd).then(function(result) {
                 g.updateOptions({
                   'file': display
@@ -232,7 +236,7 @@
             return db.real.bulkAdd(bulkadd).then(function(result) {
               bulkadd = [];
               console.log(jsonmsg['predicted'].length)
-              if (jsonmsg['predicted'].length < 0) {
+              if (jsonmsg['predicted'].length > 0) {
                 db.predicted.clear().then(function(result) {
                   console.log('terminating predicted table');
                   setuppredicted(db, jsonmsg, plant, sensor, graphName);
