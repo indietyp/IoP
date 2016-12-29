@@ -461,11 +461,14 @@ class MeshNetwork(object):
       import urllib.request
       import json
       print(recipient[1])
-      with urllib.request.urlopen('http://' + recipient[1] + ':2902/get/plant/' + recipient[0]) as response:
-        output = json.loads(response.read().decode('utf8'))
+      try:
+        with urllib.request.urlopen('http://' + recipient[1] + ':2902/get/plant/' + recipient[0]) as response:
+          output = json.loads(response.read().decode('utf8'))
 
-      if output['localhost'] is not True:
-        print('WARNING -> local change not happend')
+        if output['localhost'] is not True:
+          print('WARNING -> local change not happend')
+      except:
+        print('WARNING -> rest_api not affected - restart needed')
 
       finished = False
       while finished is False:

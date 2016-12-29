@@ -82,7 +82,7 @@ class MeshDedicatedDispatch(object):
       del dict_plant['person']
 
       for rest in Plant.select().where(Plant.ip != plant.ip, Plant.localhost == False):
-        data = urllib.parse.urlencode().encode('ascii')
+        data = urllib.parse.urlencode(dict_plant).encode('ascii')
         req = urllib.request.Request('http://' + rest.ip + ':2902/create/plant', data)
         with urllib.request.urlopen(req) as response:
           return response.read().decode('utf8')
@@ -141,5 +141,11 @@ if __name__ == '__main__':
     elif sys.argv[1] == 'reboot':
       print('executed argument action - reboot')
       MeshDedicatedDispatch().reboot()
+    elif len(sys.argv) == 3 and sys.argv[1] == 'testing' and sys.argv[2] == 'register':
+      print('executed argument action - register - testing')
+      from models.plant import Plant
+      plant = Plant.get(Plant.name == 'Thomas')
+      print(plant.ip)
+      MeshDedicatedDispatch().register(plant)
   else:
     print('aborted action - database required - no database provided')
