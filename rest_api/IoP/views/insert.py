@@ -46,7 +46,7 @@ def create_plant(data):
     Plant.get(Plant.ip == data['ip'])
   except:
     plant = Plant()
-    plant.name = data['name']
+    plant.name = data['name'].lower()
     plant.location = data['location']
     plant.species = data['species']
     plant.interval = data['interval']
