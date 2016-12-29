@@ -97,7 +97,7 @@ class SensorDataForecast(object):
 
     if len(sd) < 1000:
       print('not enough samples')
-      return None
+      return []
 
     for entry in sd:
       created_at = entry.created_at
@@ -178,7 +178,7 @@ class SensorDataForecast(object):
 
   def run(self, data):
     sd = self.get_sensor_data(data)
-    if not sd.count() < 1000:
+    if sd.count() > 1000:
       data['prediction'] = self.predict(data, sd)
       self.insert_database(data)
 

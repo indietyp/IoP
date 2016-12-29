@@ -252,7 +252,7 @@ class MeshNetwork(object):
       try:
         plant = MeshObject.get(MeshObject.registered == False, MeshObject.ip == origin.ip)
       except:
-        raise 'plant already registered'
+        print('plant already registered')
 
       self.send(30100, plant=localhost, recipient=origin)
 

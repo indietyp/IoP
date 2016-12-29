@@ -46,7 +46,7 @@ def create_plant(data):
     Plant.get(Plant.ip == data['ip'])
   except:
     plant = Plant()
-    plant.name = data['name']
+    plant.name = data['name'].lower()
     plant.location = data['location']
     plant.species = data['species']
     plant.interval = data['interval']
@@ -66,6 +66,8 @@ def create_plant(data):
     local_plant = Plant.get(Plant.localhost == True)
     for model in [SensorStatus, SensorCount, SensorSatisfactionValue, PlantNetworkUptime]:
       copy_model_instance_from_localhost(plant, model, model.plant == local_plant)
+
+    return plant
 
 
 @app.route('/create/plant', methods=['POST'])
