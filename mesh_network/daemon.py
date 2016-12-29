@@ -495,6 +495,7 @@ class MeshNetwork(object):
         self.send(50101, recipient=recipient, messages=[sensor.name], plant=plant)
       elif sub == 2:
         import json
+        from bson import json_util
         import urllib.request
         from models.sensor import SensorData, Sensor
         from tools.sensor import ToolChainSensor
@@ -521,7 +522,7 @@ class MeshNetwork(object):
         data = {'plant': rec_obj,
                 'sensor': sensor,
                 'value': dataset['value']}
-        ToolChainSensor().insert_sensor(data, mesh=False)
+        ToolChainSensor().insert_data(data, mesh=False)
         # ToolChainSensor().modify_sensor_status(data)
 
         self.send(50102, recipient=recipient, plant=plant)
