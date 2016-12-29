@@ -50,7 +50,7 @@ getCurrentSensor = () ->
 setuppredicted = (db, jsonmsg, plant, sensor, graphName) ->
   bulkadd = []
   display = []
-  console.log display
+  # console.log display
   for entry in jsonmsg['predicted']
     bulkadd.push {plant: plant, sensor: sensor, value: entry['value'], timestamp: entry['timestamp']}
 
@@ -118,7 +118,8 @@ initLineGraph = (graphName) ->
         while stop < count
           i+=1
           start = if i == 1 then 0 else stop
-          stop = Math.floor(Math.pow(i, 3))
+          # stop = Math.floor(Math.pow(i, 3))
+          stop = Math.floor(Math.pow(i, 2.8))
           console.log stop - start
           if i == 1
             smoothPlotter.smoothing = 0.33
@@ -142,7 +143,9 @@ initLineGraph = (graphName) ->
             for data in json_msg
               display.unshift [new Date(data['timestamp'] * 1000), data['value'], null]
               bulkadd.push {plant: plant, sensor: sensor, value: data['value'], timestamp: data['timestamp']}
-
+            display.sort(function(a, b) {
+              return a[0] - b[0];
+            });
             db.real.bulkAdd(bulkadd).then (result) ->
               g.updateOptions( { 'file': display } )
               return
@@ -229,13 +232,15 @@ initLineGraph = (graphName) ->
 
           db.real.bulkAdd(bulkadd).then (result) ->
             bulkadd = []
-            if jsonmsg['predicted'].length < 0
+            console.log jsonmsg['predicted'].length
+            if jsonmsg['predicted'].length > 0
               db.predicted.clear().then (result) ->
-                setuppredicted(db, jsonmsg, plant, sensor, graphName)
                 console.log 'terminating predicted table'
+                setuppredicted(db, jsonmsg, plant, sensor, graphName)
             else
               console.log 'continuing'
               setuppredicted(db, jsonmsg, plant, sensor, graphName)
+            return
 
           .catch (error) ->
             console.log error
