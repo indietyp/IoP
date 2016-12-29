@@ -7,8 +7,8 @@
   [x] 2. add field host
     [x] 2.0 add changes to iop-master-1 database
     [x] 2.1 integrate into frontend and backend
-  [ ] 2.2. convert all created_at to datetime!
   [ ] 3 add plant from iop-master-1
     [ ] 3.1 test data simulation
   [ ] 4. add dedicated alive to crontab (every 5 min + 2min)
+[ ] convert all created_at to datetime!
 [x] sensor daemon, mesh_network alive and dedicated check if database integration exists

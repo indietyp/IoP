@@ -67,6 +67,8 @@ def create_plant(data):
     for model in [SensorStatus, SensorCount, SensorSatisfactionValue, PlantNetworkUptime]:
       copy_model_instance_from_localhost(plant, model, model.plant == local_plant)
 
+    return plant
+
 
 @app.route('/create/plant', methods=['POST'])
 def create_plant_no_register():
