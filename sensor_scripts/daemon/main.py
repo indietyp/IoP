@@ -39,7 +39,6 @@ class SensorDaemon(object):
     future_datetime = current_time + timedelta(seconds=five_minutes)
 
     # round number so that it's every time 5,10.. and not going to be 6,11...
-    print(str(future_datetime))
     minute = self.round_base(future_datetime.minute)
     if minute == 60:
       minute = 59
@@ -52,6 +51,7 @@ class SensorDaemon(object):
                                minute,
                                0)
 
+    print(str(future_datetime))
     next_execution = future_datetime - current_time
     print(next_execution)
 
