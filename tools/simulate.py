@@ -50,7 +50,7 @@ class PlantSimulate:
                                                     SensorDataPrediction.sensor == sensor)
 
     if predicted.count() == 0:
-      data, saved = self.__retrieve_data
+      data, saved = self.__retrieve_data(target, source, sensor)
       data = data.order_by(SensorData.created_at.asc())
       forecast = SensorDataForecast()
 

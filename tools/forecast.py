@@ -94,8 +94,10 @@ class SensorDataForecast(object):
 
     future = {}
     future['date'] = []
-
-    if len(sd) < 1000:
+    
+    from settings.debug import DUMMYPLANT
+    if not DUMMYPLANT and len(sd) < 1000:
+      print(len(sd))
       print('not enough samples')
       return []
 
