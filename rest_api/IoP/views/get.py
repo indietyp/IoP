@@ -43,16 +43,18 @@ def get_latest_dataset(p_uuid, s_uuid):
   plant = Plant.get(Plant.uuid == p_uuid)
   sensor = Sensor.get(Sensor.name == s_uuid)
 
-  sd = SensorData.select().where(SensorData.plant == plant) \
-                          .where(SensorData.sensor == sensor) \
-                          .order_by(SensorData.created_at.desc())
+  sd = SensorData.select(SensorData.value, SensorData.persistant, SensorData.created_at) \
+                 .where(SensorData.plant == plant) \
+                 .where(SensorData.sensor == sensor) \
+                 .order_by(SensorData.created_at.desc()) \
+                 .limit(1) \
+                 .dicts()
 
-  selected = model_to_dict(sd[0])
-  del selected['sensor']
-  del selected['plant']
-  del selected['id']
+  selected = list(sd)[0]
+  selected['timestamp'] = selected['created_at'].timestamp()
+  del selected['created_at']
 
-  return json.dumps(selected, default=json_util.default)
+  return json.dumps(selected)
 
 
 @app.route('/get/plant/<p_uuid>/created_at')

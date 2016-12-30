@@ -94,7 +94,7 @@ class SensorDataForecast(object):
 
     future = {}
     future['date'] = []
-    
+
     from settings.debug import DUMMYPLANT
     if not DUMMYPLANT and len(sd) < 1000:
       print(len(sd))

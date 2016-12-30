@@ -6,22 +6,23 @@ test:
   ✔ notify_ip @done (16-09-13 20:43)
   ✔ add_plant @done (16-09-21 18:18)]
   ✔ create all related tables entries (rest-api | create plant) @done (16-12-22 16:25)
-  [ ] host before request hotfix - potential getting a lot worse!\
+  ✔ host before request hotfix - potential getting a lot worse!\ @done (16-12-31 00:25)
   [ ] simulated plant @critical @dad
   [ ] completed add_plant
   [ ] dedicated alive
     [ ] cronjob! (5min?)
-  [ ] dedicated register
-  [ ] daemon testing
+  ✔ dedicated register @done (16-12-31 00:25)
+  ✔ daemon testing @done (16-12-31 00:25)
   [ ] rest_api create/plant
     [ ] delete holger and insert! (finish first setup)
-  [ ] rest_api create/plant/register
+  ✔ rest_api create/plant/register @done (16-12-31 00:25)
   ✔ dedicated deliver new_data @done (16-09-26 18:55)
   ✔ deliver new_data @done (16-09-27 15:09)
+    [ ] host change
   ✔ dedicated register @done (16-09-21 18:18)
-  [ ] dedicated register
+  ✔ dedicated register @done (16-12-30 23:51)
   ✔ dedicated reboot @done (16-12-22 16:24)
-  [ ] dedicated update
+  ✔ dedicated update @done (16-12-31 00:25)
   [ ] offline check
     [ ] notification
     [ ] ledbar
@@ -157,6 +158,7 @@ frontend:
         ✔ integrate al so in tools @done (16-12-03 21:02)
       ✘ storage settings @cancelled (16-11-09 21:45)
  rest:
+   [ ] retire json_util @critical - replace datetime with timestamp
    general:
      ✔ improvement (under 1 second) @done (16-12-27 21:14)
        ✔ /get/sensor/range @done (16-12-27 21:14)
@@ -196,12 +198,14 @@ frontend:
        ✔ mesh_network @done (16-12-03 16:53)
          ✔ dedicated @done (16-12-03 16:53)
          [ ] SensorSatisfactionValue
-         [ ] host - used for mail sending determination
+         ✔ host - used for mail sending determination @done (16-12-31 00:26)
          ✔ plant information @done (16-12-03 16:53)
          ✔ responsible persons @done (16-12-03 16:53)
          ✔ messages @done (16-12-03 16:53)
          [ ] Day/Night time
  sensor_scripts:
+   [ ] rethink simulated @critical
+     [ ] dummyplant hardware but not email - simulated in init? optional
    daemon:
      ✔ PID on file location @done (16-11-12 14:51)
      ✔ check no database @done (16-09-17 14:00)
@@ -226,7 +230,7 @@ frontend:
          ✔ if predicted.count() == 0 @done (16-11-12 15:41)
            ✔ generate new @done (16-11-12 15:41)
    driver:
-    [ ] to python 3 @critical
+    ✔ to python 3 @critical @done (16-12-31 00:01)
       ✔ DHT @done (16-12-08 21:20)
 
    tools:

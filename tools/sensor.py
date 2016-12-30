@@ -149,7 +149,7 @@ class ToolChainSensor(object):
 
     return 'success'
 
-  def insert_data(self, data, mesh=True):
+  def insert_data(self, data, mesh=True, prediction=True):
     """ dict of data:
           'sensor': object of sensor
           'value': value - float
@@ -184,7 +184,9 @@ class ToolChainSensor(object):
     data['satisfaction'] = self.modify_sensor_status(data)
 
     if persistant is True:
-      SensorDataForecast().run(data)
+      if prediction:
+        SensorDataForecast().run(data)
+
       if mesh:
         from mesh_network.dedicated import MeshDedicatedDispatch
         MeshDedicatedDispatch().new_data(data['sensor'])

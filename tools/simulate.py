@@ -1,10 +1,9 @@
-from models.plant import Plant
-from models.sensor import SensorData, SensorDataPrediction
-from tools.sensor import ToolChainSensor
-from tools.forecast import SensorDataForecast
-from mesh_network.dedicated import MeshDedicatedDispatch
 import random
 import datetime
+from models.plant import Plant, db
+from tools.sensor import ToolChainSensor
+from tools.forecast import SensorDataForecast
+from models.sensor import SensorData, SensorDataPrediction
 
 
 class PlantSimulate:
@@ -20,31 +19,48 @@ class PlantSimulate:
     if data.count() < 1:
       saved = False
       data = SensorData.select().where(SensorData.plant == source,
-                                       SensorData.sensor == sensor)\
+                                       SensorData.sensor == sensor) \
                                 .order_by(SensorData.created_at.desc())
 
       if data.count() > 1000:
         offset = random.randint(0, data.count() - 1000)
         data = data.offset(offset).limit(1000)
 
-      time = datetime.datetime.now()
-      for sample in data:
-        new = SensorData()
-        new.value = sample.value
-        new.plant = target
-        new.sensor = sample.sensor
-        new.created_at = time
-        new.save()
+      data = data.dicts()
+      prepared = list(data)
 
-        time -= datetime.timedelta(minutes=30)
+      current = datetime.datetime.now()
+      for sample in prepared:
+        sample['plant'] = target
+        sample['created_at'] = current
+
+        current -= datetime.timedelta(minutes=30)
+
+      print(len(prepared))
+
+      with db.atomic():
+        for idx in range(0, len(prepared), 100):
+          SensorData.insert_many(prepared[idx:idx + 100]).execute()
+
+      data = SensorData.select().where(SensorData.plant == target,
+                                       SensorData.sensor == sensor) \
+                                .order_by(SensorData.created_at.desc())
 
       saved = True
 
     return data, saved
 
+  @staticmethod
   def run(self, target, sensor, source=None):
     if source is None:
-      source = Plant.get(Plant.localhost == True)
+      count = 0
+      for plant in Plant.select():
+        current = SensorData.select().where(SensorData.plant == target,
+                                            SensorData.sensor == sensor) \
+                                     .count()
+        if count < current:
+          count = current
+          target = plant
 
     predicted = SensorDataPrediction.select().where(SensorDataPrediction.plant == target,
                                                     SensorDataPrediction.sensor == sensor)
@@ -57,8 +73,7 @@ class PlantSimulate:
       information = {'plant': target, 'sensor': sensor}
       information['prediction'] = forecast.predict(information, data)
       forecast.insert_database(information)
-
-      print(information)
+      # print(information)
 
     predicted = SensorDataPrediction.select().where(SensorDataPrediction.plant == target,
                                                     SensorDataPrediction.sensor == sensor) \
@@ -67,11 +82,16 @@ class PlantSimulate:
 
     for sample in predicted:
       if sample.time >= datetime.datetime.now():
-        releaser = True
-        ToolChainSensor().insert_data({'sensor': sensor, 'plant': target, 'value': sample.value})
+        released = True
+        ToolChainSensor().insert_data({'sensor': sensor, 'plant': target, 'value': sample.value}, prediction=False)
         # insert hardware? -- test if DUMMYPLANT hardware?
         sample.delete_instance()
       else:
         released = False
         print('not in prediction timeframe')
     return released
+
+
+if __name__ == '__main__':
+  from models.sensor import Sensor
+  PlantSimulate.run(Plant.get(Plant.name == 'Thomas'), Sensor.get(Sensor.name == 'temperature'))

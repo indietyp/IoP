@@ -498,15 +498,14 @@ class MeshNetwork(object):
         self.send(50101, recipient=recipient, messages=[sensor.name], plant=plant)
       elif sub == 2:
         import json
-        from bson import json_util
         import urllib.request
-        from models.sensor import SensorData, Sensor
-        from tools.sensor import ToolChainSensor
+        from models.sensor import Sensor
+        # from tools.sensor import ToolChainSensor
 
         plant = Plant.get(Plant.localhost == True)
-        print('http://{0}:2902/get/plant/{1}/sensor/{2}/latest'.format(recipient[1], recipient[0], message[0]))
+        # print('http://{0}:2902/get/plant/{1}/sensor/{2}/latest'.format(recipient[1], recipient[0], message[0]))
         with urllib.request.urlopen('http://{0}:2902/get/plant/{1}/sensor/{2}/latest'.format(recipient[1], recipient[0], message[0])) as response:
-          dataset = json.loads(response.read().decode('utf8'), object_hook=json_util.object_hook)
+          dataset = json.loads(response.read().decode('utf8'))
 
         # consider insert_sensor? - created_at only differs and predication not needed! - would solve a load of problems
         # tesing!
