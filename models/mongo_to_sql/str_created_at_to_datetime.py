@@ -2,7 +2,7 @@ from models.sensor import SensorData
 import datetime
 
 count = SensorData.select().count()
-i = 1
+i = 0
 j = 0
 for data in SensorData.select():
   if isinstance(data.created_at, str):

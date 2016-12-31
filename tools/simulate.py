@@ -12,7 +12,7 @@ class PlantSimulate:
 
   def __retrieve_data(self, target, source, sensor):
     data = SensorData.select().where(SensorData.plant == target,
-                                     SensorData.sensor == sensor)\
+                                     SensorData.sensor == sensor) \
                               .order_by(SensorData.created_at.desc())
     saved = True
 
