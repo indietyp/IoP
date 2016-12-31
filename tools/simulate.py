@@ -65,6 +65,7 @@ class PlantSimulate:
     predicted = SensorDataPrediction.select().where(SensorDataPrediction.plant == target,
                                                     SensorDataPrediction.sensor == sensor)
 
+    print(predicted.count())
     if predicted.count() == 0:
       data, saved = self.__retrieve_data(target, source, sensor)
       data = data.order_by(SensorData.created_at.asc())
