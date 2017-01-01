@@ -1,12 +1,12 @@
-from peewee import *
-from settings.database import DATABASE_NAME
-from models.plant import Plant
 import uuid
+from peewee import *
+from models.main import Base
+from models.plant import Plant
+# from settings.database import DATABASE_NAME
+# db = SqliteDatabase(DATABASE_NAME)
 
-db = SqliteDatabase(DATABASE_NAME)
 
-
-class DayNightTime(Model):
+class DayNightTime(Base):
   uuid = UUIDField(default=uuid.uuid4)
   plant = ForeignKeyField(Plant, null=True)
 
@@ -17,6 +17,3 @@ class DayNightTime(Model):
   ledbar = BooleanField(default=False)
   generalleds = BooleanField(default=False)
   notification = BooleanField(default=False)
-
-  class Meta:
-    database = db

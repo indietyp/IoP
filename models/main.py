@@ -1,25 +1,15 @@
-from peewee import *
+from peewee import SqliteDatabase, Model
 from settings.database import DATABASE_NAME
-from peewee import BaseModel
-import inspect
-from inspect import isfunction
-from plant import *
-from sensor import *
-from people import *
-from security import *
+from playhouse.shortcuts import RetryOperationalError
 
 
-if __name__ == '__main__':
-  db = SqliteDatabase(DATABASE_NAME)
-  models = []
+class RetrySqliteDatabase(RetryOperationalError, SqliteDatabase):
+  pass
 
-  for module in ['plant', 'sensor', 'security', 'context']:
-    exec('import ' + module)
-    models.extend([
-      obj for name, obj in inspect.getmembers(
-          eval(module), lambda obj: not isfunction(obj) and isinstance(obj, BaseModel) and obj.__name__ != 'Model'
-      )
-    ])
 
-  print(models)
-  db.create_tables(models)
+db = RetrySqliteDatabase(DATABASE_NAME)
+
+
+class Base(Model):
+  class Meta:
+    database = db

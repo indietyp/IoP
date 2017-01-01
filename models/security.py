@@ -1,21 +1,17 @@
 from peewee import *
+from models.main import Base
+# from settings.database import DATABASE_NAME
+# db = SqliteDatabase(DATABASE_NAME)
 
-from settings.database import DATABASE_NAME
 
-db = SqliteDatabase(DATABASE_NAME)
-
-
-class KeyChain(Model):
+class KeyChain(Base):
   secret      = TextField()
   message     = TextField()
 
   application = CharField()
 
-  class Meta:
-    database  = db
 
-
-class MailAccount(Model):
+class MailAccount(Base):
   account     = CharField()
   transport   = CharField(default='smtp')
   server      = CharField()
@@ -24,6 +20,3 @@ class MailAccount(Model):
 
   daemon      = BooleanField(default=False)
   password    = ForeignKeyField(KeyChain)
-
-  class Meta:
-    database  = db
