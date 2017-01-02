@@ -182,7 +182,7 @@ class MeshNetwork(object):
 
     str_package = repr(package).replace('[', '<', 1)
     str_package = MeshString(str_package).rreplace(']', '>', 1).encode('utf-8')
-    logger.info('sending following package: \n' + str_package)
+    logger.info('sending following package: \n' + str_package.decode())
 
     if multicast is False:
       logger.debug('package destination: ' + external_address)
