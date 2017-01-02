@@ -11,6 +11,7 @@ class PlantSimulate:
     pass
 
   def __retrieve_data(self, target, source, sensor):
+    print('retrieving data')
     data = SensorData.select().where(SensorData.plant == target,
                                      SensorData.sensor == sensor) \
                               .order_by(SensorData.created_at.desc())
@@ -21,8 +22,11 @@ class PlantSimulate:
       data = SensorData.select().where(SensorData.plant == source,
                                        SensorData.sensor == sensor) \
                                 .order_by(SensorData.created_at.desc())
-
+      
+      print('other plant data entries: {}'.format(data.count()))
+      print('harvesting additional data')
       if data.count() > 1000:
+        print('more than 1000 assets')
         offset = random.randint(0, data.count() - 1000)
         data = data.offset(offset).limit(1000)
 
@@ -33,6 +37,7 @@ class PlantSimulate:
       for sample in prepared:
         sample['plant'] = target
         sample['created_at'] = current
+        del sample['id']
 
         current -= datetime.timedelta(minutes=30)
 
@@ -50,22 +55,21 @@ class PlantSimulate:
 
     return data, saved
 
-  @staticmethod
   def run(self, target, sensor, source=None):
     if source is None:
       count = 0
       for plant in Plant.select():
-        current = SensorData.select().where(SensorData.plant == target,
+        current = SensorData.select().where(SensorData.plant == plant,
                                             SensorData.sensor == sensor) \
                                      .count()
         if count < current:
           count = current
-          target = plant
+          source = plant
 
     predicted = SensorDataPrediction.select().where(SensorDataPrediction.plant == target,
                                                     SensorDataPrediction.sensor == sensor)
 
-    print(predicted.count())
+    print('insertation left: {}'.format(predicted.count()))
     if predicted.count() == 0:
       data, saved = self.__retrieve_data(target, source, sensor)
       data = data.order_by(SensorData.created_at.asc())
@@ -82,9 +86,10 @@ class PlantSimulate:
                                              .limit(1)
 
     for sample in predicted:
-      if sample.time >= datetime.datetime.now():
+      if sample.time <= datetime.datetime.now():
         released = True
         ToolChainSensor().insert_data({'sensor': sensor, 'plant': target, 'value': sample.value}, prediction=False)
+        print('inserting')
         # insert hardware? -- test if DUMMYPLANT hardware?
         sample.delete_instance()
       else:
@@ -95,4 +100,4 @@ class PlantSimulate:
 
 if __name__ == '__main__':
   from models.sensor import Sensor
-  PlantSimulate.run(Plant.get(Plant.name == 'Thomas'), Sensor.get(Sensor.name == 'temperature'))
+  PlantSimulate().run(Plant.get(Plant.name == 'thomas'), Sensor.get(Sensor.name == 'temperature'))
