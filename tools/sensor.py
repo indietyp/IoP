@@ -186,6 +186,7 @@ class ToolChainSensor(object):
     self.delete_non_persistant_overflow(data['sensor'], data['plant'])
     data['satisfaction'] = self.modify_sensor_status(data)
 
+    logger.debug('persistant: {}'.format(persistant))
     if persistant is True:
       if prediction:
         SensorDataForecast().run(data)
