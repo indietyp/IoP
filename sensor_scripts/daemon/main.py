@@ -65,6 +65,7 @@ class SensorDaemon(object):
     DHT22.run()
     GenericMoisture.run()
     TSL2561.run()
+    logger.info('finished')
 
   def simulate(self):
     target = Plant.get(Plant.localhost == True)
@@ -72,6 +73,7 @@ class SensorDaemon(object):
     for sensor in Sensor.select():
       logger.info(sensor.name)
       PlantSimulate().run(target, sensor, source)
+    logger.info('finished')
 
   def run(self):
     if not os.path.isfile(pid_file) and VariousTools.verify_database():
@@ -87,13 +89,11 @@ class SensorDaemon(object):
             exc.daemon = True
             exc.start()
             logger.debug('mode: real')
-            logger.info('finished')
           else:
             exc = Process(target=self.simulate)
             exc.daemon = True
             exc.start()
             logger.debug('mode: simulated')
-            logger.info('finished')
 
       except KeyboardInterrupt:
         print('Bye!')

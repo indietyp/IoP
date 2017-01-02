@@ -80,8 +80,9 @@ class ToolChainSensor(object):
     se = data['sensor']
     cl = SensorSatisfactionValue.select() \
                                 .where(SensorSatisfactionValue.plant == pl) \
-                                .where(SensorSatisfactionValue.sensor == se)
-    collection = cl
+                                .where(SensorSatisfactionValue.sensor == se) \
+                                .dicts()
+    collection = list(cl)
 
     return collection
 
