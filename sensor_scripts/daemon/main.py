@@ -70,6 +70,7 @@ class SensorDaemon(object):
     target = Plant.get(Plant.localhost == True)
     source = Plant.get(Plant.name == 'marta')
     for sensor in Sensor.select():
+      logger.info(sensor.name)
       PlantSimulate().run(target, sensor, source)
 
   def run(self):
