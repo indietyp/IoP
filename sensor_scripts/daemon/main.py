@@ -71,7 +71,7 @@ class SensorDaemon(object):
     source = Plant.get(Plant.name == 'marta')
     for sensor in Sensor.select():
       logger.info(sensor.name)
-      PlantSimulate().run(target, sensor, source)
+      logger.debug(PlantSimulate().run(target, sensor, source))
 
   def run(self):
     if not os.path.isfile(pid_file) and VariousTools.verify_database():

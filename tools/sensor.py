@@ -188,6 +188,7 @@ class ToolChainSensor(object):
         SensorDataForecast().run(data)
 
       if mesh:
+        logger.debug('running mesh')
         from mesh_network.dedicated import MeshDedicatedDispatch
         MeshDedicatedDispatch().new_data(data['sensor'])
 
