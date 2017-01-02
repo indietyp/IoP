@@ -118,6 +118,9 @@ class SensorDataForecast(object):
     last_datetime = data['date'][-1]
 
     cap = int(len(data['date']) / 100 * 10)
+    if cap > 144:
+      cap = 144
+
     for i in range(0, cap):
       current = last_datetime + datetime.timedelta(minutes=30)
       future['date'].append(current)
