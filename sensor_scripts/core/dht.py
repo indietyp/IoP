@@ -1,5 +1,6 @@
 import sys
 import random
+import tools.logger
 import Adafruit_DHT
 
 # from pymongo import MongoClient
