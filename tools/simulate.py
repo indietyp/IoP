@@ -1,9 +1,12 @@
 import random
+import logging
 import datetime
+import tools.logger
 from models.plant import Plant, db
 from tools.sensor import ToolChainSensor
 from tools.forecast import SensorDataForecast
 from models.sensor import SensorData, SensorDataPrediction
+logger = logging.getLogger('sensor_scripts')
 
 
 class PlantSimulate:
@@ -11,7 +14,7 @@ class PlantSimulate:
     pass
 
   def __retrieve_data(self, target, source, sensor):
-    print('retrieving data')
+    logger.info('retrieving data')
     data = SensorData.select().where(SensorData.plant == target,
                                      SensorData.sensor == sensor) \
                               .order_by(SensorData.created_at.desc())
@@ -22,11 +25,11 @@ class PlantSimulate:
       data = SensorData.select().where(SensorData.plant == source,
                                        SensorData.sensor == sensor) \
                                 .order_by(SensorData.created_at.desc())
-      
-      print('other plant data entries: {}'.format(data.count()))
-      print('harvesting additional data')
+
+      logger.debug('other plant data entries: {}'.format(data.count()))
+      logger.info('harvesting additional data')
       if data.count() > 1000:
-        print('more than 1000 assets')
+        logger.debug('more than 1000 assets')
         offset = random.randint(0, data.count() - 1000)
         data = data.offset(offset).limit(1000)
 
@@ -41,7 +44,7 @@ class PlantSimulate:
 
         current -= datetime.timedelta(minutes=30)
 
-      print(len(prepared))
+      logger.debug('amount of selected data: {}'.format(len(prepared)))
 
       with db.atomic():
         for idx in range(0, len(prepared), 100):
@@ -69,7 +72,7 @@ class PlantSimulate:
     predicted = SensorDataPrediction.select().where(SensorDataPrediction.plant == target,
                                                     SensorDataPrediction.sensor == sensor)
 
-    print('insertation left: {}'.format(predicted.count()))
+    logger.info('insertations left: {}'.format(predicted.count()))
     if predicted.count() == 0:
       data, saved = self.__retrieve_data(target, source, sensor)
       data = data.order_by(SensorData.created_at.asc())
@@ -78,7 +81,6 @@ class PlantSimulate:
       information = {'plant': target, 'sensor': sensor}
       information['prediction'] = forecast.predict(information, data)
       forecast.insert_database(information)
-      # print(information)
 
     predicted = SensorDataPrediction.select().where(SensorDataPrediction.plant == target,
                                                     SensorDataPrediction.sensor == sensor) \
@@ -89,12 +91,12 @@ class PlantSimulate:
       if sample.time <= datetime.datetime.now():
         released = True
         ToolChainSensor().insert_data({'sensor': sensor, 'plant': target, 'value': sample.value}, prediction=False)
-        print('inserting')
+        logger.info('inserting')
         # insert hardware? -- test if DUMMYPLANT hardware?
         sample.delete_instance()
       else:
         released = False
-        print('not in prediction timeframe')
+        logger.info('too early to insert')
     return released
 
 
