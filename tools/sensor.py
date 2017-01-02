@@ -1,5 +1,6 @@
 import sys
 import json
+import logging
 import urllib.request
 
 from models.sensor import SensorData
@@ -10,7 +11,9 @@ from models.sensor import *
 
 # from tools.mesh import ToolChainMeshSender
 # from tools.hardware import ToolChainHardware
+import tools.logger
 from tools.forecast import SensorDataForecast
+logger = logging.getLogger('sensor_scripts')
 
 
 class ToolChainSensor(object):
@@ -27,8 +30,8 @@ class ToolChainSensor(object):
                            .where(SensorData.sensor == current.sensor) \
                            .where(SensorData.plant == plant) \
                            .order_by(SensorData.created_at.desc())[counter]
-    except IndexError:
-      print('ERROR')
+    except IndexError as e:
+      logger.error(e)
       persistant = True
       return persistant
 
@@ -143,7 +146,7 @@ class ToolChainSensor(object):
       try:
         with urllib.request.urlopen('http://{}:2902/update/plant/{}/satisfaction/level/{}'.format(external.ip, str(data['plant'].uuid), url)) as response:
           data = json.loads(response.read().decode('utf8'))
-          print(data)
+          logger.debug(data)
       except:
         pass
 
