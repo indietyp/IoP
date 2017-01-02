@@ -143,16 +143,24 @@ def init_sensor():
 
   with urllib.request.urlopen('http://127.0.0.1:2902/get/sensor/' + session['sensor'] + '/unit') as response:
     unit = json.loads(response.read().decode('utf8'))['unit']
-    # print(str(unit), file=sys.stdout)
 
   with urllib.request.urlopen('http://127.0.0.1:2902/get/plant/' + session['p_uuid'] + '/sensor/' + session['sensor'] + '/range') as response:
     sensor_color_ranges = json.loads(response.read().decode('utf8'))
 
-
-  # ms2 = datetime.datetime.now().timestamp() - ms
-  # print(str(ms2), file=sys.stdout)
-
-  return {'sensor_unit': str(unit), 'sensor_color_ranges': sensor_color_ranges, 'current_data': current_data, 'sensor_range': sensor_range, 'ever_data': {'high': ever_high_data, 'low': ever_low_data, 'difference': ever_difference}, 'recent_data': {'high': today_high_data, 'low': today_low_data, 'difference': today_difference, 'date': recent_date}}
+  return {'sensor_unit': str(unit),
+          'sensor_color_ranges': sensor_color_ranges,
+          'current_data': current_data,
+          'sensor_range': sensor_range,
+          'ever_data': {
+              'high': ever_high_data,
+              'low': ever_low_data,
+              'difference': ever_difference},
+          'recent_data': {
+              'high': today_high_data,
+              'low': today_low_data,
+              'difference': today_difference,
+              'date': recent_date}
+          }
 
 
 import IoP.views.general

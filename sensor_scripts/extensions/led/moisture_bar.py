@@ -46,7 +46,6 @@ class MoistureBar:
       plant = Plant.get(Plant.localhost == True)
       status = SensorStatus.get(SensorStatus.sensor == sensor,
                                 SensorStatus.plant == plant)
-      print(status.level.label)
 
       # init MCP230xx GPIO adapter.
       bus = 1

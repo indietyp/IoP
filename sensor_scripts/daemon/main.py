@@ -2,6 +2,8 @@ import os
 import sys
 import time
 import atexit
+import logging
+import tools.logger
 from datetime import datetime, timedelta
 
 from models.plant import Plant
@@ -10,6 +12,8 @@ from settings.debug import DEBUG, DUMMYPLANT
 from settings.database import DATABASE_NAME
 from tools.main import VariousTools
 from multiprocessing import Process
+
+logger = logging.getLogger('sensor_scripts')
 
 if not DUMMYPLANT:
   from sensor_scripts.core.dht import DHT22
@@ -51,9 +55,9 @@ class SensorDaemon(object):
                                minute,
                                0)
 
-    print(str(future_datetime))
+    logger.info('next planned execution: {}'.format(future_datetime))
     next_execution = future_datetime - current_time
-    print(next_execution)
+    logger.debug('exact time till next execution: {}'.format(next_execution))
 
     return next_execution.seconds
 
@@ -81,12 +85,14 @@ class SensorDaemon(object):
             exc = Process(target=self.execute)
             exc.daemon = True
             exc.start()
-            print('real data')
+            logger.debug('mode: real')
+            logger.info('finished')
           else:
             exc = Process(target=self.simulate)
             exc.daemon = True
             exc.start()
-            print('simulated data')
+            logger.debug('mode: simulated')
+            logger.info('finished')
 
       except KeyboardInterrupt:
         print('Bye!')
@@ -100,10 +106,10 @@ class SensorDaemon(object):
         self.exit()
     else:
       if not VariousTools.verify_database():
-        print('aborted action - database required - no database provided')
+        logger.error('aborted action - database required - no database provided')
 
       if os.path.isfile(pid_file):
-        print('process already running')
+        logger.error('process already running')
 
   def exit(self):
     if os.path.isfile(pid_file):
@@ -114,7 +120,7 @@ class SensorDaemon(object):
       Plant.get(Plant.localhost == True)
       return True
     except Exception as e:
-      print(e)
+      logger.warning(e)
       return False
 
 
@@ -124,9 +130,9 @@ atexit.register(SensorDaemon().exit)
 if __name__ == '__main__':
   print('start')
   if len(sys.argv) < 2:
-    print('running standard configuration')
+    logger.info('running standard configuration')
     SensorDaemon().run()
   elif sys.argv[1] == 'force' or True:
-    print('forcing start - deleting ' + pid_file + ' if found')
+    logger.info('forcing start - deleting ' + pid_file + ' if found')
     SensorDaemon().exit()
     SensorDaemon().run()

@@ -1,10 +1,13 @@
-import pandas as pd
-import numpy as np
+import logging
 import datetime
+import numpy as np
+import pandas as pd
+import tools.logger
+from settings.debug import GRAPH
 from models.sensor import SensorData
 from models.sensor import SensorDataPrediction
-from settings.debug import GRAPH
 from sklearn.ensemble import ExtraTreesRegressor
+logger = logging.getLogger('sensor_scripts')
 
 
 class SensorDataForecast(object):
@@ -95,10 +98,9 @@ class SensorDataForecast(object):
     future = {}
     future['date'] = []
 
-    from settings.debug import DUMMYPLANT
-    if not DUMMYPLANT and len(sd) < 1000:
-      print(len(sd))
-      print('not enough samples')
+    if len(sd) < 1000:
+      logger.debug('amount of data: ' + len(sd))
+      logger.error('not enough samples')
       return []
 
     for entry in sd:

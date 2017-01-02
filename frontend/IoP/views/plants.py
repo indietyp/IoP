@@ -1,8 +1,8 @@
-from IoP import app, init, init_overview, init_sensor, set_uuid
-from flask import render_template, session
-import urllib.request
 import json
 import random
+import urllib.request
+from flask import render_template, session
+from IoP import app, init, init_overview, init_sensor, set_uuid
 
 
 @app.route('/plant/<plant>')

@@ -1,15 +1,15 @@
-import socket
-from multiprocessing import Process
-import time
 import uuid
+import time
+import socket
+import logging
+import tools.logger
 from models.plant import Plant
 from tools.main import MeshString
+from multiprocessing import Process
+from tools.sensor import ToolChainSensor
 from models.mesh import MeshMessage, MeshObject
 from settings.mesh import MULTICAST_ADDRESS, EXTERNAL_PORT
-from settings.database import DATABASE_NAME
-from tools.sensor import ToolChainSensor
-from tools.mesh import MeshTools
-from bson import json_util
+logger = logging.getLogger('mesh')
 
 
 class MeshNetwork(object):
@@ -32,16 +32,15 @@ class MeshNetwork(object):
     Handler = http.server.SimpleHTTPRequestHandler
     httpd = socketserver.TCPServer(("", port), Handler)
 
-    print("serving at port " + str(port) + ", for 5 requests")
+    logger.info("serving HTTP-server at port " + str(port) + ", for 5 requests")
     for _ in range(0, 5):
       httpd.handle_request()
 
   def daemon_process(self, received):
-    # print(received)
     message = received[0].decode('utf-8')
+    logger.info('received following package: \n' + message)
     message = message.replace('<', '[').replace('>', ']')
     message = eval(message)
-    print(message[4][0].zfill(5))
 
     if self.IP != received[1][0]:
       code = str(message[3][0])
@@ -82,7 +81,7 @@ class MeshNetwork(object):
           sub = int(code[3:]) + 1
           self.deliver(3, sub=sub, recipient=target, message=message)
     else:
-      print('same IP')
+      logger.debug('not processing request - same ip')
 
   def daemon(self):
     client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -103,7 +102,7 @@ class MeshNetwork(object):
         p.daemon = True
         p.start()
       except Exception as e:
-        print(e)
+        logger.warning(e)
 
   def create_message_object(self, plant, code, messages, received=False,
                             recipient=None, muuid=None, priority=255):
@@ -183,14 +182,14 @@ class MeshNetwork(object):
 
     str_package = repr(package).replace('[', '<', 1)
     str_package = MeshString(str_package).rreplace(']', '>', 1).encode('utf-8')
-    print(str_package)
+    logger.info('sending following package: \n' + str_package)
 
     if multicast is False:
-      print(external_address)
+      logger.debug('package destination: ' + external_address)
       address = external_address
       sender = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     else:
-      print('MULTICAST')
+      logger.debug('package destination: multicast ({})'.format(MULTICAST_ADDRESS))
       address = MULTICAST_ADDRESS
       sender = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
       sender.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, 2)
@@ -223,12 +222,12 @@ class MeshNetwork(object):
     elif mode == 2:
       code = 40200
       try:
-        print('DISCOVER: 1')
         plant = Plant.get(Plant.localhost == True)
+        logger.debug('discovered - database exists')
         code += 1
         self.send(code, plant=plant, recipient=target, messages=['LOGGED', 'DATABASE'])
       except:
-        print('DISCOVER: 2')
+        logger.debug('discovered - no database exists')
         code += 2
         self.send(code, no_database=True, recipient=target, messages=['NOT_LOGGED', 'NO_DATABASE'])
 
@@ -252,7 +251,7 @@ class MeshNetwork(object):
       try:
         plant = MeshObject.get(MeshObject.registered == False, MeshObject.ip == origin.ip)
       except:
-        print('plant already registered')
+        logger.warning('plant already registered')
 
       self.send(30100, plant=localhost, recipient=origin)
 
@@ -282,9 +281,8 @@ class MeshNetwork(object):
 
       public = tools.bin2hex(public)
       public = public.decode()
-      print(len(public))
       public = re.findall('.{1,100}', public)
-      print(str(public))
+      logger.debug('generated publickey: ' + str(public))
 
       self.send(30200, recipient=recipient, messages=public, no_database=True)
 
@@ -354,7 +352,7 @@ class MeshNetwork(object):
 
       tools = MeshTools()
       plant = Plant.get(Plant.localhost == True)
-      print(plant.uuid)
+      logger.debug('local plant uuid: {}'.format(plant.uuid))
 
       directory = './database_serve/'
       tools.reinit_dir(directory)
@@ -372,7 +370,7 @@ class MeshNetwork(object):
         key = out.read()
 
       MeshAES.encrypt_file(DATABASE_NAME, filename, key, iv)
-      print(filename)
+      logger.debug('filename of generated file: {}'.format(filename))
 
       # free 124 - 134
       # original_port = 128 birthday of Johannes Neubrand, yeah :D
@@ -380,7 +378,7 @@ class MeshNetwork(object):
 
       with open('./keys/' + recipient[1] + '.pub') as out:
         hex_public = out.read()
-      print(hex_public)
+      logger.debug('received publickey: {}'.format(hex_public))
 
       public_key = tools.hex2bin(hex_public.encode())
       crypter = RSA.importKey(public_key)
@@ -443,12 +441,12 @@ class MeshNetwork(object):
       MeshAES.decrypt_file(u_hash, DATABASE_NAME, key, iv)
 
       old_plant = Plant.get(Plant.localhost == True)
-      print(old_plant.name)
+      logger.info('source plant: {}'.format(old_plant.name))
       old_plant.localhost = False
       old_plant.save()
 
       plant = Plant.get(Plant.uuid == UUID(u_uuid))
-      print(plant.name)
+      logger.info('current plant: {}'.format(plant.name))
       plant.localhost = True
       plant.save()
 
@@ -460,15 +458,15 @@ class MeshNetwork(object):
     elif mode == 7:
       import urllib.request
       import json
-      print(recipient[1])
+      logger.info('source: ' + recipient[1])
       try:
         with urllib.request.urlopen('http://' + recipient[1] + ':2902/get/plant/' + recipient[0]) as response:
           output = json.loads(response.read().decode('utf8'))
 
         if output['localhost'] is not True:
-          print('WARNING -> local change not happend')
+          logger.warning('local change not happend - reboot device')
       except:
-        print('WARNING -> rest_api not affected - restart needed')
+        logger.warning('rest_api not reachable - reboot device or check nginx config')
 
       finished = False
       while finished is False:
@@ -476,6 +474,7 @@ class MeshNetwork(object):
           urllib.request.urlopen('http://localhost:' + messages[0])
         except:
           finished = True
+      logger.info('terminated local HTTP-server')
 
       plant = Plant.get(Plant.localhost == True)
       self.send(30700, recipient=recipient, plant=plant)
@@ -641,14 +640,14 @@ if __name__ == '__main__':
       elif sys.argv[2] == 'data':
         pass
   else:
-    print('nothing selected, starting daemon')
+    logger.info('nothing selected, starting daemon')
 
     def startup():
       try:
         MeshNetwork().daemon()
       except KeyboardInterrupt as e:
-        print(e)
+        logger.info('Bye!')
       except Exception as e:
-        print(e)
+        logger.error(e)
         return startup()
     startup()

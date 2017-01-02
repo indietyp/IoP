@@ -7,7 +7,8 @@ test:
   ✔ add_plant @done (16-09-21 18:18)
   ✔ create all related tables entries (rest-api | create plant) @done (16-12-22 16:25)
   ✔ host before request hotfix - potential getting a lot worse!\ @done (16-12-31 00:25)
-  [ ] simulated plant @critical @dad
+  [ ] cannot operate on a closed database fix @critical
+  ✔ simulated plant @critical @dad @done (17-01-02 14:39)
   [ ] completed add_plant
   [ ] dedicated alive
     [ ] cronjob! (5min?)

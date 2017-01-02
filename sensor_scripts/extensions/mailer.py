@@ -15,7 +15,7 @@ class PlantMailer(object):
 
     for part in messages:
       preset = part.plant.person.preset
-      
+
       if isinstance(part.created_at, str):
         created_at = part.created_at.replace('+00:00', '')
         try:
@@ -59,11 +59,8 @@ class PlantMailer(object):
       # print(tmp)
       output += tmp + '\n\n'
 
-    print(output)
+    # print(output)
     return output
-
-
-
 
   def send_message(self, data, message):
     mailer_instance = NotificationMailer()
@@ -117,31 +114,6 @@ class PlantMailer(object):
         interval = data['plant'].interval * 60 * 60
         if sent.count() == 0 or (now - se[0].created_at).seconds >= interval:
           message = ''
-          # for part in unsent:
-          #   s = SensorSatisfactionLevel.get(SensorSatisfactionLevel.label == 'cautioning')
-          #   c = SensorSatisfactionValue.select()\
-          #                              .where(SensorSatisfactionValue.level == s)\
-          #                              .where(SensorSatisfactionValue.plant == data['plant'])\
-          #                              .where(SensorSatisfactionValue.sensor == part.sensor)[0]
-          #   message +=
-          #               {0}
-          #               Sensor: {1}
-          #               Plant: {5}
-          #               Level: threat
-          #               current: {2}{6}
-          #               cautioning at {3}{6} to {4}{6}
-
-
-          #              .format(part.created_at.strftime('%H:%M'),
-          #                         part.sensor.name,
-          #                         round(part.value, 2),
-          #                         c.min_value,
-          #                         c.max_value,
-          #                         data['plant'].name,
-          #                         part.sensor.unit)
-
-          print(type(unsent))
-          print(type(data))
           message += self.format_messages(unsent)
 
           self.send_message(data, message)

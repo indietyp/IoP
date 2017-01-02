@@ -1,5 +1,7 @@
-import socket
 import sys
+import socket
+import logging
+import tools.logger
 import urllib.request
 from models.plant import Plant
 from tools.main import VariousTools
@@ -131,21 +133,22 @@ class MeshDedicatedDispatch(object):
     return True
 
 if __name__ == '__main__':
+  logger = logging.getLogger('mesh')
   if VariousTools.verify_database():
     if len(sys.argv) < 2:
-      print('executed standard action - reboot')
+      logger.info('executed standard action - reboot')
       MeshDedicatedDispatch().reboot()
     elif sys.argv[1] == 'alive':
-      print('executed argument action - alive')
+      logger.info('executed argument action - alive')
       MeshDedicatedDispatch().alive()
     elif sys.argv[1] == 'reboot':
-      print('executed argument action - reboot')
+      logger.info('executed argument action - reboot')
       MeshDedicatedDispatch().reboot()
     elif len(sys.argv) == 3 and sys.argv[1] == 'testing' and sys.argv[2] == 'register':
-      print('executed argument action - register - testing')
+      logger.info('executed argument action - register - testing')
       from models.plant import Plant
       plant = Plant.get(Plant.name == 'Thomas')
-      print(plant.ip)
+      logger.info(plant.ip)
       MeshDedicatedDispatch().register(plant)
   else:
-    print('aborted action - database required - no database provided')
+    logger.info('aborted action - database required - no database provided')

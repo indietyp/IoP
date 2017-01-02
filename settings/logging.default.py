@@ -1,0 +1,3 @@
+from logging import DEBUG, INFO, WARNING, ERROR, CRITICAL
+
+LOGLEVEL = ERROR

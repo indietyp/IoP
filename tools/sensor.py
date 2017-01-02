@@ -77,8 +77,8 @@ class ToolChainSensor(object):
     """
     pl = data['plant']
     se = data['sensor']
-    cl = SensorSatisfactionValue.select()\
-                                .where(SensorSatisfactionValue.plant == pl)\
+    cl = SensorSatisfactionValue.select() \
+                                .where(SensorSatisfactionValue.plant == pl) \
                                 .where(SensorSatisfactionValue.sensor == se)
     collection = cl
 

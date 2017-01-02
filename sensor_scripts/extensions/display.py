@@ -1,11 +1,14 @@
 import re
+import logging
 import datetime
+import tools.logger
 from models.plant import Plant
 from collections import OrderedDict
 from tools.main import VariousTools
 from models.sensor import Sensor, SensorData, SensorHardware
 from sensor_scripts.driver.mcp23017 import MCP230XX_GPIO
 from sensor_scripts.driver.char_lcd import Adafruit_CharLCD
+logger = logging.getLogger('sensor_scripts')
 
 
 class Display:
@@ -101,7 +104,7 @@ class Display:
         sensor.last_execution = datetime.datetime.now()
         sensor.save()
 
-        print('Display set')
+        logger.debug('display: updated')
 
         bus = 1
         gpio_count = 16
@@ -119,11 +122,11 @@ class Display:
         lcd.clear()
         lcd.message(self.data['display']['text'])
       else:
-        print('Display not set')
+        logger.debug('display: not updated')
 
       # print self.data['display']['text']
     else:
-      print('not in time')
+      logger.info('display: in offline timeframe - clearing')
       bus = 1
       gpio_count = 16
       address = 32
@@ -134,5 +137,4 @@ class Display:
 
 
 if __name__ == "__main__":
-  # Display().get().calculate()
   Display().set()

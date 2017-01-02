@@ -1,7 +1,10 @@
+import logging
+import tools.logger
 from sensor_scripts.extensions.display import Display
 from sensor_scripts.extensions.mailer import PlantMailer
 from sensor_scripts.extensions.led.general import TrafficLight
 from sensor_scripts.extensions.led.moisture_bar import MoistureBar
+logger = logging.getLogger('sensor_scripts')
 
 
 class ToolChainHardware(object):
@@ -11,23 +14,23 @@ class ToolChainHardware(object):
     pass
 
   def execute_led_traffic_light(self, data):
-    print('TrafficLight')
+    logger.info('executing traffic light')
     TrafficLight.run()
 
   def execute_led_bar(self, data):
-    print('MoistureBar')
+    logger.info('executing moisture led bar')
     MoistureBar.run()
 
   def execute_display(self, data):
-    print('Display')
+    logger.info('executing display')
     Display().set()
 
   def execute_water_pump(self, data):
-    print('WATER_PUMP')
+    logger.info('executing water pump')
 
   def execute_mailer(self, data):
-    print('mailer')
+    logger.info('executing mailer')
     PlantMailer().execute(data)
 
   def unicorn(self, data):
-    print('PRAISE THE ALL MIGHTY UNICORN!')
+    logger.critical('PRAISE THE ALL MIGHTY UNICORN!')
