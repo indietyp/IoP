@@ -1,6 +1,7 @@
 import sys
 import json
 import logging
+import datetime
 import urllib.request
 
 from models.sensor import SensorData
@@ -22,26 +23,23 @@ class ToolChainSensor(object):
   def __init__(self):
     pass
 
-  def get_last_persistant(self, current, plant, counter=0):
-    # WHERE PLANT
-    persistant = False
-    try:
-      previous = SensorData.select() \
-                           .where(SensorData.sensor == current.sensor) \
-                           .where(SensorData.plant == plant) \
-                           .order_by(SensorData.created_at.desc())[counter]
-    except IndexError as e:
-      logger.error(e)
-      persistant = True
-      return persistant
+  def persistant_evaluation(self, plant, sensor):
+    dataset = SensorData.select(SensorData.created_at) \
+                        .where(SensorData.sensor == sensor) \
+                        .where(SensorData.plant == plant) \
+                        .where(SensorData.persistant == True) \
+                        .order_by(SensorData.created_at.desc()) \
+                        .limit(1) \
+                        .dicts()
 
-    counter += 1
-
-    if previous.persistant is True:
-      persistant = False if counter % 7 != 0 else True
-      return persistant
+    if dataset.count() == 0:
+      return True
     else:
-      return self.get_last_persistant(previous, plant, counter)
+      dataset = list(dataset)[0]
+      if datetime.datetime.now() - dataset['created_at'] >= datetime.timedelta(minutes=29):
+        return True
+      else:
+        return False
 
   def get_second_last_entry(self, current, plant):
     try:
@@ -163,9 +161,10 @@ class ToolChainSensor(object):
                                 .count()
 
     persistant = False
+    data['value'] = round(data['value'], 2)
 
     sensor_db = SensorData()
-    sensor_db.value = round(data['value'], 2)
+    sensor_db.value = data['value']
     sensor_db.plant = data['plant']
     sensor_db.sensor = data['sensor']
     sensor_db.persistant = False
@@ -178,7 +177,7 @@ class ToolChainSensor(object):
     if offset >= data['sensor'].persistant_offset:
       persistant = True
     elif current_entries > 6:
-      persistant = self.get_last_persistant(sensor_db, data['plant'], 1)
+      persistant = self.persistant_evaluation(data['plant'], data['sensor'])
 
     sensor_db.persistant = persistant
     sensor_db.save()
