@@ -95,52 +95,38 @@ class ToolChainSensor(object):
     """
     collection = self.get_sensor_satification_value(data)
 
-    current = [- sys.maxsize, '', '']
+    current = {'minimum': - sys.maxsize,
+               'satisfaction': None}
 
     for satisfaction in collection:
-      if satisfaction['inherited'] is True:
-        min_value = data['sensor'].min_value
-        max_value = data['sensor'].max_value
-      else:
-        min_value = satisfaction['min_value']
-        max_value = satisfaction['max_value']
+      if current['minimum'] < satisfaction['min_value']:
+        if satisfaction['inherited']:
+          satisfaction['min_value'] = data['sensor'].min_value
+          satisfaction['max_value'] = data['sensor'].max_value
 
-      if min_value <= data['value'] <= max_value:
-        barrier = max_value - min_value / 2
-        high_low = True if data['value'] >= barrier else False
+        if satisfaction['min_value'] <= data['value'] <= satisfaction['max_value']:
+          current['satisfaction'] = satisfaction
+          current['minimum'] = satisfaction['min_value']
 
-        if min_value >= current[0]:
-          current[0] = min_value
-          current[1] = satisfaction
-          current[2] = SensorStatus.get(SensorStatus.sensor == data['sensor'],
-                                        SensorStatus.plant == data['plant'])
+    status = SensorStatus.get(SensorStatus.sensor == data['sensor'],
+                              SensorStatus.plant == data['plant'])
 
-          status, result = SensorStatus.get_or_create(
-              sensor=data['sensor'],
-              plant=data['plant'],
-              defaults={'level': satisfaction['level']})
+    if status.level != current['satisfaction']['level']:
+      barrier = current['satisfaction']['max_value'] - current['satisfaction']['min_value']
+      barrier = True if data['value'] >= barrier else False
 
-          status.level = satisfaction['level']
-          status.status = high_low
-          status.save()
+      status.level = satisfaction['level']
+      status.status = barrier
+      status.save()
 
-          # not rlly working?
-          counter, result = SensorCount.get_or_create(
-              plant=data['plant'],
-              sensor=data['sensor'],
-              level=satisfaction['level'],
-              defaults={'count': int(0)})
-          counter.count += 1
-          counter.save()
-
-    if current[2].level == current[1]['level']:
-      data['plant'].sat_streak = data['plant'].sat_streak + 1
-      data['plant'].save()
-      url = 'add'
-    else:
       data['plant'].sat_streak = 1
       data['plant'].save()
       url = 'reset'
+
+    else:
+      data['plant'].sat_streak = data['plant'].sat_streak + 1
+      data['plant'].save()
+      url = 'add'
 
     for external in Plant.select().where(Plant.localhost == False):
       try:
@@ -148,7 +134,15 @@ class ToolChainSensor(object):
           data = json.loads(response.read().decode('utf8'))
           logger.debug(data)
       except:
-        pass
+        logger.debug('couldn\'t access {}'.format(external.name))
+
+    counter, result = SensorCount.get_or_create(
+        plant=data['plant'],
+        sensor=data['sensor'],
+        level=satisfaction['level'],
+        defaults={'count': int(0)})
+    counter.count = counter.count + 1
+    counter.save()
 
     return 'success'
 
@@ -173,9 +167,15 @@ class ToolChainSensor(object):
     sensor_db.persistant = False
     sensor_db.save()
 
+    # start block
+    ###################
     last_entry = self.get_second_last_entry(sensor_db, data['plant'])
     last_value = last_entry.value if last_entry is not None else data['value']
+    ###################
+    # 0.8 seconds
 
+    # start block
+    ###################
     offset = abs(data['value'] - last_value)
     if offset >= data['sensor'].persistant_offset:
       persistant = True
@@ -184,16 +184,24 @@ class ToolChainSensor(object):
 
     sensor_db.persistant = persistant
     sensor_db.save()
+    ###################
+    # 00.9 seconds
 
-    between = datetime.datetime.now()
+    # start block
+    ###################
     self.delete_non_persistant_overflow(data['sensor'], data['plant'])
-    logger.debug('(194-196) time elapsed: {}'.format(datetime.datetime.now() - between))
-    between = datetime.datetime.now()
+    ###################
+    # 00.5 seconds
+
+    # start block
+    ###################
     data['satisfaction'] = self.modify_sensor_status(data)
-    logger.debug('(197-199) time elapsed: {}'.format(datetime.datetime.now() - between))
+    ###################
+    # 00.7 seconds - 03 seconds
 
     logger.debug('{} - {} persistant: {}'.format(data['plant'].name, data['sensor'].name, persistant))
-    between = datetime.datetime.now()
+    # start block
+    ###################
     if persistant is True:
       if prediction:
         SensorDataForecast().run(data)
@@ -202,7 +210,8 @@ class ToolChainSensor(object):
         logger.debug('running mesh')
         from mesh_network.dedicated import MeshDedicatedDispatch
         MeshDedicatedDispatch().new_data(data['sensor'])
-    logger.debug('(199-208) time elapsed: {}'.format(datetime.datetime.now() - between))
+    ###################
+    # 60.02 seconds
     logger.debug('time elapsed: {}'.format(datetime.datetime.now() - start))
     return persistant
 
