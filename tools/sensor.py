@@ -88,7 +88,7 @@ class ToolChainSensor(object):
 
     return collection
 
-  def modify_sensor_status(self, data):
+  def modify_sensor_status(self, data, mesh=True):
     """ dict of data:
           'sensor': object of sensor
           'value': value - float
@@ -129,15 +129,16 @@ class ToolChainSensor(object):
       data['plant'].save()
       url = 'add'
 
-    for external in Plant.select().where(Plant.localhost == False):
-      try:
-        data = urllib.parse.urlencode({}).encode()
-        req = urllib.request.Request('http://{}:2902/update/plant/{}/satisfaction/level/{}'.format(external.ip, str(data['plant'].uuid), url), data=data)
-        with urllib.request.urlopen(req) as response:
-          output = json.loads(response.read().decode('utf8'))
-          logger.debug(output)
-      except:
-        logger.debug('couldn\'t access {}'.format(external.name))
+    if mesh:
+      for external in Plant.select().where(Plant.localhost == False):
+        try:
+          data = urllib.parse.urlencode({}).encode()
+          req = urllib.request.Request('http://{}:2902/update/plant/{}/satisfaction/level/{}'.format(external.ip, str(data['plant'].uuid), url), data=data)
+          with urllib.request.urlopen(req) as response:
+            output = json.loads(response.read().decode('utf8'))
+            logger.debug(output)
+        except:
+          logger.debug('couldn\'t access {}'.format(external.name))
 
     counter, result = SensorCount.get_or_create(
         plant=data['plant'],
@@ -198,7 +199,7 @@ class ToolChainSensor(object):
 
     # start block
     ###################
-    data['satisfaction'] = self.modify_sensor_status(data)
+    data['satisfaction'] = self.modify_sensor_status(data, mesh)
     ###################
     # 00.7 seconds - 03 seconds
 
