@@ -157,7 +157,8 @@ class ToolChainSensor(object):
           'value': value - float
           'plant': current selected plant
     """
-    now = datetime.datetime.now()
+    between = datetime.datetime.now()
+    start = datetime.datetime.now()
     current_entries = SensorData.select()\
                                 .where(SensorData.sensor == data['sensor'])\
                                 .count()
@@ -171,10 +172,14 @@ class ToolChainSensor(object):
     sensor_db.sensor = data['sensor']
     sensor_db.persistant = False
     sensor_db.save()
+    logger.debug('(160-175) time elapsed: {}'.format(datetime.datetime.now() - between))
 
+    between = datetime.datetime.now()
     last_entry = self.get_second_last_entry(sensor_db, data['plant'])
     last_value = last_entry.value if last_entry is not None else data['value']
+    logger.debug('(177-180) time elapsed: {}'.format(datetime.datetime.now() - between))
 
+    between = datetime.datetime.now()
     offset = abs(data['value'] - last_value)
     if offset >= data['sensor'].persistant_offset:
       persistant = True
@@ -183,11 +188,15 @@ class ToolChainSensor(object):
 
     sensor_db.persistant = persistant
     sensor_db.save()
+    logger.debug('(182-191) time elapsed: {}'.format(datetime.datetime.now() - between))
 
+    between = datetime.datetime.now()
     self.delete_non_persistant_overflow(data['sensor'], data['plant'])
     data['satisfaction'] = self.modify_sensor_status(data)
+    logger.debug('(193-196) time elapsed: {}'.format(datetime.datetime.now() - between))
 
     logger.debug('{} - {} persistant: {}'.format(data['plant'].name, data['sensor'].name, persistant))
+    between = datetime.datetime.now()
     if persistant is True:
       if prediction:
         SensorDataForecast().run(data)
@@ -196,7 +205,8 @@ class ToolChainSensor(object):
         logger.debug('running mesh')
         from mesh_network.dedicated import MeshDedicatedDispatch
         MeshDedicatedDispatch().new_data(data['sensor'])
-    logger.debug('time elapsed: {}'.format(datetime.datetime.now() - now))
+    logger.debug('(199-208) time elapsed: {}'.format(datetime.datetime.now() - between))
+    logger.debug('time elapsed: {}'.format(datetime.datetime.now() - start))
     return persistant
 
   def set_hardware(self, data):
