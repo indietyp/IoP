@@ -131,7 +131,7 @@ class ToolChainSensor(object):
 
     for external in Plant.select().where(Plant.localhost == False):
       try:
-        data = parse.urlencode({}).encode()
+        data = urllib.parse.urlencode({}).encode()
         req = urllib.request.Request('http://{}:2902/update/plant/{}/satisfaction/level/{}'.format(external.ip, str(data['plant'].uuid), url), data=data)
         with urllib.request.urlopen(req) as response:
           data = json.loads(response.read().decode('utf8'))
