@@ -3,6 +3,7 @@ import json
 import logging
 import datetime
 import urllib.request
+import urllib.parse
 
 from models.sensor import SensorData
 from models.sensor import Sensor
@@ -115,7 +116,7 @@ class ToolChainSensor(object):
       barrier = current['satisfaction']['max_value'] - current['satisfaction']['min_value']
       barrier = True if data['value'] >= barrier else False
 
-      status.level = satisfaction['level']
+      status.level = current['satisfaction']['level']
       status.status = barrier
       status.save()
 
@@ -130,7 +131,9 @@ class ToolChainSensor(object):
 
     for external in Plant.select().where(Plant.localhost == False):
       try:
-        with urllib.request.urlopen('http://{}:2902/update/plant/{}/satisfaction/level/{}'.format(external.ip, str(data['plant'].uuid), url)) as response:
+        data = parse.urlencode({}).encode()
+        req = urllib.request.Request('http://{}:2902/update/plant/{}/satisfaction/level/{}'.format(external.ip, str(data['plant'].uuid), url), data=data)
+        with urllib.request.urlopen(req) as response:
           data = json.loads(response.read().decode('utf8'))
           logger.debug(data)
       except:
