@@ -134,8 +134,8 @@ class ToolChainSensor(object):
         data = urllib.parse.urlencode({}).encode()
         req = urllib.request.Request('http://{}:2902/update/plant/{}/satisfaction/level/{}'.format(external.ip, str(data['plant'].uuid), url), data=data)
         with urllib.request.urlopen(req) as response:
-          data = json.loads(response.read().decode('utf8'))
-          logger.debug(data)
+          output = json.loads(response.read().decode('utf8'))
+          logger.debug(output)
       except:
         logger.debug('couldn\'t access {}'.format(external.name))
 
