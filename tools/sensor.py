@@ -132,8 +132,8 @@ class ToolChainSensor(object):
     if mesh:
       for external in Plant.select().where(Plant.localhost == False):
         try:
-          data = urllib.parse.urlencode({}).encode()
-          req = urllib.request.Request('http://{}:2902/update/plant/{}/satisfaction/level/{}'.format(external.ip, str(data['plant'].uuid), url), data=data)
+          magic = urllib.parse.urlencode({}).encode()
+          req = urllib.request.Request('http://{}:2902/update/plant/{}/satisfaction/level/{}'.format(external.ip, str(data['plant'].uuid), url), data=magic)
           with urllib.request.urlopen(req) as response:
             output = json.loads(response.read().decode('utf8'))
             logger.debug(output)
