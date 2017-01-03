@@ -103,6 +103,7 @@ class SensorDataForecast(object):
       logger.error('not enough samples')
       return []
 
+    between = datetime.datetime.now()
     for entry in sd:
       created_at = entry.created_at
       if isinstance(created_at, str):
@@ -116,6 +117,7 @@ class SensorDataForecast(object):
       data['value'].append(entry.value)
 
     last_datetime = data['date'][-1]
+    logger.debug('(106-120) time elapsed: {}'.format(datetime.datetime.now() - between))
 
     cap = int(len(data['date']) / 100 * 10)
     if cap > 144:
@@ -126,13 +128,18 @@ class SensorDataForecast(object):
       future['date'].append(current)
       last_datetime = current
 
+    between = datetime.datetime.now()
     data = self.datetime_to_dict(data)
     future = self.datetime_to_dict(future)
+    logger.debug('(131-134) time elapsed: {}'.format(datetime.datetime.now() - between))
 
+    between = datetime.datetime.now()
     index = pd.DatetimeIndex(data['date'])
     time_series = pd.Series(data['value'], index=index)
     rolmean = time_series.rolling(center=False, window=12).mean()
+    logger.debug('(136-140) time elapsed: {}'.format(datetime.datetime.now() - between))
 
+    between = datetime.datetime.now()
     for entry in rolmean:
       data['average'].append(entry)
 
@@ -141,17 +148,22 @@ class SensorDataForecast(object):
 
     columns = data_frame.columns.tolist()
     columns = [c for c in columns if c not in ['value', 'average', 'date']]
+    logger.debug('(142-151) time elapsed: {}'.format(datetime.datetime.now() - between))
 
+    between = datetime.datetime.now()
     model = ExtraTreesRegressor()
     model.fit(data_frame[columns].values,
               data_frame['average'].values)
 
     pred_data_frame = pd.DataFrame(future)
     predictions = model.predict(pred_data_frame[columns].values)
+    logger.debug('(153-160) time elapsed: {}'.format(datetime.datetime.now() - between))
 
+    between = datetime.datetime.now()
     future['prediction'] = []
     for prediction in predictions:
       future['prediction'].append(prediction)
+    logger.debug('(162-166) time elapsed: {}'.format(datetime.datetime.now() - between))
 
     if GRAPH is True:
       self.show_graph(data['date'], data['average'], future['date'], predictions)

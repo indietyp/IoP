@@ -46,7 +46,8 @@ class ToolChainSensor(object):
       previous = SensorData.select() \
                            .where(SensorData.sensor == current.sensor) \
                            .where(SensorData.plant == plant) \
-                           .order_by(SensorData.created_at.desc())[1]
+                           .order_by(SensorData.created_at.desc()) \
+                           .limit(2)[1]
     except:
       return None
 
@@ -157,7 +158,6 @@ class ToolChainSensor(object):
           'value': value - float
           'plant': current selected plant
     """
-    between = datetime.datetime.now()
     start = datetime.datetime.now()
     current_entries = SensorData.select()\
                                 .where(SensorData.sensor == data['sensor'])\
@@ -172,14 +172,10 @@ class ToolChainSensor(object):
     sensor_db.sensor = data['sensor']
     sensor_db.persistant = False
     sensor_db.save()
-    logger.debug('(160-175) time elapsed: {}'.format(datetime.datetime.now() - between))
 
-    between = datetime.datetime.now()
     last_entry = self.get_second_last_entry(sensor_db, data['plant'])
     last_value = last_entry.value if last_entry is not None else data['value']
-    logger.debug('(177-180) time elapsed: {}'.format(datetime.datetime.now() - between))
 
-    between = datetime.datetime.now()
     offset = abs(data['value'] - last_value)
     if offset >= data['sensor'].persistant_offset:
       persistant = True
@@ -188,12 +184,13 @@ class ToolChainSensor(object):
 
     sensor_db.persistant = persistant
     sensor_db.save()
-    logger.debug('(182-191) time elapsed: {}'.format(datetime.datetime.now() - between))
 
     between = datetime.datetime.now()
     self.delete_non_persistant_overflow(data['sensor'], data['plant'])
+    logger.debug('(194-196) time elapsed: {}'.format(datetime.datetime.now() - between))
+    between = datetime.datetime.now()
     data['satisfaction'] = self.modify_sensor_status(data)
-    logger.debug('(193-196) time elapsed: {}'.format(datetime.datetime.now() - between))
+    logger.debug('(197-199) time elapsed: {}'.format(datetime.datetime.now() - between))
 
     logger.debug('{} - {} persistant: {}'.format(data['plant'].name, data['sensor'].name, persistant))
     between = datetime.datetime.now()
