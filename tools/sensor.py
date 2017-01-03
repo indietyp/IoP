@@ -97,12 +97,12 @@ class ToolChainSensor(object):
     current = [- sys.maxsize, '', '']
 
     for satisfaction in collection:
-      if satisfaction.inherited is True:
-        min_value = satisfaction.sensor.min_value
-        max_value = satisfaction.sensor.max_value
+      if satisfaction['inherited'] is True:
+        min_value = data['sensor'].min_value
+        max_value = data['sensor'].max_value
       else:
-        min_value = satisfaction.min_value
-        max_value = satisfaction.max_value
+        min_value = satisfaction['min_value']
+        max_value = satisfaction['max_value']
 
       if min_value <= data['value'] <= max_value:
         barrier = max_value - min_value / 2
@@ -117,9 +117,9 @@ class ToolChainSensor(object):
           status, result = SensorStatus.get_or_create(
               sensor=data['sensor'],
               plant=data['plant'],
-              defaults={'level': satisfaction.level})
+              defaults={'level': satisfaction['level']})
 
-          status.level = satisfaction.level
+          status.level = satisfaction['level']
           status.status = high_low
           status.save()
 
@@ -127,12 +127,12 @@ class ToolChainSensor(object):
           counter, result = SensorCount.get_or_create(
               plant=data['plant'],
               sensor=data['sensor'],
-              level=satisfaction.level,
+              level=satisfaction['level'],
               defaults={'count': int(0)})
           counter.count += 1
           counter.save()
 
-    if current[2].level == current[1].level:
+    if current[2].level == current[1]['level']:
       data['plant'].sat_streak = data['plant'].sat_streak + 1
       data['plant'].save()
       url = 'add'
@@ -157,6 +157,7 @@ class ToolChainSensor(object):
           'value': value - float
           'plant': current selected plant
     """
+    now = datetime.datetime.now()
     current_entries = SensorData.select()\
                                 .where(SensorData.sensor == data['sensor'])\
                                 .count()
@@ -195,7 +196,7 @@ class ToolChainSensor(object):
         logger.debug('running mesh')
         from mesh_network.dedicated import MeshDedicatedDispatch
         MeshDedicatedDispatch().new_data(data['sensor'])
-
+    logger.debug('time elapsed: {}'.format(datetime.datetime.now() - now))
     return persistant
 
   def set_hardware(self, data):

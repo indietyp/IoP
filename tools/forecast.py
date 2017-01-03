@@ -159,10 +159,13 @@ class SensorDataForecast(object):
     return future
 
   def insert_database(self, data):
+    deletion = datetime.datetime.now()
     SensorDataPrediction.delete().where(SensorDataPrediction.plant == data['plant']) \
                                  .where(SensorDataPrediction.sensor == data['sensor']) \
                                  .execute()
+    logger.debug('elapsed time deleting: {}'.format(datetime.datetime.now() - deletion))
 
+    time_insert = datetime.datetime.now()
     prepared = []
     for key, prediction in enumerate(data['prediction']['prediction']):
       prepared.append({'plant': data['plant'],
@@ -182,6 +185,8 @@ class SensorDataForecast(object):
       for idx in range(0, len(prepared), 100):
         SensorDataPrediction.insert_many(prepared[idx:idx + 100]).execute()
       # SensorDataPrediction.insert_many(prepared).execute()
+    logger.debug('insert time elapsed: {}'.format(datetime.datetime.now() - time_insert))
+    logger.debug('overall time elapsed: {}'.format(datetime.datetime.now() - deletion))
 
   def run(self, data):
     sd = self.get_sensor_data(data)
