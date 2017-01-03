@@ -99,11 +99,11 @@ class ToolChainSensor(object):
                'satisfaction': None}
 
     for satisfaction in collection:
-      if current['minimum'] < satisfaction['min_value']:
-        if satisfaction['inherited']:
-          satisfaction['min_value'] = data['sensor'].min_value
-          satisfaction['max_value'] = data['sensor'].max_value
+      if satisfaction['inherited']:
+        satisfaction['min_value'] = data['sensor'].min_value
+        satisfaction['max_value'] = data['sensor'].max_value
 
+      if current['minimum'] < satisfaction['min_value']:
         if satisfaction['min_value'] <= data['value'] <= satisfaction['max_value']:
           current['satisfaction'] = satisfaction
           current['minimum'] = satisfaction['min_value']
