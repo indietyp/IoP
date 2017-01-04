@@ -184,12 +184,12 @@ class ToolChainSensor(object):
     sensor_db.save()
 
     self.delete_non_persistant_overflow(data['sensor'], data['plant'])
-    data['satisfaction'] = self.modify_sensor_status(data, mesh)
-
     logger.debug('{} - {} persistant: {}'.format(data['plant'].name, data['sensor'].name, persistant))
     # start block
     ###################
-    if persistant is True:
+    if persistant:
+      self.modify_sensor_status(data, mesh)
+
       if prediction:
         SensorDataForecast().run(data)
 

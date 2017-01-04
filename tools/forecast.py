@@ -49,7 +49,7 @@ class SensorDataForecast(object):
     return array
 
   def get_sensor_data(self, data):
-    sd = SensorData.select() \
+    sd = SensorData.select(SensorData.value, SensorData.created_at) \
                    .where(SensorData.plant == data['plant']) \
                    .where(SensorData.sensor == data['sensor']) \
                    .order_by(SensorData.created_at.asc())
@@ -105,18 +105,13 @@ class SensorDataForecast(object):
       return []
     logger.debug('(101-106) time elapsed: {}'.format(datetime.datetime.now() - between))
 
+    sd = sd.dicts()
+    sd = list(sd)
+
     between = datetime.datetime.now()
     for entry in sd:
-      created_at = entry.created_at
-      if isinstance(created_at, str):
-        str_entry = created_at.replace('+00:00', '')
-        dt_date = datetime.datetime.strptime(str_entry, '%Y-%m-%d %H:%M:%S')
-      else:
-        # print(type(created_at))
-        dt_date = created_at
-      data['date'].append(dt_date)
-
-      data['value'].append(entry.value)
+      data['date'].append(entry['created_at'])
+      data['value'].append(entry['value'])
 
     last_datetime = data['date'][-1]
     logger.debug('(106-120) time elapsed: {}'.format(datetime.datetime.now() - between))
