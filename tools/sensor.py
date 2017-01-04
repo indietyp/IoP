@@ -171,15 +171,9 @@ class ToolChainSensor(object):
     sensor_db.persistant = False
     sensor_db.save()
 
-    # start block
-    ###################
     last_entry = self.get_second_last_entry(sensor_db, data['plant'])
     last_value = last_entry.value if last_entry is not None else data['value']
-    ###################
-    # 0.8 seconds
 
-    # start block
-    ###################
     offset = abs(data['value'] - last_value)
     if offset >= data['sensor'].persistant_offset:
       persistant = True
@@ -188,32 +182,24 @@ class ToolChainSensor(object):
 
     sensor_db.persistant = persistant
     sensor_db.save()
-    ###################
-    # 00.9 seconds
 
-    # start block
-    ###################
     self.delete_non_persistant_overflow(data['sensor'], data['plant'])
-    ###################
-    # 00.5 seconds
-
-    # start block
-    ###################
     data['satisfaction'] = self.modify_sensor_status(data, mesh)
-    ###################
-    # 00.7 seconds - 03 seconds
 
     logger.debug('{} - {} persistant: {}'.format(data['plant'].name, data['sensor'].name, persistant))
     # start block
     ###################
     if persistant is True:
       if prediction:
+        between = datetime.datetime.now()
         SensorDataForecast().run(data)
+        logger.debug('forecast time elapsed: {}'.format(datetime.datetime.now() - between))
 
       if mesh:
-        logger.debug('running mesh')
+        between = datetime.datetime.now()
         from mesh_network.dedicated import MeshDedicatedDispatch
         MeshDedicatedDispatch().new_data(data['sensor'])
+        logger.debug('mesh dispatch time elapsed: {}'.format(datetime.datetime.now() - between))
     ###################
     # 60.02 seconds
     logger.debug('time elapsed: {}'.format(datetime.datetime.now() - start))
