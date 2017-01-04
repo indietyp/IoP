@@ -105,10 +105,10 @@ class SensorDataForecast(object):
       return []
     logger.debug('(101-106) time elapsed: {}'.format(datetime.datetime.now() - between))
 
+    between = datetime.datetime.now()
     sd = sd.dicts()
     sd = list(sd)
 
-    between = datetime.datetime.now()
     for entry in sd:
       data['date'].append(entry['created_at'])
       data['value'].append(entry['value'])

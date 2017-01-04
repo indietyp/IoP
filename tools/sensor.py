@@ -112,7 +112,10 @@ class ToolChainSensor(object):
     status = SensorStatus.get(SensorStatus.sensor == data['sensor'],
                               SensorStatus.plant == data['plant'])
 
-    if status.level != current['satisfaction']['level']:
+    logger.debug('status level: {}'.format(status.level))
+    logger.debug('status level id: {}'.format(status.level.id))
+    logger.debug('current level: {}'.format(current['satisfaction']['level']))
+    if status.level.id != current['satisfaction']['level']:
       barrier = current['satisfaction']['max_value'] - current['satisfaction']['min_value']
       barrier = True if data['value'] >= barrier else False
 
