@@ -88,6 +88,20 @@ class ToolChainSensor(object):
 
     return collection
 
+  def evaluate_sensor_status(self, data):
+    evl = {'threat': 0, 'cautioning': 0, 'optimum': 0}
+    status_all = SensorStatus.select().where(SensorStatus.plant == data['plant'])
+
+    for status in status_all:
+      evl[status.level.label] += 1
+
+    if evl['threat'] > 0:
+      return 3
+    elif evl['cautioning'] > 0:
+      return 2
+    elif evl['optimum'] > 0:
+      return 1
+
   def modify_sensor_status(self, data, mesh=True):
     """ dict of data:
           'sensor': object of sensor
@@ -112,9 +126,7 @@ class ToolChainSensor(object):
     status = SensorStatus.get(SensorStatus.sensor == data['sensor'],
                               SensorStatus.plant == data['plant'])
 
-    logger.debug('status level: {}'.format(status.level))
-    logger.debug('status level id: {}'.format(status.level.id))
-    logger.debug('current level: {}'.format(current['satisfaction']['level']))
+    previous = self.evaluate_sensor_status(data)
     if status.level.id != current['satisfaction']['level']:
       barrier = current['satisfaction']['max_value'] - current['satisfaction']['min_value']
       barrier = True if data['value'] >= barrier else False
@@ -123,25 +135,11 @@ class ToolChainSensor(object):
       status.status = barrier
       status.save()
 
-      data['plant'].sat_streak = 1
-      data['plant'].save()
-      url = 'reset'
-
-    else:
+    if previous == self.evaluate_sensor_status(data):
       data['plant'].sat_streak = data['plant'].sat_streak + 1
-      data['plant'].save()
-      url = 'add'
-
-    if mesh:
-      for external in Plant.select().where(Plant.localhost == False):
-        try:
-          magic = urllib.parse.urlencode({}).encode()
-          req = urllib.request.Request('http://{}:2902/update/plant/{}/satisfaction/level/{}'.format(external.ip, str(data['plant'].uuid), url), data=magic)
-          with urllib.request.urlopen(req) as response:
-            output = json.loads(response.read().decode('utf8'))
-            logger.debug(output)
-        except:
-          logger.debug('couldn\'t access {}'.format(external.name))
+    else:
+      data['plant'].sat_streak = 1
+    data['plant'].save()
 
     counter, result = SensorCount.get_or_create(
         plant=data['plant'],
