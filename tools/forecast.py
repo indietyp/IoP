@@ -99,7 +99,7 @@ class SensorDataForecast(object):
     future['date'] = []
 
     between = datetime.datetime.now()
-    if len(sd) < 1000:
+    if sd.count() < 1000:
       logger.debug('amount of data: ' + len(sd))
       logger.error('not enough samples')
       return []
