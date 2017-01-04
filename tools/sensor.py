@@ -191,15 +191,11 @@ class ToolChainSensor(object):
     ###################
     if persistant is True:
       if prediction:
-        between = datetime.datetime.now()
         SensorDataForecast().run(data)
-        logger.debug('forecast time elapsed: {}'.format(datetime.datetime.now() - between))
 
       if mesh:
-        between = datetime.datetime.now()
         from mesh_network.dedicated import MeshDedicatedDispatch
         MeshDedicatedDispatch().new_data(data['sensor'])
-        logger.debug('mesh dispatch time elapsed: {}'.format(datetime.datetime.now() - between))
     ###################
     # 60.02 seconds
     logger.debug('time elapsed: {}'.format(datetime.datetime.now() - start))

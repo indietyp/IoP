@@ -119,6 +119,7 @@ class SensorDataForecast(object):
     last_datetime = data['date'][-1]
     logger.debug('(106-120) time elapsed: {}'.format(datetime.datetime.now() - between))
 
+    between = datetime.datetime.now()
     cap = int(len(data['date']) / 100 * 10)
     if cap > 144:
       cap = 144
@@ -127,6 +128,7 @@ class SensorDataForecast(object):
       current = last_datetime + datetime.timedelta(minutes=30)
       future['date'].append(current)
       last_datetime = current
+    logger.debug('(122-131) time elapsed: {}'.format(datetime.datetime.now() - between))
 
     between = datetime.datetime.now()
     data = self.datetime_to_dict(data)
@@ -201,10 +203,16 @@ class SensorDataForecast(object):
     logger.debug('overall time elapsed: {}'.format(datetime.datetime.now() - deletion))
 
   def run(self, data):
+    between = datetime.datetime.now()
     sd = self.get_sensor_data(data)
+    logger.debug('(206-208) time elapsed: {}'.format(datetime.datetime.now() - between))
     if sd.count() > 1000:
+      between = datetime.datetime.now()
       data['prediction'] = self.predict(data, sd)
+      logger.debug('(210-212) time elapsed: {}'.format(datetime.datetime.now() - between))
+      between = datetime.datetime.now()
       self.insert_database(data)
+      logger.debug('(213-215) time elapsed: {}'.format(datetime.datetime.now() - between))
 
 
 if __name__ == '__main__':
