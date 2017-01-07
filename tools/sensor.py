@@ -24,6 +24,18 @@ class ToolChainSensor(object):
   def __init__(self):
     pass
 
+  def mail_evaluation(self, data):
+    if data['satisfaction'].level.label == 'threat':
+      message = SensorDangerMessage()
+      message.plant = data['plant']
+      message.sensor = data['sensor']
+      message.level = data['satisfaction'].level
+
+      message.message = '---'
+      message.value = data['value']
+
+      message.save()
+
   def persistant_evaluation(self, plant, sensor):
     dataset = SensorData.select(SensorData.created_at) \
                         .where(SensorData.sensor == sensor) \
@@ -149,7 +161,7 @@ class ToolChainSensor(object):
     counter.count = counter.count + 1
     counter.save()
 
-    return 'success'
+    return status
 
   def insert_data(self, data, mesh=True, prediction=True):
     """ dict of data:
@@ -189,7 +201,8 @@ class ToolChainSensor(object):
     # start block
     ###################
     if persistant:
-      self.modify_sensor_status(data, mesh)
+      data['statisfaction'] = self.modify_sensor_status(data, mesh)
+      self.mail_evaluation(data)
 
       if prediction:
         SensorDataForecast().run(data)

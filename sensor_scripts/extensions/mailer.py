@@ -1,6 +1,7 @@
 import datetime
 from tools.mail import NotificationMailer
 from models.sensor import SensorSatisfactionLevel
+from models.plant import Plant, Person
 from models.sensor import SensorSatisfactionValue, SensorDangerMessage
 from models.message import MessagePreset
 from tools.main import VariousTools
@@ -56,10 +57,8 @@ class PlantMailer(object):
 
         tmp = tmp.replace(r[0], r[1])
 
-      # print(tmp)
       output += tmp + '\n\n'
 
-    # print(output)
     return output
 
   def send_message(self, data, message):
@@ -81,47 +80,36 @@ class PlantMailer(object):
           value - current value
           satisfaction - current satisfaction
     """
-    result = VariousTools.offline_check('notification', hardware=False)
-    if result is True:
+    online = VariousTools.offline_check('notification', hardware=False)
+    if online and data['plant'].host:
+      latest = SensorDangerMessage.select()\
+                                  .where(SensorDangerMessage.sent == True) \
+                                  .order_by(SensorDangerMessage.created_at.desc()) \
+                                  .limit(1) \
+                                  .dicts()
 
-      if data['satisfaction'].level.label == 'threat':
-        message = SensorDangerMessage()
-        message.plant = data['plant']
-        message.sensor = data['sensor']
-        message.level = data['satisfaction'].level
-
-        message.message = '---'
-        message.value = data['value']
-
-        message.save()
+      latest = list(latest)
 
       now = datetime.datetime.now()
+      interval = data['plant'].interval * 60 * 60
+      if len(latest) == 0 or (now - latest[0].created_at).seconds >= interval:
+        latest = latest[0]
 
-      se = SensorDangerMessage.select()\
-                              .where(SensorDangerMessage.sent == True)\
-                              .where(SensorDangerMessage.plant == data['plant'])\
-                              .order_by(SensorDangerMessage.created_at.desc())
-      sent = se
+        for person in Person.select():
+          us = SensorDangerMessage.select() \
+                                  .where(SensorDangerMessage.sent == False) \
+                                  .where(SensorDangerMessage.plant << Plant.select().where(Plant.person == person)) \
+                                  .order_by(SensorDangerMessage.created_at.asc())
+          unsent = us
 
-      us = SensorDangerMessage.select()\
-                              .where(SensorDangerMessage.sent == False)\
-                              .where(SensorDangerMessage.plant == data['plant'])\
-                              .order_by(SensorDangerMessage.created_at.asc())
-      unsent = us
+          for partial in unsent:
+            partial.sent = True
+            partial.sent_time = now
+            partial.save()
 
-      if unsent.count() != 0 and (now - unsent[0].created_at).seconds > 5 * 60:
-
-        interval = data['plant'].interval * 60 * 60
-        if sent.count() == 0 or (now - se[0].created_at).seconds >= interval:
           message = ''
           message += self.format_messages(unsent)
-
           self.send_message(data, message)
-
-          for part in unsent:
-            part.sent = True
-            part.sent_time = now
-            part.save()
 
       return True
     else:
