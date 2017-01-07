@@ -92,9 +92,7 @@ class PlantMailer(object):
 
       now = datetime.datetime.now()
       interval = data['plant'].interval * 60 * 60
-      if len(latest) == 0 or (now - latest[0].created_at).seconds >= interval:
-        latest = latest[0]
-
+      if len(latest) == 0 or (now - latest[0]['created_at']).seconds >= interval:
         for person in Person.select():
           us = SensorDangerMessage.select() \
                                   .where(SensorDangerMessage.sent == False) \
