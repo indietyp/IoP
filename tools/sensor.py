@@ -201,7 +201,7 @@ class ToolChainSensor(object):
     # start block
     ###################
     if persistant:
-      data['statisfaction'] = self.modify_sensor_status(data, mesh)
+      data['satisfaction'] = self.modify_sensor_status(data, mesh)
       self.mail_evaluation(data)
 
       if prediction:
