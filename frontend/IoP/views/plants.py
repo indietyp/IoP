@@ -2,7 +2,7 @@ import json
 import random
 import urllib.request
 from flask import render_template, session
-from IoP import app, init, init_overview, init_sensor, set_uuid
+from IoP import app, init, init_overview, init_sensor, set_uuid, request
 
 
 @app.route('/plant/<plant>')
@@ -42,3 +42,8 @@ def sensorData(plant, sensor):
   content.update(init_sensor())
   content.update({'current': sensor, 'get': True, 'current_active': plant, 'type': 'plant', 'random': random})
   return render_template('plant/sensor.jade', content=content)
+
+
+@app.route('/upload/picture/plant', methods=['POST'])
+def upload_picture_plant():
+  print(request.form)

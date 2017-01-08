@@ -80,8 +80,9 @@ class PlantMailer(object):
           value - current value
           satisfaction - current satisfaction
     """
+    local = Plant.get(Plant.localhost == True)
     online = VariousTools.offline_check('notification', hardware=False)
-    if online and data['plant'].host:
+    if online and local.host:
       latest = SensorDangerMessage.select()\
                                   .where(SensorDangerMessage.sent == True) \
                                   .order_by(SensorDangerMessage.created_at.desc()) \
@@ -100,14 +101,15 @@ class PlantMailer(object):
                                   .order_by(SensorDangerMessage.created_at.asc())
           unsent = us
 
-          for partial in unsent:
-            partial.sent = True
-            partial.sent_time = now
-            partial.save()
+          if unsent.count() != 0:
+            for partial in unsent:
+              partial.sent = True
+              partial.sent_time = now
+              partial.save()
 
-          message = ''
-          message += self.format_messages(unsent)
-          self.send_message(data, message)
+            message = ''
+            message += self.format_messages(unsent)
+            self.send_message(data, message)
 
       return True
     else:
