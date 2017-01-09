@@ -1,3 +1,4 @@
+import os
 import json
 import random
 import urllib.request
@@ -47,6 +48,8 @@ def sensorData(plant, sensor):
 @app.route('/upload/picture/plant', methods=['POST'])
 def upload_picture_plant():
   image = request.files['profile-image']
-  # print(image)
-  print(image.filename)
+  destination = os.path.dirname(os.path.realpath(__file__)) + '/../static/images/plant/'
+  extension = print(image.filename).split('.')[0]
+
+  image.save('{}{}.{}'.format(destination, session['p_uuid'], extension))
   return 'success'
