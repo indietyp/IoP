@@ -75,4 +75,12 @@ block content
     .spacer(style='flex-grow:0.25')
     .ui.segment.circular
       img.ui.medium.circular.image(src='https://source.unsplash.com/category/nature/400x400')
+      script.
+        request = $.ajax({
+          url: '/get/picture/plant',
+          method: 'POST'
+        });
+        request.done(function(msg) {
+          $("img.ui.medium.circular.image").attr('src', msg);
+        });
     .spacer(style='flex-grow:0.25')
