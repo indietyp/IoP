@@ -25,10 +25,22 @@ def plantSettings(plant):
 
   with urllib.request.urlopen('http://localhost:2902/get/plant/' + session['p_uuid'] + '/intervals') as response:
     intervals = json.loads(response.read().decode('utf8'))
-  print(intervals)
 
   content = init()
   content['intervals'] = intervals
+
+  destination = os.path.dirname(os.path.realpath(__file__)) + '/../static/images/plant/'
+  selected = None
+  for file in os.listdir(destination):
+    if file.split('.')[0] == session['p_uuid']:
+      selected = file
+
+  if selected is None:
+    selected = 'https://source.unsplash.com/category/nature/400x400'
+  else:
+    selected = '/static/images/plant/' + selected
+
+  content['portrait'] = selected
   content.update({'current': 'plant_settings', 'get': True, 'current_active': plant, 'type': 'plant'})
   return render_template('plant/settings.jade', content=content)
 

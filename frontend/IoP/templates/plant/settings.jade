@@ -29,7 +29,7 @@ block content
             .ui.basic.button.fluid.red(onclick='sg_nsps_reset(this)') Reset
     .spacer(style='flex-grow:1')
     .ui.segment.circular
-      img.ui.medium.circular.image(src='https://source.unsplash.com/category/nature/400x400')
+      img.ui.medium.circular.image(src=content['portrait'])
 
   script(type='text/javascript').
     $('#portrait_file').ajaxfileupload({
