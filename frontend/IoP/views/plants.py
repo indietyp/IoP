@@ -46,6 +46,7 @@ def sensorData(plant, sensor):
 
 @app.route('/upload/picture/plant', methods=['POST'])
 def upload_picture_plant():
-  image = request.files['file']
-  print(image.name)
+  image = request.files['profile-image']
+  # print(image)
+  print(image.filename)
   return 'success'
