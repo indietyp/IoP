@@ -49,7 +49,14 @@ def sensorData(plant, sensor):
 def upload_picture_plant():
   image = request.files['profile-image']
   destination = os.path.dirname(os.path.realpath(__file__)) + '/../static/images/plant/'
-  extension = print(image.filename).split('.')[0]
+  extension = image.filename.split('.')[1]
+
+  if not os.path.exists(destination):
+    os.makedirs(destination)
+
+  for file in os.listdir(destination):
+    if file.split('.')[0] == session['p_uuid']:
+      os.remove(os.path.join(destination, file))
 
   image.save('{}{}.{}'.format(destination, session['p_uuid'], extension))
   return 'success'
