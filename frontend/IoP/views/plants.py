@@ -29,18 +29,6 @@ def plantSettings(plant):
   content = init()
   content['intervals'] = intervals
 
-  destination = os.path.dirname(os.path.realpath(__file__)) + '/../static/images/plant/'
-  selected = None
-  for file in os.listdir(destination):
-    if file.split('.')[0] == session['p_uuid']:
-      selected = file
-
-  if selected is None:
-    selected = 'https://source.unsplash.com/category/nature/400x400'
-  else:
-    selected = '/static/images/plant/' + selected
-
-  content['portrait'] = selected
   content.update({'current': 'plant_settings', 'get': True, 'current_active': plant, 'type': 'plant'})
   return render_template('plant/settings.jade', content=content)
 
@@ -72,3 +60,19 @@ def upload_picture_plant():
 
   image.save('{}{}.{}'.format(destination, session['p_uuid'], extension))
   return 'success'
+
+
+@app.route('/get/picture/plant', methods=['POST'])
+def get_picture_plant():
+  destination = os.path.dirname(os.path.realpath(__file__)) + '/../static/images/plant/'
+  selected = None
+  for file in os.listdir(destination):
+    if file.split('.')[0] == session['p_uuid']:
+      selected = file
+
+  if selected is None:
+    selected = 'https://source.unsplash.com/category/nature/400x400'
+  else:
+    selected = '/static/images/plant/' + selected
+
+  return selected

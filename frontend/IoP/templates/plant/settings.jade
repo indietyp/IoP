@@ -29,11 +29,25 @@ block content
             .ui.basic.button.fluid.red(onclick='sg_nsps_reset(this)') Reset
     .spacer(style='flex-grow:1')
     .ui.segment.circular
-      img.ui.medium.circular.image(src=content['portrait'])
+      img.ui.medium.circular.image
+      //- (src=content['portrait'])
 
   script(type='text/javascript').
+    get_picture_plant = function() {
+      request = $.ajax({
+        url: '/get/picture/plant',
+        method: 'POST'
+      });
+      request.done(function(msg) {
+        $("#portrait_file").attr('src', msg);
+      });
+    }
+    get_picture_plant()
     $('#portrait_file').ajaxfileupload({
-      action: '/upload/picture/plant'
+      action: '/upload/picture/plant',
+      onComplete: function(response) {
+        get_picture_plant()
+      },
     });
 
 
