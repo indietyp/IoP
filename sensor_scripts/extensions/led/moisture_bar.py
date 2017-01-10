@@ -13,31 +13,6 @@ class MoistureBar:
   def __init__(self):
     pass
 
-  def calculate(self, ranges, state):
-    if state['color'] == 'green':
-      if self.value <= (((ranges['green']['min'] - ranges['green']['max']) / 3) * 2):
-        led = 6
-      else:
-        led = 5
-
-    elif state['color'] == 'yellow':
-      differenceLow = (ranges['green']['min'] - ranges['yellow']['min'] ) / 2
-      differenceHigh = (ranges['yellow']['max'] - ranges['green']['max'] ) / 2
-      if (self.value <= (ranges['yellow']['min'] + differenceLow) and state['status'] == 'low') or (self.value >= (ranges['green']['max'] + differenceHigh) and state['status'] == 'high'):
-        led = 3
-      else:
-        led = 4
-
-    else:
-      differenceLow = (ranges['yellow']['min'] - ranges['red']['min']) / 2
-      differenceHigh = (ranges['red']['max'] - ranges['yellow']['max']) / 2
-      if (self.value <= (ranges['red']['min'] + differenceLow) and state['status'] == 'low') or (self.value >= (ranges['yellow']['min'] + differenceHigh) and state['status'] == 'high'):
-        led = 1
-      else:
-        led = 2
-
-    return led
-
   @staticmethod
   def run():
     result = VariousTools.offline_check('ledbar', hardware=True, pins=[0, 1, 2, 3, 4, 5], mcp=True)

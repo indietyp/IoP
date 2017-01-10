@@ -56,17 +56,19 @@ class VariousTools(object):
 
     if online is False:
       if hardware and not mcp:
-        from GPi.GPIO import GPIO
+        from RPi.GPIO import GPIO
+        GPIO.setmode(GPIO.BCM)
         for pin in pins:
           GPIO.output(pin, False)
       elif hardware and mcp:
         from sensor_scripts.driver.mcp23017 import MCP230XX_GPIO
-        mcp = MCP230XX_GPIO(1, 32, 16)
+        mcp = MCP230XX_GPIO(1, 0x20, 16)
         for pin in pins:
+          mcp.setup(pin, mcp.OUT)
           mcp.output(pin, False)
 
     return online
-  
+
   @staticmethod
   def verify_database():
     return os.path.isfile(DATABASE_NAME)
