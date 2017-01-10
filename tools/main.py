@@ -59,6 +59,7 @@ class VariousTools(object):
         import RPi.GPIO as GPIO
         GPIO.setmode(GPIO.BCM)
         for pin in pins:
+          GPIO.setup(pin, GPIO.OUT)
           GPIO.output(pin, False)
       elif hardware and mcp:
         from sensor_scripts.driver.mcp23017 import MCP230XX_GPIO
