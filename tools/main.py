@@ -56,7 +56,7 @@ class VariousTools(object):
 
     if online is False:
       if hardware and not mcp:
-        from RPi.GPIO import GPIO
+        import RPi.GPIO as GPIO
         GPIO.setmode(GPIO.BCM)
         for pin in pins:
           GPIO.output(pin, False)
