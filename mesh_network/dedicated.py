@@ -47,14 +47,13 @@ class MeshDedicatedDispatch(object):
       online_dataset = None
       offline_dataset = None
 
-      options, _ = [[online, online_dataset, [1]],
-                    [offline, offline_dataset, [254, 255]]]
-      print(_)
+      options = [[online, online_dataset, [1]],
+                 [offline, offline_dataset, [254, 255]]]
 
       for i in options:
-        i[1] = PlantNetworkUptime.get_or_create(plant=plant,
-                                                status=i[0],
-                                                defaults={'overall': 0, 'current': 0})
+        i[1], _ = PlantNetworkUptime.get_or_create(plant=plant,
+                                                   status=i[0],
+                                                   defaults={'overall': 0, 'current': 0})
 
         if status in i[2]:
           i[1].current += 1
