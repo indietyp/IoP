@@ -7,15 +7,15 @@ test:
   ✔ add_plant @done (16-09-21 18:18)
   ✔ create all related tables entries (rest-api | create plant) @done (16-12-22 16:25)
   ✔ host before request hotfix - potential getting a lot worse!\ @done (16-12-31 00:25)
-  [ ] cannot operate on a closed database fix @critical
+  ✔ cannot operate on a closed database fix @critical @done (17-01-11 21:13)
   ✔ simulated plant @critical @dad @done (17-01-02 14:39)
-  [ ] completed add_plant
+  ✔ completed add_plant @done (17-01-11 21:13)
   [ ] dedicated alive
     [ ] cronjob! (5min?)
   ✔ dedicated register @done (16-12-31 00:25)
   ✔ daemon testing @done (16-12-31 00:25)
-  [ ] rest_api create/plant
-    [ ] delete holger and insert! (finish first setup)
+  ✔ rest_api create/plant @done (17-01-11 21:13)
+    ✔ delete holger and insert! (finish first setup) @done (17-01-11 21:13)
   ✔ rest_api create/plant/register @done (16-12-31 00:25)
   ✔ dedicated deliver new_data @done (16-09-26 18:55)
   ✔ deliver new_data @done (16-09-27 15:09)
@@ -24,11 +24,11 @@ test:
   ✔ dedicated register @done (16-12-30 23:51)
   ✔ dedicated reboot @done (16-12-22 16:24)
   ✔ dedicated update @done (16-12-31 00:25)
-  [ ] offline check
-    [ ] notification
-    [ ] ledbar
-    [ ] moisture
-    [ ] display
+  ✔ offline check @done (17-01-11 21:14)
+    ✔ notification @done (17-01-11 21:14)
+    ✔ ledbar @done (17-01-11 21:14)
+    ✔ moisture @done (17-01-11 21:14)
+    ✔ display @done (17-01-11 21:14)
   ✔ rest api change of underlying db in virtualbox -> does it work at all or do I need to restart the process? @done (16-09-18 13:38)
   ✔ moisture @done (16-12-17 14:53)
   ✔ light @done (16-12-17 14:53)
