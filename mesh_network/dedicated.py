@@ -40,7 +40,10 @@ class MeshDedicatedDispatch(object):
     online = PlantNetworkStatus.select().where(PlantNetworkStatus.name == 'online')
     offline = PlantNetworkStatus.select().where(PlantNetworkStatus.name == 'online')
 
-    for plant in Plant.select().where(Plant.localhost == False):
+    plants = Plant.select().where(Plant.localhost == False)
+    plants = list(plants)
+
+    for plant in plants:
       daemon.alive(plant, 1)
       status = self.get(5)
 

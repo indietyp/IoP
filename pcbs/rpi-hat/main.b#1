@@ -967,12 +967,14 @@ Please ensure your boards meet these minimum design rule requirements.</descript
 <contactref element="DHT22" pad="4"/>
 <contactref element="TSL2561" pad="2"/>
 <polygon width="0.4064" layer="16" isolate="0.254">
+<vertex x="3.81" y="59.69"/>
 <vertex x="88.9" y="59.69"/>
 <vertex x="88.9" y="3.81"/>
 <vertex x="3.81" y="3.81"/>
 </polygon>
 <polygon width="0.4064" layer="1" isolate="0.254">
 <vertex x="3.81" y="3.81"/>
+<vertex x="3.81" y="59.69"/>
 <vertex x="88.9" y="59.69"/>
 <vertex x="88.9" y="3.81"/>
 </polygon>

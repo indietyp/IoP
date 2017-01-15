@@ -10,8 +10,8 @@ test:
   ✔ cannot operate on a closed database fix @critical @done (17-01-11 21:13)
   ✔ simulated plant @critical @dad @done (17-01-02 14:39)
   ✔ completed add_plant @done (17-01-11 21:13)
-  [ ] dedicated alive
-    [ ] cronjob! (5min?)
+  ✔ dedicated alive @done (17-01-14 20:23)
+    ✔ cronjob! (5min?) @done (17-01-14 20:23)
   ✔ dedicated register @done (16-12-31 00:25)
   ✔ daemon testing @done (16-12-31 00:25)
   ✔ rest_api create/plant @done (17-01-11 21:13)
@@ -242,3 +242,10 @@ frontend:
        ✔  problem 2 same ids, why? @done (16-11-12 18:21)
          ✔ Investigate! (test) @done (16-11-12 18:21)
          ✔ change @done (16-11-12 14:55)
+
+slave:
+  webserver:
+    [ ] change network - if already in network - other website?!
+    [ ] insert incredientials and hard reset
+  connect:
+    [ ] check if wifi available and working - if not ap mode
