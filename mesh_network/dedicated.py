@@ -38,7 +38,7 @@ class MeshDedicatedDispatch(object):
 
     daemon = MeshNetwork()
     online = PlantNetworkStatus.select().where(PlantNetworkStatus.name == 'online')
-    offline = PlantNetworkStatus.select().where(PlantNetworkStatus.name == 'online')
+    offline = PlantNetworkStatus.select().where(PlantNetworkStatus.name == 'offline')
 
     plants = Plant.select().where(Plant.localhost == False)
     plants = list(plants)
@@ -71,29 +71,44 @@ class MeshDedicatedDispatch(object):
 
   def register(self, plant):
     from models.mesh import MeshObject
+    daemon = MeshNetwork()
+    successful = False
 
     # transmit data to other plants
-    daemon = MeshNetwork()
-    daemon.register(1, origin=plant)
-    status = self.get(120)
+    if plant.role == 'master':
+      daemon.register(1, origin=plant)
+      status = self.get(120)
 
-    if status == 1:
-      obj = MeshObject.get(MeshObject.ip == plant.ip)
-      obj.registered = True
-      obj.save()
+      if status == 1:
+        obj = MeshObject.get(MeshObject.ip == plant.ip)
+        obj.registered = True
+        obj.save()
 
+        successful = True
+      else:
+        raise BaseException('something went from: error code: ' + str(status))
+    else:
+      master = Plant.get(Plant.ip == plant.role)
+      daemon.register_lite(1, ip=plant.ip, target=plant, plant=master)
+
+      if status == 1:
+        obj = MeshObject.get(MeshObject.ip == plant.ip)
+        obj.registered = True
+        obj.save()
+
+        successful = True
+
+    if successful:
       dict_plant = model_to_dict(plant)
       dict_plant['email'] = plant.person.email
       del dict_plant['id']
       del dict_plant['person']
 
-      for rest in Plant.select().where(Plant.ip != plant.ip, Plant.localhost == False):
+      for rest in Plant.select().where(Plant.ip != plant.ip, Plant.localhost == False, Plant.role == 'master'):
         data = urllib.parse.urlencode(dict_plant).encode('ascii')
         req = urllib.request.Request('http://' + rest.ip + ':2902/create/plant', data)
         with urllib.request.urlopen(req) as response:
           return response.read().decode('utf8')
-    else:
-      raise BaseException('something went from: error code: ' + str(status))
 
   def new_data(self, sensor):
     from models.plant import Plant

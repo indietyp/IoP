@@ -59,7 +59,19 @@ def create_plant(data):
     if 'persistant_hold' in data:
       plant.persistant_hold = data['persistant_hold']
     if 'role' in data:
-      plant.role = data['role']
+      import re
+      if data['role'] == 'master':
+        plant.role = data['role']
+      else:
+        ip = re.findall(r'(\d{3})\.(\d{3})\.(\d{1,3})\.(\d{1,3}))')
+        if len(ip) > 0:
+          valid = True
+          for x in ip[0]:
+            if int(x) > 255:
+              valid = False
+
+          if valid:
+            plant.role = data['role']
 
     plant.save()
 

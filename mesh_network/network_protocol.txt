@@ -22,14 +22,28 @@ MODE
     99      [FAIL]
   4       [DISCOVER]
     1       [INITIAL]
-    2       [RESPONSE I'M THERE]
+    2       [RESPONSE I'M THERE][MASTER]
+    3       [RESPONSE I'M THERE][SLAVE][NOT REGISTERED]
+    4       [RESPONSE I'M THERE][SLAVE][REGISTERED]
   5       [NOTIFY]
     1       [NEW_DATA]  - [A_MESSAGE - UUID sensor]
     2       [IP]
     3       [CHANGE]    - [A_MESSAGE - OBJECT, B_MESSAGE - UUID]
+  6       [REGISTER][LITE][SLAVE]
+    1       [REQUEST][MASTER]
+    2       [CHECK][SLAVE]
+    3       [SEND GENERATED UUID AND CREATE OBJECT][MASTER]
+    4       [CHECK AND CONFIRM][SLAVE]
+    5       [SPREAD TO OTHERS][MASTER]
   8       [SUCCESS]
   9       [FAIL]
 (mode in CODE ex. alive: 10100 response: 10200)
+
+SLAVE INCLUDED
+  1       [ALIVE]
+  2       [DELIVER]
+  4       [DISCOVER]
+  6       [REGISTER][LITE]
 
 RETURN
   1       [ALIVE]

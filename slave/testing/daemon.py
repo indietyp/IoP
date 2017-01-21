@@ -1,4 +1,5 @@
 import os
+import uuid
 import json
 import socket
 EXTERNAL_PORT = 4012
@@ -21,9 +22,10 @@ class MeshNetwork(object):
   """ response daemon for mesh network """
 
   def __init__(self):
-    import network
-    sta_if = network.WLAN(network.STA_IF)
-    self.IP = sta_if.ifconfig()[0]
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    s.connect(("gmail.com", 80))
+    self.IP = s.getsockname()[0]
+    s.close()
 
   def daemon_process(self, received):
     message = received[0].decode('utf-8')
@@ -49,16 +51,11 @@ class MeshNetwork(object):
     else:
       print('not processing request - same ip')
 
-  def ip32bit(self, target):
-    import ustruct
-    return ustruct.pack('4B', *(int(x) for x in target.split('.')))
-
   def daemon(self):
     client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     multicast_addr = MULTICAST_ADDRESS
     port = EXTERNAL_PORT
     host = '0.0.0.0'
-
     membership = socket.inet_aton(multicast_addr) + socket.inet_aton(host)
 
     client.setsockopt(socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, membership)

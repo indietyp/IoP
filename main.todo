@@ -1,4 +1,9 @@
 test:
+  [ ] master --> slave
+    [ ] discover
+    [ ] deliver
+    [ ] alive
+    [ ] register [lite]
   ✔ alive: register needed @done (16-09-14 21:26)
   ✔ register @done (16-09-13 20:42)
   ✔ discover @done (16-09-05 20:14)
@@ -246,6 +251,15 @@ frontend:
 slave:
   webserver:
     [ ] change network - if already in network - other website?!
-    [ ] insert incredientials and hard reset
+    ✔ insert incredientials and hard reset @done (17-01-18 20:58)
   connect:
-    [ ] check if wifi available and working - if not ap mode
+    ✔ check if wifi available and working - if not ap mode @done (17-01-18 20:58)
+  mesh:
+    ✔ port mesh_daemon with less instructions @done (17-01-18 20:58)
+    [ ] extend master
+      ✔ discover @done (17-01-18 20:59)
+      [ ] register
+      ✔ deliver @done (17-01-18 20:59)
+    [ ] extend master frontend
+      [ ] manage plants @critical
+      [ ] add with appropriate master ip @critical

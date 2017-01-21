@@ -69,6 +69,14 @@ class MeshNetwork(object):
               defaults={'registered': registered})
           status.registered = registered
           status.save()
+        elif int(code[1:3]) in [3, 4]:
+          registered = False if int(code[1:3]) == 3 else True
+          status, result = MeshObject.get_or_create(
+              ip=received[1][0],
+              defaults={'registered': registered, 'master': False})
+          status.registered = registered
+          status.save()
+
       elif code[0] == '5':
         target = [message[1][0], received[1][0]]
         if int(code[1:3]) == 1:
@@ -80,6 +88,11 @@ class MeshNetwork(object):
         elif int(code[1:3]) == 3:
           sub = int(code[3:]) + 1
           self.deliver(3, sub=sub, recipient=target, message=message)
+
+      elif code[0] == '6':
+        target = [message[1][0], received[1][0]]
+        self.register_lite(int(code[1:3]) + 1, recipient=target)
+
     else:
       logger.debug('not processing request - same ip')
 
@@ -225,11 +238,35 @@ class MeshNetwork(object):
         plant = Plant.get(Plant.localhost == True)
         logger.debug('discovered - database exists')
         code += 1
-        self.send(code, plant=plant, recipient=target, messages=['LOGGED', 'DATABASE'])
+        self.send(code, plant=plant, recipient=target, messages=['LOGGED', 'DATABASE', 'MASTER'])
       except:
         logger.debug('discovered - no database exists')
         code += 2
-        self.send(code, no_database=True, recipient=target, messages=['NOT_LOGGED', 'NO_DATABASE'])
+        self.send(code, no_database=True, recipient=target, messages=['NOT_LOGGED', 'NO_DATABASE', 'MASTER'])
+
+  def slave(self, mode=1, target=None, sensor=None):
+    if mode != 1:
+      logger.warning('every mode except 1 is not implemented and allowed')
+    else:
+      code = 20100
+      self.send(code, recipient=target, messages=[sensor.name])
+
+  def register_lite(self, target=None, mode=1, messages=[], plant=None):
+    local = Plant.get(Plant.localhost == True)
+    if mode == 1:
+      # target plant object
+      if MeshObject.select().where(MeshObject.registered == False, MeshObject.ip == target.ip, MeshMessage.slave == True).count() > 0:
+        self.send(60100, plant=local, recipient=target)
+
+    elif mode == 3:
+      plant = Plant.get(Plant.uuid == plant)
+      master = Plant.get(Plant.ip == plant.role)
+      self.send(60300, plant=plant, recipient=target, messages=[master.uuid, master.ip, plant.uuid])
+
+    elif mode == 5:
+      self.send_local(mode=1, code=1)
+      self.send(60500, plant=plant, recipient=target)
+
 
   def register(self, mode, ip=None, recipient=None, messages=None, origin=None, local_uuid=None):
     """ MODES:

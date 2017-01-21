@@ -12,8 +12,8 @@ def establish():
     machine.reset()
 
 if sta_if.active():
-  print('main loop needs to be here')
-  # from mesh import daemon
-  # daemon()
+  from daemon import MeshNetwork
+  MeshNetwork.daemon()
+
 elif ap_if.active():
   establish()

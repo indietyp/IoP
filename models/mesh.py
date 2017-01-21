@@ -27,5 +27,6 @@ class MeshMessage(Base):
 class MeshObject(Base):
   ip = CharField()
   registered = BooleanField(default=True)
+  master = BooleanField(default=True)
 
   created_at = DateTimeField(default=datetime.datetime.now)
