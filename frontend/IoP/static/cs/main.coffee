@@ -143,9 +143,10 @@ initLineGraph = (graphName) ->
             for data in json_msg
               display.unshift [new Date(data['timestamp'] * 1000), data['value'], null]
               bulkadd.push {plant: plant, sensor: sensor, value: data['value'], timestamp: data['timestamp']}
-            display.sort(function(a, b) {
+
+            display.sort (a, b) ->
               return a[0] - b[0];
-            });
+
             db.real.bulkAdd(bulkadd).then (result) ->
               g.updateOptions( { 'file': display } )
               return
@@ -500,7 +501,11 @@ device_discover = () ->
     $('div.ui.selection.dropdown.discover > div.menu').empty()
 
     for item in msg
-      $('div.ui.selection.dropdown.discover > div.menu').append '<div class="item" data-value="' + msg + '"> ' + msg + ' </div>'
+      if msg['master'] == true
+        msg['role'] = 'master'
+      else
+        msg['role'] = 'slave'
+      $('div.ui.selection.dropdown.discover > div.menu').append '<div class="item ' + msg['role'] + '" data-value="' + msg['ip'] + '"> ' + msg['ip'] + ' </div>'
       # return
     $('div.ui.selection.dropdown.discover > div.default.text').html 'IP-Adress - done loading'
     # return

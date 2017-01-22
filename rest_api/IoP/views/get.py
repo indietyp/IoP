@@ -526,6 +526,32 @@ def get_current_discover(registered):
   return json.dumps(output)
 
 
+@app.route('/get/discovered/<int:registered>/names/extendend')
+def get_current_discover_extended(registered):
+  if registered == 0:
+    items = MeshObject.select().where(MeshObject.registered == False)
+  elif registered == 1:
+    items = MeshObject.select().where(MeshObject.registered == True)
+  elif registered == 2:
+    items = MeshObject.select()
+  else:
+    return json.dumps({'info': 'path registered value not valid'})
+
+  output = []
+  for item in items:
+    output.append({'ip': item.ip, 'master': item.master})
+
+  return json.dumps(output)
+
+
+@app.route('/get/plants/master')
+def get_plants_master():
+  plants = Plant.select(Plant.ip, Plant.localhost, Plant.name, Plant.uuid).where(Plant.role == 'master').dicts()
+  plants = list(plants)
+
+  return json.dumps(plants)
+
+
 @app.route('/get/plants/satisfaction')
 def get_current_satifaction():
   output = {}

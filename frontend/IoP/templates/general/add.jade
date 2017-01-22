@@ -78,17 +78,19 @@ block content
                 .dropdown()
               ;
 
+        //- only if slave selected
+        //- load every master and disable
         .eight.wide.column
-          .field
-            label Role
+          .field.disabled
+            label Master
             .wrapper(style='display:flex;align-items:center;flex-direction:row')
               .ui.selection.dropdown(style='width:100%')
                 input(type='hidden', name='person')
                 i.terminal.icon
-                .default.text Role
+                .default.text Master
                 .menu
                   .item(data-value='1') master
-                  .disabled.item(data-value='2') slave
+                  .item(data-value='2') slave
               button.ui.icon.button.right.attached(onclick='device_discover()')
                 i.refresh.icon
 
@@ -100,7 +102,3 @@ block content
       .ui.two.buttons(style='margin-top: 2%')
         .ui.basic.button.fluid.green(onclick='register_new_plant()') Apply
         .ui.basic.button.fluid.red Reset
-  //- DISCOVER PLANT
-  //- --> select name usw.
-  //- --> --> register
-  //- only point direct db integration! and access to dedicated register

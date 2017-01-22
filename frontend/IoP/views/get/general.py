@@ -23,7 +23,7 @@ def get_device_discover():
   # MeshNetwork().discover(1)
   time.sleep(3)
 
-  with urllib.request.urlopen('http://localhost:2902/get/discovered/0/names') as response:
+  with urllib.request.urlopen('http://localhost:2902/get/discovered/0/names/extended') as response:
     output = response.read().decode('utf8')
 
   return output

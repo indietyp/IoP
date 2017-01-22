@@ -75,6 +75,7 @@ class MeshNetwork(object):
               ip=received[1][0],
               defaults={'registered': registered, 'master': False})
           status.registered = registered
+          status.master = False
           status.save()
 
       elif code[0] == '5':

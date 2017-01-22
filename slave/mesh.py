@@ -175,11 +175,11 @@ class MeshNetwork(object):
 
       if 'config.json' not in os.listdir():
         print('discovered - slave not registered')
-        code += 3
+        code = 40300
         self.send(code, plant=False, recipient=target, messages=['NOT_LOGGED', 'NOT_CONFIGURED', 'SLAVE'])
       else:
         print('discovered - slave registered')
-        code += 4
+        code = 40400
         self.send(code, recipient=target, messages=['NOT_LOGGED', 'CONFIGURED', 'SLAVE'])
 
   def slave(self, target=None, mode=2):
