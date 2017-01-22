@@ -8,12 +8,19 @@ MULTICAST_ADDRESS = '224.0.0.1'
 class MeshString(str):
   import sys
 
+  def reverse(self):
+    self = ''.join(list(reversed(self)))
+    return self
+
   def rreplace(self, old, new, maxcount=sys.maxsize):
     """ reverse replace
         reverses string and runs replace at reversed old and new
         returns reversed reversed string
     """
-    self = self[::-1].replace(old[::-1], new[::-1], maxcount)[::-1]
+    old = MeshString(old)
+    new = MeshString(new)
+    self = self.reverse().replace(old.reverse(), new.reverse(), maxcount)
+    self = MeshString(self).reverse()
     return self
 
 
@@ -59,19 +66,19 @@ class MeshNetwork(object):
     port = EXTERNAL_PORT
     host = '0.0.0.0'
 
-    membership = socket.inet_aton(multicast_addr) + socket.inet_aton(host)
+    # membership = socket.inet_aton(multicast_addr) + socket.inet_aton(host)
 
-    client.setsockopt(socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, membership)
+    # client.setsockopt(socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, membership)
     client.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
-    client.bind((host, port))
+    client.bind(('', port))
     while True:
-      try:
-        received = client.recvfrom(65000)
+      # try:
+      received = client.recvfrom(2048)
 
-        self.daemon_process(received)
-      except Exception as e:
-        print(e)
+      self.daemon_process(received)
+      # except Exception as e:
+      # print(e)
 
   def send_local(self, mode, code, port=2311):
     """ method for communication between daemon and other scripts """
@@ -166,7 +173,7 @@ class MeshNetwork(object):
     elif mode == 2:
       code = 40200
 
-      if 'config.json' in os.listdir():
+      if 'config.json' not in os.listdir():
         print('discovered - slave not registered')
         code += 3
         self.send(code, plant=False, recipient=target, messages=['NOT_LOGGED', 'NOT_CONFIGURED', 'SLAVE'])

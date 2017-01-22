@@ -15,7 +15,7 @@ if sys.argv[1] == 'makemigrations':
     exec('import ' + module)
     models.extend([
       obj for name, obj in inspect.getmembers(
-          eval(module), lambda obj: not isfunction(obj) and isinstance(obj, BaseModel) and obj.__name__ != 'Model'
+          eval(module), lambda obj: not isfunction(obj) and isinstance(obj, BaseModel) and obj.__name__ != 'Model' and obj.__name__ != 'Base'
       )
     ])
 
