@@ -20,11 +20,11 @@ block content
 
             script(type='text/javascript').
               device_discover()
-              $('.ui.dropdown')
+              $('.ui.dropdown.discover')
                 .dropdown({
                   action: 'activate',
                   onChange: function(value, text, $selectedItem) {
-                    console.log(value)
+                    console.log(text)
                   }
                 })
               ;
