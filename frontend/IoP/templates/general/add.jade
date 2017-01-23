@@ -21,7 +21,12 @@ block content
             script(type='text/javascript').
               device_discover()
               $('.ui.dropdown')
-                .dropdown()
+                .dropdown({
+                  action: 'activate',
+                  onChange: function(value, text, $selectedItem) {
+                    console.log(value)
+                  }
+                })
               ;
         .eight.wide.column
           .field
@@ -95,12 +100,7 @@ block content
             script(type='text/javascript').
               device_master()
               $('.ui.dropdown.master')
-                .dropdown({
-                  action: 'activate',
-                  onChange: function(value, text, $selectedItem) {
-                    console.log(value)
-                  }
-                })
+                .dropdown()
               ;
 
       .ui.two.buttons(style='margin-top: 2%')
