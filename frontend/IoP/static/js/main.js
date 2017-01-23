@@ -543,6 +543,7 @@
         } else {
           msg['role'] = 'slave';
         }
+        console.log(msg);
         $('div.ui.selection.dropdown.discover > div.menu').append('<div class="item ' + msg['role'] + '" data-value="' + msg['ip'] + '"> ' + msg['ip'] + ' </div>');
       }
       return $('div.ui.selection.dropdown.discover > div.default.text').html('IP-Adress - done loading');
