@@ -513,6 +513,26 @@ device_discover = () ->
 
 window.device_discover = device_discover
 
+device_discover = () ->
+  $('div.ui.selection.dropdown.master > div.default.text').html 'please wait a couple of seconds'
+  current = $.ajax
+    url: '/get/master'
+    method: 'POST'
+    data: {}
+
+  current.done (msg) ->
+    msg = JSON.parse msg
+    $('div.ui.selection.dropdown.master > div.menu').empty()
+
+    for item in msg
+      content = "#{msg['name']} <#{msg['ip']}>"
+      $('div.ui.selection.dropdown.master > div.menu').append "<div class='item' data-value='#{msg['uuid']}'>#{content}</div>"
+    $('div.ui.selection.dropdown.master > div.default.text').html 'ready for selection'
+    return
+  return
+
+window.device_discover = device_discover
+
 add_plant_responsibles = () ->
   $('div.ui.selection.dropdown.responsible > div.default.text').html 'please wait a couple of seconds'
   current = $.ajax

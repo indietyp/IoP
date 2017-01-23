@@ -551,6 +551,29 @@
 
   window.device_discover = device_discover;
 
+  device_discover = function() {
+    var current;
+    $('div.ui.selection.dropdown.master > div.default.text').html('please wait a couple of seconds');
+    current = $.ajax({
+      url: '/get/master',
+      method: 'POST',
+      data: {}
+    });
+    current.done(function(msg) {
+      var content, item, j, len;
+      msg = JSON.parse(msg);
+      $('div.ui.selection.dropdown.master > div.menu').empty();
+      for (j = 0, len = msg.length; j < len; j++) {
+        item = msg[j];
+        content = msg['name'] + " <" + msg['ip'] + ">";
+        $('div.ui.selection.dropdown.master > div.menu').append("<div class='item' data-value='" + msg['uuid'] + "'>" + content + "</div>");
+      }
+      $('div.ui.selection.dropdown.master > div.default.text').html('ready for selection');
+    });
+  };
+
+  window.device_discover = device_discover;
+
   add_plant_responsibles = function() {
     var current;
     $('div.ui.selection.dropdown.responsible > div.default.text').html('please wait a couple of seconds');

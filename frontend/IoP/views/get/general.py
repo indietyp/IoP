@@ -29,6 +29,12 @@ def get_device_discover():
   return output
 
 
+@app.route('/get/master', methods=['POST'])
+def get_master_yoda():
+  with urllib.request.urlopen('http://localhost:2902/get/plants/master') as response:
+    return response.read().decode('utf8')
+
+
 @app.route('/create/plant', methods=['POST'])
 def create_new_plant():
   data = urllib.parse.urlencode(request.form).encode('ascii')

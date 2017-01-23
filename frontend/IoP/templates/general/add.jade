@@ -84,13 +84,11 @@ block content
           .field.disabled
             label Master
             .wrapper(style='display:flex;align-items:center;flex-direction:row')
-              .ui.selection.dropdown(style='width:100%')
+              .ui.selection.dropdown.master(style='width:100%')
                 input(type='hidden', name='person')
                 i.terminal.icon
                 .default.text Master
                 .menu
-                  .item(data-value='1') master
-                  .item(data-value='2') slave
               button.ui.icon.button.right.attached(onclick='device_discover()')
                 i.refresh.icon
 
