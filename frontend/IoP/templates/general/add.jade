@@ -22,6 +22,7 @@ block content
               device_discover()
               $('.ui.dropdown.discover')
                 .dropdown({
+                  action: 'activate',
                   onChange: function(value, text, $selectedItem) {
                     console.log(text)
                   }
@@ -78,7 +79,7 @@ block content
                i.refresh.icon
             script(type='text/javascript').
               add_plant_responsibles()
-              $('.ui.dropdown')
+              $('.ui.dropdown.responsible')
                 .dropdown()
               ;
 
