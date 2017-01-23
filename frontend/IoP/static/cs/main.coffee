@@ -513,7 +513,7 @@ device_discover = () ->
 
 window.device_discover = device_discover
 
-device_discover = () ->
+device_master = () ->
   $('div.ui.selection.dropdown.master > div.default.text').html 'please wait a couple of seconds'
   current = $.ajax
     url: '/get/master'
@@ -531,7 +531,7 @@ device_discover = () ->
     return
   return
 
-window.device_discover = device_discover
+window.device_master = device_master
 
 add_plant_responsibles = () ->
   $('div.ui.selection.dropdown.responsible > div.default.text').html 'please wait a couple of seconds'
