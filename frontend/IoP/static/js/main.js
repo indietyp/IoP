@@ -538,13 +538,13 @@
       $('div.ui.selection.dropdown.discover > div.menu').empty();
       for (j = 0, len = msg.length; j < len; j++) {
         item = msg[j];
-        if (msg['master'] === true) {
-          msg['role'] = 'master';
+        if (item['master'] === true) {
+          item['role'] = 'master';
         } else {
-          msg['role'] = 'slave';
+          item['role'] = 'slave';
         }
-        console.log(msg);
-        $('div.ui.selection.dropdown.discover > div.menu').append('<div class="item ' + msg['role'] + '" data-value="' + msg['ip'] + '"> ' + msg['ip'] + ' </div>');
+        console.log(item);
+        $('div.ui.selection.dropdown.discover > div.menu').append('<div class="item ' + item['role'] + '" data-value="' + item['ip'] + '"> ' + item['ip'] + ' </div>');
       }
       return $('div.ui.selection.dropdown.discover > div.default.text').html('IP-Adress - done loading');
     });
@@ -566,8 +566,8 @@
       $('div.ui.selection.dropdown.master > div.menu').empty();
       for (j = 0, len = msg.length; j < len; j++) {
         item = msg[j];
-        content = msg['name'] + " <" + msg['ip'] + ">";
-        $('div.ui.selection.dropdown.master > div.menu').append("<div class='item' data-value='" + msg['uuid'] + "'>" + content + "</div>");
+        content = item['name'] + " <" + item['ip'] + ">";
+        $('div.ui.selection.dropdown.master > div.menu').append("<div class='item' data-value='" + item['uuid'] + "'>" + content + "</div>");
       }
       $('div.ui.selection.dropdown.master > div.default.text').html('ready for selection');
     });
