@@ -89,7 +89,8 @@ class MeshDedicatedDispatch(object):
         raise BaseException('something went from: error code: ' + str(status))
     else:
       master = Plant.get(Plant.uuid == plant.role)
-      daemon.register_lite(1, ip=plant.ip, target=plant, plant=master)
+      daemon.register_lite(1, target=plant, plant=master)
+      status = self.get(120)
 
       if status == 1:
         obj = MeshObject.get(MeshObject.ip == plant.ip)

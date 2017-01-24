@@ -257,11 +257,14 @@ class MeshNetwork(object):
     if mode == 1:
       # target plant object
       if MeshObject.select().where(MeshObject.registered == False, MeshObject.ip == target.ip, MeshMessage.slave == True).count() > 0:
+        logger.debug('test')
         self.send(60100, plant=local, recipient=target)
+      else:
+        logger.debug('TEST')
 
     elif mode == 3:
       plant = Plant.get(Plant.uuid == plant)
-      master = Plant.get(Plant.ip == plant.role)
+      master = Plant.get(Plant.uuid == plant.role)
       self.send(60300, plant=plant, recipient=target, messages=[master.uuid, master.ip, plant.uuid])
 
     elif mode == 5:

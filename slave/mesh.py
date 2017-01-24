@@ -52,7 +52,10 @@ class MeshNetwork(object):
           self.discover(target=[message[1][0], received[1][0]], mode=2)
       elif code[0] == '6':
         target = [message[1][0], received[1][0]]
-        self.register_lite(int(code[1:3]) + 1, recipient=target, messages=[message[4]])
+        local = message[2][1]
+        self.register_lite(int(code[1:3]) + 1, recipient=target, messages=[message[4]], local=local)
+      else:
+        print('not supported by slave module')
     else:
       print('not processing request - same ip')
 
@@ -87,7 +90,7 @@ class MeshNetwork(object):
     sender.close()
 
   def send(self, code, plant=True, messages=[], master=True, priority=255,
-           recipient=None, multicast=False, no_database=False):
+           recipient=None, multicast=False, no_database=False, local_uuid=None):
     """ main method for sending information in the mesh_network
         code - 5 digit number for mode
         plant - optional (origin, plant object)
@@ -125,6 +128,8 @@ class MeshNetwork(object):
 
     if configured:
       package[1].append(plant['uuid'])
+    elif local_uuid is not None:
+      package[1].append(local_uuid)
     else:
       package[1].append('')
 
@@ -197,11 +202,11 @@ class MeshNetwork(object):
 
           self.send(code, recipient=target, messages=[str(current)])
 
-  def register_lite(self, target=None, mode=1, messages=[]):
+  def register_lite(self, target=None, mode=1, messages=[], local=None):
     if mode == 2:
       if 'config.json' not in os.listdir():
         code = 60200
-        self.send(code, recipient=target)
+        self.send(code, recipient=target, plant=False, local_uuid=local)
     elif mode == 4:
       code = 60400
       with open('config.json') as out:
