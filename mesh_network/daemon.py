@@ -263,7 +263,7 @@ class MeshNetwork(object):
       plant = Plant.get(Plant.uuid == target[0])
       logger.info(plant.name)
       master = Plant.get(Plant.uuid == plant.role)
-      self.send(60300, plant=local, recipient=target, messages=[master.uuid, master.ip, plant.uuid])
+      self.send(60300, plant=local, recipient=target, messages=[str(master.uuid), master.ip, str(plant.uuid)])
 
     elif mode == 5:
       plant = Plant.get(Plant.uuid == target[0])
