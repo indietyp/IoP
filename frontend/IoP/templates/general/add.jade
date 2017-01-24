@@ -26,9 +26,9 @@ block content
                   onChange: function(value, text, $selectedItem) {
                     console.log(text)
                     if ($selectedItem.hasClass('slave')) {
-                      $('.ui.dropdown.master').removeClass('disabled')
+                      $('.field.master').removeClass('disabled')
                     } else {
-                      $('.ui.dropdown.master').addClass('disabled')
+                      $('.field.master').addClass('disabled')
                     }
                   }
                 })
@@ -91,7 +91,7 @@ block content
         //- only if slave selected
         //- load every master and disable
         .eight.wide.column
-          .field.disabled
+          .field.master.disabled
             label Master
             .wrapper(style='display:flex;align-items:center;flex-direction:row')
               .ui.selection.dropdown.master(style='width:100%')
