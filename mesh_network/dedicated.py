@@ -88,7 +88,7 @@ class MeshDedicatedDispatch(object):
       else:
         raise BaseException('something went from: error code: ' + str(status))
     else:
-      master = Plant.get(Plant.ip == plant.role)
+      master = Plant.get(Plant.uuid == plant.role)
       daemon.register_lite(1, ip=plant.ip, target=plant, plant=master)
 
       if status == 1:
@@ -168,6 +168,11 @@ if __name__ == '__main__':
       from models.plant import Plant
       plant = Plant.get(Plant.name == 'Thomas')
       logger.info(plant.ip)
+      MeshDedicatedDispatch().register(plant)
+    elif len(sys.argv) == 4 and sys.argv[1] == 'testing' and sys.argv[2] == 'slave' and sys.argv[3] == 'register':
+      logger.info('executed argument action - register - testing')
+      from models.plant import Plant
+      plant = Plant.get(Plant.name == 'gertrud')
       MeshDedicatedDispatch().register(plant)
   else:
     logger.info('aborted action - database required - no database provided')
