@@ -25,7 +25,11 @@ block content
                   action: 'activate',
                   onChange: function(value, text, $selectedItem) {
                     console.log(text)
-                    console.log($selectedItem.hasClass('slave'))
+                    if ($selectedItem.hasClass('slave')) {
+                      $('.ui.dropdown.master').removeClass('disabled')
+                    } else {
+                      $('.ui.dropdown.master').addClass('disabled')
+                    }
                   }
                 })
               ;
