@@ -75,6 +75,15 @@ def create_plant(data):
     for model in [SensorStatus, SensorCount, SensorSatisfactionValue, PlantNetworkUptime]:
       copy_model_instance_from_localhost(plant, model, model.plant == local_plant)
 
+    for count in list(SensorCount.select().where(SensorCount.plant == plant)):
+      count.count = 0
+      count.save()
+
+    for uptime in list(PlantNetworkUptime.select().where(PlantNetworkUptime.plant == plant)):
+      uptime.overall = 0
+      uptime.current = 0
+      uptime.save()
+
     return plant
 
 
