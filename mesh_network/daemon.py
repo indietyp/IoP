@@ -92,7 +92,7 @@ class MeshNetwork(object):
 
       elif code[0] == '6':
         target = [message[1][0], received[1][0]]
-        self.register_lite(int(code[1:3]) + 1, recipient=target)
+        self.register_lite(int(code[1:3]) + 1, target=target)
 
     else:
       logger.debug('not processing request - same ip')
@@ -257,13 +257,11 @@ class MeshNetwork(object):
     if mode == 1:
       # target plant object
       if MeshObject.select().where(MeshObject.registered == False, MeshObject.ip == target.ip, MeshObject.master == False).count() > 0:
-        logger.debug('test')
         self.send(60100, plant=local, recipient=target)
-      else:
-        logger.debug('TEST')
 
     elif mode == 3:
       plant = Plant.get(Plant.uuid == target[1])
+      logger.info(plant.name)
       master = Plant.get(Plant.uuid == plant.role)
       self.send(60300, plant=local, recipient=target, messages=[master.uuid, master.ip, plant.uuid])
 

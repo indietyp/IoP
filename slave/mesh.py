@@ -53,9 +53,7 @@ class MeshNetwork(object):
       elif code[0] == '6':
         target = [message[1][0], received[1][0]]
         local = message[2][1]
-        self.register_lite(int(code[1:3]) + 1, recipient=target, messages=[message[4]], local=local)
-      else:
-        print('not supported by slave module')
+        self.register_lite(mode=int(code[1:3]) + 1, target=target, messages=message[4], local=local)
     else:
       print('not processing request - same ip')
 
@@ -89,7 +87,7 @@ class MeshNetwork(object):
     sender.sendto(str([mode, code]).encode(), ('127.0.0.1', port))
     sender.close()
 
-  def send(self, code, plant=True, messages=[], master=True, priority=255,
+  def send(self, code, plant=True, messages=[], master=False, priority=255,
            recipient=None, multicast=False, no_database=False, local_uuid=None):
     """ main method for sending information in the mesh_network
         code - 5 digit number for mode
@@ -142,9 +140,11 @@ class MeshNetwork(object):
     package[3].append(code)
     package[4] = messages
 
-    str_package = repr(package).replace('[', '<', 1)
-    str_package = MeshString(str_package).rreplace(']', '>', 1).encode('utf-8')
-    print('sending following package: \n' + str_package.decode())
+    package = '<' + repr(package)[1:-1] + '>'
+    # package = repr(package).replace('[', '<', 1)
+    # package = MeshString(package).rreplace(']', '>', 1).encode('utf-8')
+    print('sending following package: \n' + package)
+    package = package.encode()
 
     if multicast is False:
       print('package destination: ' + external_address)
@@ -156,7 +156,7 @@ class MeshNetwork(object):
       sender = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
       sender.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, 2)
 
-    sender.sendto(str_package, (address, EXTERNAL_PORT))
+    sender.sendto(package, (address, EXTERNAL_PORT))
 
     sender.close()
 
