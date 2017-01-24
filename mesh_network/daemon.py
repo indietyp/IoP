@@ -256,7 +256,7 @@ class MeshNetwork(object):
     local = Plant.get(Plant.localhost == True)
     if mode == 1:
       # target plant object
-      if MeshObject.select().where(MeshObject.registered == False, MeshObject.ip == target.ip, MeshObject.slave == True).count() > 0:
+      if MeshObject.select().where(MeshObject.registered == False, MeshObject.ip == target.ip, MeshObject.master == False).count() > 0:
         logger.debug('test')
         self.send(60100, plant=local, recipient=target)
       else:
