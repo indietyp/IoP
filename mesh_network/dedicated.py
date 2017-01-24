@@ -89,7 +89,7 @@ class MeshDedicatedDispatch(object):
         raise BaseException('something went from: error code: ' + str(status))
     else:
       master = Plant.get(Plant.uuid == plant.role)
-      daemon.register_lite(1, target=plant, plant=master)
+      daemon.register_lite(mode=1, target=plant, plant=master)
       status = self.get(120)
 
       if status == 1:
@@ -115,7 +115,7 @@ class MeshDedicatedDispatch(object):
     from models.plant import Plant
 
     daemon = MeshNetwork()
-    for plant in Plant.select().where(Plant.localhost == False):
+    for plant in Plant.select().where(Plant.localhost == False, Plant.master == True):
       daemon.deliver(1, sub=1, recipient=plant, sensor=sensor)
 
   def reboot(self):

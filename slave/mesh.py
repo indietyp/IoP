@@ -106,6 +106,8 @@ class MeshNetwork(object):
     if configured and 'config.json' in os.listdir():
       with open('config.json') as out:
         plant = json.dumps(out.read())
+    else:
+      configured = False
 
     if type(recipient) == list:
       recipient_uuid = recipient[0]

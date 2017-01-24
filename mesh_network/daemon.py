@@ -263,13 +263,14 @@ class MeshNetwork(object):
         logger.debug('TEST')
 
     elif mode == 3:
-      plant = Plant.get(Plant.uuid == plant)
+      plant = Plant.get(Plant.uuid == target[1])
       master = Plant.get(Plant.uuid == plant.role)
-      self.send(60300, plant=plant, recipient=target, messages=[master.uuid, master.ip, plant.uuid])
+      self.send(60300, plant=local, recipient=target, messages=[master.uuid, master.ip, plant.uuid])
 
     elif mode == 5:
+      plant = Plant.get(Plant.uuid == target[1])
       self.send_local(mode=1, code=1)
-      self.send(60500, plant=plant, recipient=target)
+      self.send(60500, plant=local, recipient=target)
 
 
   def register(self, mode, ip=None, recipient=None, messages=None, origin=None, local_uuid=None):
