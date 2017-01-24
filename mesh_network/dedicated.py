@@ -115,7 +115,7 @@ class MeshDedicatedDispatch(object):
     from models.plant import Plant
 
     daemon = MeshNetwork()
-    for plant in Plant.select().where(Plant.localhost == False, Plant.master == True):
+    for plant in Plant.select().where(Plant.localhost == False, Plant.role == 'master'):
       daemon.deliver(1, sub=1, recipient=plant, sensor=sensor)
 
   def reboot(self):

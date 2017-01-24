@@ -92,7 +92,7 @@ class MeshNetwork(object):
 
       elif code[0] == '6':
         target = [message[1][0], received[1][0]]
-        self.register_lite(int(code[1:3]) + 1, target=target)
+        self.register_lite(mode=int(code[1:3]) + 1, target=target)
 
     else:
       logger.debug('not processing request - same ip')
