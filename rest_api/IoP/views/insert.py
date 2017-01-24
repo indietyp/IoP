@@ -45,33 +45,29 @@ def create_plant(data):
   try:
     Plant.get(Plant.ip == data['ip'])
   except:
+    from models.mesh import MeshObject
+    discovered = MeshObject.get(ip=data['ip'])
     plant = Plant()
     plant.name = data['name'].lower()
     plant.location = data['location']
     plant.species = data['species']
     plant.interval = data['interval']
     plant.person = Person.get(Person.email == data['email'])
-    plant.ip = request.form['ip']
+    plant.ip = data['ip']
     plant.sat_streak = 0
 
     if 'uuid' in data:
       plant.uuid = data['uuid']
     if 'persistant_hold' in data:
       plant.persistant_hold = data['persistant_hold']
-    if 'role' in data:
-      import re
-      if data['role'] == 'master':
-        plant.role = data['role']
-      else:
-        ip = re.findall(r'(\d{3})\.(\d{3})\.(\d{1,3})\.(\d{1,3}))')
-        if len(ip) > 0:
-          valid = True
-          for x in ip[0]:
-            if int(x) > 255:
-              valid = False
 
-          if valid:
-            plant.role = data['role']
+    if not discovered.master:
+      if 'role' not in data:
+        master = Plant.get(localhost=True)
+      else:
+        master = Plant.get(uuid=data['role'])
+
+      plant.role = str(master.uuid)
 
     plant.save()
 

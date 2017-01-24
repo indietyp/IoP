@@ -555,17 +555,23 @@ add_plant_responsibles = () ->
 window.add_plant_responsibles = add_plant_responsibles
 
 register_new_plant = () ->
-  console.log('HEY')
   a = $('input.name').val()
   b = $('input.location').val()
   c = $('input.species').val()
   d = $('input.notification_interval').val()
   e = $('.ui.selection.dropdown.responsible .active.selected').data()['value']
   f = $('.ui.selection.dropdown.discover .active.selected').data()['value']
+  g = $('.ui.selection.dropdown.master .active.selected').data()
+  if (g === undefined) {
+    g = 'master'
+  } else {
+    g = g['value']
+  }
+
   current = $.ajax
     url: '/create/plant'
     method: 'POST'
-    data: {'name': a, 'location': b, 'species': c, 'interval': d, 'email': e, 'ip': f}
+    data: {'name': a, 'location': b, 'species': c, 'interval': d, 'email': e, 'ip': f, 'role': g}
 
   current.done (msg) ->
     window.location.href = '/'

@@ -548,7 +548,7 @@ def get_current_discover_extended(registered):
 def get_plants_master():
   plants = Plant.select(Plant.ip, Plant.localhost, Plant.name, Plant.uuid).where(Plant.role == 'master').dicts()
   plants = list(plants)
-  
+
   for plant in plants:
     plant['uuid'] = str(plant['uuid'])
 

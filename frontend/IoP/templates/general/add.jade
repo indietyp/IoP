@@ -24,7 +24,7 @@ block content
                 .dropdown({
                   action: 'activate',
                   onChange: function(value, text, $selectedItem) {
-                    console.log(text)
+                    device_master()
                     if ($selectedItem.hasClass('slave')) {
                       $('.field.master').removeClass('disabled')
                     } else {
@@ -99,7 +99,7 @@ block content
                 i.terminal.icon
                 .default.text Master
                 .menu
-              button.ui.icon.button.right.attached(onclick='device_discover()')
+              button.ui.icon.button.right.attached(onclick='device_master()')
                 i.refresh.icon
 
             script(type='text/javascript').
