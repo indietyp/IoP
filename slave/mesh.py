@@ -46,7 +46,7 @@ class MeshNetwork(object):
           self.alive(target, 2, additional_information=message[4][0])
       elif code[0] == '2':
         target = [message[1][0], received[1][0]]
-        self.register_lite(int(code[1:3]) + 1, recipient=target, messages=message[4])
+        self.slave(mode=int(code[1:3]) + 1, target=target, messages=message[4])
       elif code[0] == '4':
         if int(code[1:3]) == 1:
           self.discover(target=[message[1][0], received[1][0]], mode=2)
@@ -103,7 +103,7 @@ class MeshNetwork(object):
     configured = plant
     if configured and 'config.json' in os.listdir():
       with open('config.json') as out:
-        plant = json.dumps(out.read())
+        plant = json.loads(out.read())
     else:
       configured = False
 
@@ -189,20 +189,26 @@ class MeshNetwork(object):
         code = 40400
         self.send(code, recipient=target, messages=['NOT_LOGGED', 'CONFIGURED', 'SLAVE'])
 
-  def slave(self, target=None, mode=2):
+  def slave(self, target=None, mode=2, messages=[]):
+    print(target)
+    print(messages)
+    print(mode)
+
     if mode != 2:
       print('mode not supported')
     else:
       if 'config.json' in os.listdir():
-        with open('config.json') as out:
-          config = json.dumps(out.read())
+        with open('config.json', 'r') as out:
+          config = json.loads(out.read())
 
-        if target[1] == config['uuid']:
+        if target[0] == config['uuid']:
           code = 20200
-          from sensor import measure
-          current = measure()
 
-          self.send(code, recipient=target, messages=[str(current)])
+          if messages[0] == 'moisture':
+            from sensor import measure
+            current = measure()
+
+            self.send(code, recipient=target, messages=[current, messages[0]])
 
   def register_lite(self, target=None, mode=1, messages=[], local=None):
     if mode == 2:
@@ -211,7 +217,7 @@ class MeshNetwork(object):
         self.send(code, recipient=target, plant=False, local_uuid=local)
     elif mode == 4:
       code = 60400
-      with open('config.json') as out:
+      with open('config.json', 'w') as out:
         out.write(json.dumps({'uuid': messages[2],
                               'master': {
                                   'ip': messages[1],

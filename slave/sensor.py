@@ -9,6 +9,8 @@ def measure():
 
   median = []
   alert = Pin(12, Pin.OUT)
+  green = Pin(13, Pin.OUT)
+  red = Pin(15, Pin.OUT)
   alert.value(1)
 
   for i in range(5):
@@ -18,4 +20,13 @@ def measure():
     sleep(0.5)
 
   alert.value(0)
-  return sum(median) / len(median)
+  median = sum(median) / len(median)
+  if median > 50:
+    green.value(1)
+    red.value(0)
+  else:
+    green.value(0)
+    red.value(1)
+
+  print(median)
+  return median

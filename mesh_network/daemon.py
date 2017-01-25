@@ -51,8 +51,8 @@ class MeshNetwork(object):
         elif int(code[1:3]) == 2:
           self.send_local(mode=1, code=1)
       elif code[0] == '2':
-        if int(code[1:3]) == 1:
-          pass
+        target = [message[1][0], received[1][0]]
+        self.slave(mode=int(code[1:3]) + 1, target=target, messages=message[4])
       elif code[0] == '3':
         target = [message[1][0], received[1][0]]
         local_uuid = message[2][1]
@@ -245,12 +245,23 @@ class MeshNetwork(object):
         code += 2
         self.send(code, no_database=True, recipient=target, messages=['NOT_LOGGED', 'NO_DATABASE', 'MASTER'])
 
-  def slave(self, mode=1, target=None, sensor=None):
-    if mode != 1:
+  def slave(self, mode=1, target=None, sensor=None, messages=[]):
+    if mode != 1 and mode != 3:
       logger.warning('every mode except 1 is not implemented and allowed')
-    else:
+    elif mode == 1:
       code = 20100
       self.send(code, recipient=target, messages=[sensor.name])
+    elif mode == 3:
+      logger.debug(messages)
+      logger.debug(target)
+      from sensor import Sensor
+      sensor = Sensor.get(name=messages[1])
+      slave = Plant.get(uuid=target[1])
+
+      data = {'plant': slave,
+              'sensor': sensor,
+              'value': messages[0]}
+      ToolChainSensor().insert_data(data)
 
   def register_lite(self, target=None, mode=1, messages=[], plant=None):
     local = Plant.get(Plant.localhost == True)
