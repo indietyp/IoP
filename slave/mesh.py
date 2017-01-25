@@ -200,8 +200,9 @@ class MeshNetwork(object):
       if 'config.json' in os.listdir():
         with open('config.json', 'r') as out:
           config = json.loads(out.read())
+        print(config)
 
-        if target[0] == config['uuid']:
+        if target[0] == config['master']['uuid']:
           code = 20200
 
           if messages[0] == 'moisture':

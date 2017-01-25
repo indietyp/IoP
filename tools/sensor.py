@@ -210,6 +210,14 @@ class ToolChainSensor(object):
       if mesh:
         from mesh_network.dedicated import MeshDedicatedDispatch
         MeshDedicatedDispatch().new_data(data['sensor'])
+
+        if data['plant'].localhost:
+          slaves = Plant.select().where(Plant.role == str(data['plant']))
+          slaves = list(slaves)
+
+          for slave in slaves:
+            MeshDedicatedDispatch().slave_data(slave, data['sensor'])
+
     ###################
     # 60.02 seconds
     logger.debug('time elapsed: {}'.format(datetime.datetime.now() - start))

@@ -152,6 +152,12 @@ class MeshDedicatedDispatch(object):
 
     return True
 
+  def slave_data(self, plant, sensor):
+    # currently only supported : moisture, nothing probably following
+    if sensor.name == 'moisture':
+      daemon = MeshNetwork()
+      daemon.slave(mode=1, target=plant, sensor=sensor)
+
 if __name__ == '__main__':
   logger = logging.getLogger('mesh')
   if VariousTools.verify_database():
