@@ -254,7 +254,7 @@ class MeshNetwork(object):
     elif mode == 3:
       logger.debug(messages)
       logger.debug(target)
-      from sensor import Sensor
+      from models.sensor import Sensor
       sensor = Sensor.get(name=messages[1])
       slave = Plant.get(uuid=target[1])
 
