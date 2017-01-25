@@ -246,17 +246,18 @@ class MeshNetwork(object):
         self.send(code, no_database=True, recipient=target, messages=['NOT_LOGGED', 'NO_DATABASE', 'MASTER'])
 
   def slave(self, mode=1, target=None, sensor=None, messages=[]):
+    local = Plant.get(localhost=True)
     if mode != 1 and mode != 3:
       logger.warning('every mode except 1 is not implemented and allowed')
     elif mode == 1:
       code = 20100
-      self.send(code, recipient=target, messages=[sensor.name])
+      self.send(code, recipient=target, messages=[sensor.name], plant=local)
     elif mode == 3:
       logger.debug(messages)
       logger.debug(target)
       from models.sensor import Sensor
       sensor = Sensor.get(name=messages[1])
-      slave = Plant.get(uuid=target[1])
+      slave = Plant.get(uuid=target[0])
 
       data = {'plant': slave,
               'sensor': sensor,
