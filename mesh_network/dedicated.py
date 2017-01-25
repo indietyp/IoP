@@ -158,6 +158,10 @@ class MeshDedicatedDispatch(object):
       daemon = MeshNetwork()
       daemon.slave(mode=1, target=plant, sensor=sensor)
 
+      return True
+    else:
+      return False
+
 if __name__ == '__main__':
   logger = logging.getLogger('mesh')
   if VariousTools.verify_database():
