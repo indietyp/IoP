@@ -21,7 +21,7 @@ def measure():
 
   alert.value(0)
   median = sum(median) / len(median)
-  if median > 50:
+  if median > 60 and median < 80:
     green.value(1)
     red.value(0)
   else:

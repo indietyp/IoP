@@ -63,23 +63,17 @@ class MeshNetwork(object):
 
   def daemon(self):
     client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    multicast_addr = MULTICAST_ADDRESS
     port = EXTERNAL_PORT
-    host = '0.0.0.0'
 
-    # membership = socket.inet_aton(multicast_addr) + socket.inet_aton(host)
-
-    # client.setsockopt(socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, membership)
     client.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
     client.bind(('', port))
     while True:
-      # try:
-      received = client.recvfrom(2048)
-
-      self.daemon_process(received)
-      # except Exception as e:
-      # print(e)
+      try:
+        received = client.recvfrom(2048)
+        self.daemon_process(received)
+      except Exception as e:
+        print(e)
 
   def send_local(self, mode, code, port=2311):
     """ method for communication between daemon and other scripts """

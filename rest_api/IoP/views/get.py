@@ -11,6 +11,8 @@ from models.mesh import MeshObject
 from models.plant import Plant, PlantNetworkUptime, Person, MessagePreset
 from models.sensor import Sensor, SensorData, SensorCount, SensorSatisfactionValue, SensorDataPrediction, SensorStatus
 
+slave_supported = ['moisture']
+
 
 # the frontend is dumb! only give data from database, scripts to the other stuff
 @app.route('/get/plants/name')
@@ -42,6 +44,9 @@ def get_plant_intervals(p_uuid):
 def get_latest_dataset(p_uuid, s_uuid):
   plant = Plant.get(Plant.uuid == p_uuid)
   sensor = Sensor.get(Sensor.name == s_uuid)
+
+  if plant.role != 'master' and sensor.name not in slave_supported:
+    plant = Plant.get(Plant.uuid == UUID(plant.role))
 
   sd = SensorData.select(SensorData.value, SensorData.persistant, SensorData.created_at) \
                  .where(SensorData.plant == plant) \
@@ -133,6 +138,9 @@ def get_plant_sensor_prediction(p_uuid, sensor):
   plant = Plant.get(Plant.uuid == p_uuid)
   sensor = Sensor.get(Sensor.name == sensor)
 
+  if plant.role != 'master' and sensor.name not in slave_supported:
+    plant = Plant.get(Plant.uuid == UUID(plant.role))
+
   sensor_prediction_set = SensorDataPrediction.select(SensorDataPrediction.value, SensorDataPrediction.time) \
                                               .where(SensorDataPrediction.plant == plant) \
                                               .where(SensorDataPrediction.sensor == sensor) \
@@ -150,6 +158,10 @@ def get_plant_sensor_prediction(p_uuid, sensor):
 def get_plant_sensor_data(p_uuid, sensor):
   plant = Plant.get(Plant.uuid == p_uuid)
   sensor = Sensor.get(Sensor.name == sensor)
+
+  if plant.role != 'master' and sensor.name not in slave_supported:
+    plant = Plant.get(Plant.uuid == UUID(plant.role))
+
   sensor_data_set = SensorData.select() \
                               .where(SensorData.plant == plant) \
                               .where(SensorData.sensor == sensor) \
@@ -180,6 +192,9 @@ def get_plant_sensor_data_after(p_uuid, sensor, until):
   sensor = Sensor.get(Sensor.name == sensor)
   plant = Plant.get(Plant.uuid == p_uuid)
 
+  if plant.role != 'master' and sensor.name not in slave_supported:
+    plant = Plant.get(Plant.uuid == UUID(plant.role))
+
   date_time = datetime.datetime.fromtimestamp(until + 1)
   sensor_data_set = SensorData.select(SensorData.created_at, SensorData.value) \
                               .where(SensorData.plant == plant) \
@@ -208,6 +223,10 @@ def get_plant_sensor_data_after(p_uuid, sensor, until):
 def get_plant_current_sensor_data(p_uuid, sensor):
   plant = Plant.get(Plant.uuid == p_uuid)
   sensor = Sensor.get(Sensor.name == sensor)
+
+  if plant.role != 'master' and sensor.name not in slave_supported:
+    plant = Plant.get(Plant.uuid == UUID(plant.role))
+
   latest = SensorData.select() \
                      .where(SensorData.plant == plant) \
                      .where(SensorData.sensor == sensor) \
@@ -258,15 +277,7 @@ def get_sensor_data_high_low(plant, sensor, configuration, target=None):
   print(len(dataset))
 
   data = dataset[0]
-  if isinstance(data['created_at'], str):
-    data['t'] = data['created_at'].replace('+00:00', '')
-    try:
-      data['t'] = datetime.datetime.strptime(data['t'], '%Y-%m-%d %H:%M:%S')
-    except:
-      data['t'] = datetime.datetime.strptime(data['t'], "%Y-%m-%d %H:%M:%S.%f")
-  else:
-    data['t'] = data['created_at']
-  data['t'] = data['t'].timestamp()
+  data['t'] = data['created_at'].timestamp()
 
   data['v'] = data['value']
 
@@ -282,6 +293,9 @@ def get_plant_sensor_data_high_ever(sensor, p_uuid, mode):
   plant = Plant.get(Plant.uuid == p_uuid)
   sensor = Sensor.get(Sensor.name == sensor)
 
+  if plant.role != 'master' and sensor.name not in slave_supported:
+    plant = Plant.get(Plant.uuid == UUID(plant.role))
+
   return json.dumps(get_sensor_data_high_low(plant, sensor, configuration))
 
 
@@ -290,6 +304,9 @@ def get_plant_sensor_data_high_today(sensor, p_uuid, mode, if_no_data_days_befor
   configuration = True if mode == 'high' else False
   plant = Plant.get(Plant.uuid == p_uuid)
   sensor = Sensor.get(Sensor.name == sensor)
+  if plant.role != 'master' and sensor.name not in slave_supported:
+    plant = Plant.get(Plant.uuid == UUID(plant.role))
+
   target = datetime.datetime.combine(datetime.date.today(), datetime.datetime.min.time())
 
   if if_no_data_days_before == 'yes':
@@ -436,6 +453,9 @@ def get_responsible_persons():
 def get_plant_data_selective(p_uuid, sensor, start, stop):
   plant = Plant.get(Plant.uuid == p_uuid)
   sensor = Sensor.get(Sensor.name == sensor)
+  if plant.role != 'master' and sensor.name not in slave_supported:
+    plant = Plant.get(Plant.uuid == UUID(plant.role))
+
   sensor_data_set = SensorData.select(SensorData.value, SensorData.created_at) \
                               .where(SensorData.plant == plant) \
                               .where(SensorData.sensor == sensor) \
@@ -464,6 +484,9 @@ def get_plant_data_selective(p_uuid, sensor, start, stop):
 def get_plant_count(p_uuid, sensor):
   plant = Plant.get(Plant.uuid == p_uuid)
   sensor = Sensor.get(Sensor.name == sensor)
+  if plant.role != 'master' and sensor.name not in slave_supported:
+    plant = Plant.get(Plant.uuid == UUID(plant.role))
+
   sensor_data_set = SensorData.select() \
                               .where(SensorData.plant == plant) \
                               .where(SensorData.sensor == sensor)

@@ -12,8 +12,8 @@ def establish():
     machine.reset()
 
 if sta_if.active():
-  from daemon import MeshNetwork
-  MeshNetwork.daemon()
+  from mesh import MeshNetwork
+  MeshNetwork().daemon()
 
 elif ap_if.active():
   establish()
