@@ -1,9 +1,9 @@
 import sys
 import socket
 import logging
-import deepcopy
 import tools.logger
 import urllib.request
+from copy import deepcopy
 from models.plant import Plant
 from tools.main import VariousTools
 from mesh_network.daemon import MeshNetwork
