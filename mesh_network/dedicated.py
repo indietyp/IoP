@@ -40,8 +40,13 @@ class MeshDedicatedDispatch(object):
     online = PlantNetworkStatus.select().where(PlantNetworkStatus.name == 'online')
     offline = PlantNetworkStatus.select().where(PlantNetworkStatus.name == 'offline')
 
-    plants = Plant.select().where(Plant.localhost == False, Plant.role == 'master')
-    plants = list(plants)
+    masters = Plant.select().where(Plant.localhost == False, Plant.role == 'master')
+    masters = list(masters)
+    plants = masters
+
+    local = Plant.get(localhost=True)
+    slaves = Plant.select().where(Plant.localhost == False, Plant.role == str(local.uuid))
+    plants.extend(list(slaves))
 
     for plant in plants:
       daemon.alive(plant, 1)
@@ -63,6 +68,18 @@ class MeshDedicatedDispatch(object):
           i[1].current += 1
           i[1].overall += 1
           i[1].save()
+
+          if plant.role != 'master':
+            print(plant.name)
+            data = urllib.parse.urlencode({}).encode('ascii')
+
+            for master in masters:
+              req = urllib.request.Request('http://{}:2902/update/plant/{}/alive/{}/add'.format(master.ip, str(plant.uuid), i[1].status.name), data)
+              try:
+                with urllib.request.urlopen(req) as response:
+                  response.read().decode('utf8')
+              except Exception as e:
+                print(e)
 
         for dataset in options:
           if dataset[0] != i[0] and i[1].current != 0:
