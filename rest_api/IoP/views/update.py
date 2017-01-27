@@ -111,20 +111,22 @@ def update_plant_satisfaction_level_add(p_uuid):
 def plant_alive_online_offline(p_uuid, mode):
   counterpart = 'online' if mode == 'offline' else 'offline'
   status = PlantNetworkStatus.get(name=mode)
+  counterpart = PlantNetworkStatus.get(name=counterpart)
+
   plant = Plant.get(uuid=p_uuid)
   if plant.role == 'master':
     return json.dumps({'info': 0})
 
-  uptime = PlantNetworkUptime.get(plant=plant, status=status)
-  counteruptime = PlantNetworkUptime.get(plant=plant, status=counterpart)
+  status = PlantNetworkUptime.get(plant=plant, status=status)
+  counterpart = PlantNetworkUptime.get(plant=plant, status=counterpart)
 
-  if counteruptime.current != 0:
-    counteruptime.current = 0
-    counteruptime.save()
+  if counterpart.current != 0:
+    counterpart.current = 0
+    counterpart.save()
 
-  uptime.current += 1
-  uptime.overall += 1
-  uptime.save()
+  status.current += 1
+  status.overall += 1
+  status.save()
 
   return json.dumps({'info': 1})
 
