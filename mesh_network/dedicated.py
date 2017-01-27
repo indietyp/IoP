@@ -1,6 +1,7 @@
 import sys
 import socket
 import logging
+import deepcopy
 import tools.logger
 import urllib.request
 from models.plant import Plant
@@ -42,7 +43,7 @@ class MeshDedicatedDispatch(object):
 
     masters = Plant.select().where(Plant.localhost == False, Plant.role == 'master')
     masters = list(masters)
-    plants = masters
+    plants = deepcopy(masters)
 
     local = Plant.get(localhost=True)
     slaves = Plant.select().where(Plant.localhost == False, Plant.role == str(local.uuid))
