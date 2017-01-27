@@ -74,10 +74,11 @@ class MeshDedicatedDispatch(object):
             data = urllib.parse.urlencode({}).encode('ascii')
 
             for master in masters:
+              print('http://{}:2902/update/plant/{}/alive/{}/add'.format(master.ip, str(plant.uuid), i[1].status.name))
               req = urllib.request.Request('http://{}:2902/update/plant/{}/alive/{}/add'.format(master.ip, str(plant.uuid), i[1].status.name), data)
               try:
                 with urllib.request.urlopen(req) as response:
-                  response.read().decode('utf8')
+                  print(response.read().decode('utf8'))
               except Exception as e:
                 print(e)
 
