@@ -40,7 +40,7 @@ class MeshDedicatedDispatch(object):
     online = PlantNetworkStatus.select().where(PlantNetworkStatus.name == 'online')
     offline = PlantNetworkStatus.select().where(PlantNetworkStatus.name == 'offline')
 
-    plants = Plant.select().where(Plant.localhost == False)
+    plants = Plant.select().where(Plant.localhost == False, Plant.role == 'master')
     plants = list(plants)
 
     for plant in plants:
@@ -108,8 +108,11 @@ class MeshDedicatedDispatch(object):
       for rest in Plant.select().where(Plant.ip != plant.ip, Plant.localhost == False, Plant.role == 'master'):
         data = urllib.parse.urlencode(dict_plant).encode('ascii')
         req = urllib.request.Request('http://' + rest.ip + ':2902/create/plant', data)
-        with urllib.request.urlopen(req) as response:
-          return response.read().decode('utf8')
+        try:
+          with urllib.request.urlopen(req) as response:
+            response.read().decode('utf8')
+        except Exception as e:
+          print(e)
 
   def new_data(self, sensor):
     from models.plant import Plant

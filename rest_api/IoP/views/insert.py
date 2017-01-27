@@ -89,15 +89,21 @@ def create_plant(data):
 
 @app.route('/create/plant', methods=['POST'])
 def create_plant_no_register():
+  from mesh_network.daemon import MeshNetwork
+  import time
+
+  MeshNetwork().discover(1)
+  time.sleep(2)
+
   plant = create_plant(request.form)
-  return json.loads({'name': plant.name, 'info': 'only created'})
+  return json.dumps({'name': plant.name, 'info': 'only created'})
 
 
 @app.route('/create/plant/register', methods=['POST'])
 def create_plant_register():
   plant = create_plant(request.form)
   MeshDedicatedDispatch().register(plant)
-  return json.loads({'name': plant.name, 'info': 'registered'})
+  return json.dumps({'name': plant.name, 'info': 'registered'})
 
 
 @app.route('/create/message', methods=['POST'])
@@ -114,4 +120,4 @@ def create_message_preset():
   msg.message = data['message']
   msg.save()
 
-  return {'info': 'success'}
+  return json.dumps({'info': 'success'})

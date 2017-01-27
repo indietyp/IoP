@@ -1,8 +1,6 @@
 from IoP import app
 from flask import request
-from playhouse.shortcuts import model_to_dict
 import json
-import sys
 from copy import deepcopy
 
 # UPDATE
@@ -15,6 +13,7 @@ from copy import deepcopy
 # - LOCATION
 # - TYPE
 from models.plant import Plant, Person
+from models.plant import PlantNetworkStatus, PlantNetworkUptime
 from models.sensor import SensorSatisfactionValue, SensorSatisfactionLevel, Sensor
 from models.plant import MessagePreset
 from models.context import DayNightTime
@@ -105,6 +104,28 @@ def update_plant_satisfaction_level_add(p_uuid):
   plant = Plant.get(Plant.uuid == p_uuid)
   plant.sat_streak = plant.sat_streak + 1
   plant.save()
+  return json.dumps({'info': 1})
+
+
+@app.route('/update/plant/<p_uuid>/alive/<any(online,offline):mode>/add', methods=['POST'])
+def plant_alive_online_offline(p_uuid, mode):
+  counterpart = 'online' if mode == 'offline' else 'offline'
+  status = PlantNetworkStatus.get(name=mode)
+  plant = Plant.get(uuid=p_uuid)
+  if plant.role == 'master':
+    return json.dumps({'info': 0})
+
+  status = PlantNetworkUptime.get(plant=plant, status=status)
+  counterpart = PlantNetworkUptime.get(plant=plant, status=counterpart)
+
+  if counterpart.current != 0:
+    counterpart.current = 0
+    counterpart.save()
+
+  status.current += 1
+  status.overall += 1
+  status.save()
+
   return json.dumps({'info': 1})
 
 
