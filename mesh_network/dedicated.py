@@ -71,11 +71,9 @@ class MeshDedicatedDispatch(object):
           i[1].save()
 
           if plant.role != 'master':
-            print(plant.name)
             data = urllib.parse.urlencode({}).encode('ascii')
 
             for master in masters:
-              print('http://{}:2902/update/plant/{}/alive/{}/add'.format(master.ip, str(plant.uuid), i[1].status.name))
               req = urllib.request.Request('http://{}:2902/update/plant/{}/alive/{}/add'.format(master.ip, str(plant.uuid), i[1].status.name), data)
               try:
                 with urllib.request.urlopen(req) as response:
