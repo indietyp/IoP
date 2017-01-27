@@ -115,16 +115,16 @@ def plant_alive_online_offline(p_uuid, mode):
   if plant.role == 'master':
     return json.dumps({'info': 0})
 
-  status = PlantNetworkUptime.get(plant=plant, status=status)
-  counterpart = PlantNetworkUptime.get(plant=plant, status=counterpart)
+  uptime = PlantNetworkUptime.get(plant=plant, status=status)
+  counteruptime = PlantNetworkUptime.get(plant=plant, status=counterpart)
 
-  if counterpart.current != 0:
-    counterpart.current = 0
-    counterpart.save()
+  if counteruptime.current != 0:
+    counteruptime.current = 0
+    counteruptime.save()
 
-  status.current += 1
-  status.overall += 1
-  status.save()
+  uptime.current += 1
+  uptime.overall += 1
+  uptime.save()
 
   return json.dumps({'info': 1})
 
