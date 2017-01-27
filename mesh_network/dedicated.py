@@ -8,6 +8,7 @@ from models.plant import Plant
 from tools.main import VariousTools
 from mesh_network.daemon import MeshNetwork
 from playhouse.shortcuts import model_to_dict
+logger = logging.getLogger('mesh')
 
 
 class MeshDedicatedDispatch(object):
@@ -77,9 +78,9 @@ class MeshDedicatedDispatch(object):
               req = urllib.request.Request('http://{}:2902/update/plant/{}/alive/{}/add'.format(master.ip, str(plant.uuid), i[1].status.name), data)
               try:
                 with urllib.request.urlopen(req) as response:
-                  print(response.read().decode('utf8'))
+                  response.read().decode('utf8')
               except Exception as e:
-                print(e)
+                logger.warning('{} - {}: {}'.format(plant.name, master.name, e))
 
         for dataset in options:
           if dataset[0] != i[0] and i[1].current != 0:
