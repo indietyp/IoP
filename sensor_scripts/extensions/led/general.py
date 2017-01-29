@@ -12,7 +12,7 @@ class TrafficLight(object):
 
   @staticmethod
   def run():
-    result = VariousTools.offline_check('generalleds', hardware=True, pins=[5, 6, 16])
+    result = VariousTools.offline_check('generalleds', hardware=True, pins=[5, 6, 13])
     if result is True:
       setting = {'threat': 0, 'cautioning': 0, 'optimum': 0}
       plant = Plant.get(Plant.localhost == True)
