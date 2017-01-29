@@ -168,8 +168,8 @@ class MeshDedicatedDispatch(object):
 
     daemon = MeshNetwork()
 
-    for plant in Plant.select().where(Plant.localhost == False):
-      daemon.deliver(3, sub=1, recipient=plant, message=[counter, str(uuid)])
+    for plant in Plant.select().where(Plant.localhost == False, Plant.role == 'master'):
+      daemon.deliver(3, sub=1, recipient=plant, change={'object': counter, 'uuid': uuid})
 
     return True
 
