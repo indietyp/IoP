@@ -35,8 +35,8 @@ def add_plant():
 @app.route('/manage')
 def manage_plants():
   content = init()
-  content.update({'get': True, 'current_active': 'add plant'})
-  return render_template('general/add.jade', content=content)
+  content.update({'get': True, 'current_active': 'manage plants'})
+  return render_template('general/manage.jade', content=content)
 
 
 @app.route('/global/settings')
