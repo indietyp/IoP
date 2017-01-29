@@ -18,6 +18,9 @@ from models.sensor import SensorSatisfactionValue, SensorSatisfactionLevel, Sens
 from models.plant import MessagePreset
 from models.context import DayNightTime
 from mesh_network.dedicated import MeshDedicatedDispatch
+import logging
+import tools.logger
+logger = logging.getLogger('exception')
 
 
 @app.route('/update/plant/<p_uuid>/name', methods=['POST'])
@@ -74,7 +77,11 @@ def update_plant_ranges(p_uuid):
   value_green.save()
   value_yellow.save()
 
+  logger.warning('updating')
   MeshDedicatedDispatch().update('plant', plant.uuid)
+  logger.warning('proceeding')
+  logger.warning(server.name)
+  logger.info(plant.role)
   if sensor.name == 'moisture' and plant.role != 'master':
     information = {'min': value_yellow.min_value, 'max': value_yellow.max_value}
     MeshDedicatedDispatch().slave_update(1, information, plant)
