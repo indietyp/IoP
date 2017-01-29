@@ -88,7 +88,7 @@ class MeshNetwork(object):
           self.deliver(2, sub=sub, recipient=target)
         elif int(code[1:3]) == 3:
           sub = int(code[3:]) + 1
-          self.deliver(3, sub=sub, recipient=target, message=message)
+          self.deliver(3, sub=sub, recipient=target, message=message[4])
 
       elif code[0] == '6':
         target = [message[1][0], received[1][0]]
