@@ -77,12 +77,7 @@ def update_plant_ranges(p_uuid):
   value_green.save()
   value_yellow.save()
 
-  logger.warning('updating')
   MeshDedicatedDispatch().update('plant', plant.uuid)
-  logger.warning('proceeding')
-  logger.warning(sensor.name)
-  logger.info(plant.name)
-  logger.info(plant.role)
   if sensor.name == 'moisture' and plant.role != 'master':
     logger.info('executing slave update')
     information = {'min': value_yellow.min_value, 'max': value_yellow.max_value}
@@ -243,7 +238,7 @@ def update_responsible_wizard():
   return json.dumps({'info': 'success'})
 
 
-# add to mesh?
+# add to mesh? Yes!
 @app.route('/update/day/night/time', methods=['POST'])
 def update_day_night():
   data = deepcopy(request.form)
@@ -255,6 +250,12 @@ def update_day_night():
     day_night.generalleds = data['generalleds']
     day_night.notification = data['notification']
     day_night.save()
+
+  for slave in list(Plant.select().where(Plant.role != 'master')):
+    logger.info('executing slave update')
+    information = {'min': data['start'], 'max': data['stop']}
+    MeshDedicatedDispatch().slave_update(0, information, slave)
+
   return json.dumps({'info': 'success'})
 
 
