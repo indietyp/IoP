@@ -75,6 +75,10 @@ def update_plant_ranges(p_uuid):
   value_yellow.save()
 
   MeshDedicatedDispatch().update('plant', plant.uuid)
+  if sensor.name == 'moisture' and plant.role != 'master':
+    information = {'min': value_yellow.min_value, 'max': value_yellow.max_value}
+    MeshDedicatedDispatch().slave_update(1, information)
+
   return json.dumps({'info': 'success'})
 
 

@@ -94,6 +94,9 @@ class MeshNetwork(object):
         target = [message[1][0], received[1][0]]
         self.register_lite(mode=int(code[1:3]) + 1, target=target)
 
+      elif code[0] == '7':
+        self.slave_update(mode=int(code[1:3]), sub=int(code[3:]) + 1, target=target)
+
     else:
       logger.debug('not processing request - same ip')
 
@@ -264,8 +267,22 @@ class MeshNetwork(object):
               'value': messages[0]}
       ToolChainSensor().insert_data(data)
 
+  def slave_update(self, mode=1, sub=1, target=None, messages=[], information={}):
+    local = Plant.get(localhost=True)
+    if mode > 2:
+      logger.warning('mode currently not supported')
+    if mode == 1 or mode == 3:
+      if sub == 2 or sub > 3:
+        logger.warning('not supported sub mode')
+      elif sub == 1:
+        raw = 70001
+        code = raw + (mode * 100)
+        self.send(code, recipient=target, plant=local, messages=[information['min'], information['max']])
+      elif sub == 3:
+        self.send_local(1, 1)
+
   def register_lite(self, target=None, mode=1, messages=[], plant=None):
-    local = Plant.get(Plant.localhost == True)
+    local = Plant.get(localhost=True)
     if mode == 1:
       # target plant object
       if MeshObject.select().where(MeshObject.registered == False, MeshObject.ip == target.ip, MeshObject.master == False).count() > 0:

@@ -173,6 +173,11 @@ class MeshDedicatedDispatch(object):
 
     return True
 
+  def slave_update(self, mode, information):
+    # mwhahahaha redirect
+    daemon = MeshNetwork()
+    daemon.slave_update(mode=mode + 1, sub=1, information=information)
+
   def slave_data(self, plant, sensor):
     # currently only supported : moisture, nothing probably following
     if sensor.name == 'moisture':

@@ -54,6 +54,8 @@ class MeshNetwork(object):
         target = [message[1][0], received[1][0]]
         local = message[2][1]
         self.register_lite(mode=int(code[1:3]) + 1, target=target, messages=message[4], local=local)
+      elif code[0] == '7':
+        self.slave_update(mode=int(code[1:3]), sub=int(code[3:]) + 1, target=target, messages=message[4])
     else:
       print('not processing request - same ip')
 
@@ -219,6 +221,26 @@ class MeshNetwork(object):
                                   'uuid': messages[0]}
                               }))
       self.send(code, recipient=target)
+
+  def slave_update(self, mode=1, sub=1, target=None, messages=[]):
+    if mode > 2:
+      print('mode currently not supported')
+    if mode == 1 or mode == 3:
+      if sub != 2:
+        print('not supported sub mode')
+      elif sub == 2:
+        entry = 'sleep' if mode == 1 else 'range'
+        raw = 70002
+        code = raw + (mode * 100)
+
+        with open('config.json', 'rw') as out:
+          config = json.loads(out.read())
+          config[entry] = {}
+          config[entry]['min'] = messages[0]
+          config[entry]['max'] = messages[1]
+          out.write(json.dumps(config))
+
+        self.send(code, recipient=target)
 
 if __name__ == '__main__':
   MeshNetwork().daemon()

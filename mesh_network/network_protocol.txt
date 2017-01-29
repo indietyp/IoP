@@ -35,6 +35,9 @@ MODE
     3       [SEND GENERATED UUID AND CREATE OBJECT][MASTER]
     4       [CHECK AND CONFIRM][SLAVE]
     5       [SPREAD TO OTHERS][MASTER]
+  7       [SLAVE UPDATE]
+    1       [SLEEP] - [START, STOP]
+    2       [RANGE] - [MIN, MAX]
   8       [SUCCESS]
   9       [FAIL]
 (mode in CODE ex. alive: 10100 response: 10200)

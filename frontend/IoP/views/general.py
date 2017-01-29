@@ -25,8 +25,15 @@ def page_not_found(e):
   return redirect(url_for('index', error=message))
 
 
-@app.route('/add_plant')
+@app.route('/add')
 def add_plant():
+  content = init()
+  content.update({'get': True, 'current_active': 'add plant'})
+  return render_template('general/add.jade', content=content)
+
+
+@app.route('/manage')
+def manage_plants():
   content = init()
   content.update({'get': True, 'current_active': 'add plant'})
   return render_template('general/add.jade', content=content)

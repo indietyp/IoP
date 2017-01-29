@@ -562,11 +562,10 @@ register_new_plant = () ->
   e = $('.ui.selection.dropdown.responsible .active.selected').data()['value']
   f = $('.ui.selection.dropdown.discover .active.selected').data()['value']
   g = $('.ui.selection.dropdown.master .active.selected').data()
-  if (g === undefined) {
+  if g == undefined
     g = 'master'
-  } else {
+  else
     g = g['value']
-  }
 
   current = $.ajax
     url: '/create/plant'
@@ -591,7 +590,7 @@ $ ->
         $('section.mainContent').html(msg)
         $('section.mainContent').html(msg).fadeIn('slow')
         return
-      window.history.pushState({}, '', '/add_plant')
+      window.history.pushState({}, '', '/add')
 
     return
 
