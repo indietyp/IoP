@@ -19,7 +19,7 @@ block content
         a.ui.orange.ribbon.label Slave
         | Gertrud
         | My master is
-        .ui.inline.dropdown
+        .ui.inline.dropdown.gertrud.slave
           .menu
             .item Marta
             .item Thomas
@@ -30,3 +30,5 @@ block content
             i.checkmark.icon
           button.ui.button
             i.erase.icon
+      script.
+        $('.gertrud.slave').dropdown({});
