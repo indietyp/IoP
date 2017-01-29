@@ -80,11 +80,13 @@ def update_plant_ranges(p_uuid):
   logger.warning('updating')
   MeshDedicatedDispatch().update('plant', plant.uuid)
   logger.warning('proceeding')
-  logger.warning(server.name)
+  logger.warning(sensor.name)
+  logger.info(plant.name)
   logger.info(plant.role)
   if sensor.name == 'moisture' and plant.role != 'master':
+    logger.info('executing slave update')
     information = {'min': value_yellow.min_value, 'max': value_yellow.max_value}
-    MeshDedicatedDispatch().slave_update(1, information, plant)
+    MeshDedicatedDispatch().slave_update(2, information, plant)
 
   return json.dumps({'info': 'success'})
 

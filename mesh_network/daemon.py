@@ -269,7 +269,7 @@ class MeshNetwork(object):
 
   def slave_update(self, mode=1, sub=1, target=None, messages=[], information={}):
     local = Plant.get(localhost=True)
-    if mode > 2:
+    if mode > 3:
       logger.warning('mode currently not supported')
     if mode == 1 or mode == 3:
       if sub == 2 or sub > 3:
