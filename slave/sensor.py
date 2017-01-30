@@ -10,7 +10,9 @@ def measure():
     config = json.loads(out.read())
 
   if 'sleep' in config:
-    led = True if config['sleep']['min'] <= time.localtime()[3] <= config['sleep']['max'] else False
+    start = int(config['sleep']['min']) / 100
+    stop = int(config['sleep']['max']) / 100
+    led = True if start <= time.localtime()[3] <= stop else False
   else:
     led = True
 
