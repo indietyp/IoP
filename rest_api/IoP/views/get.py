@@ -5,6 +5,7 @@ import datetime
 import json
 from uuid import UUID
 from bson import json_util
+from peewee import Clause, fn, SQL
 from playhouse.shortcuts import model_to_dict
 
 from models.mesh import MeshObject
@@ -18,8 +19,15 @@ slave_supported = ['moisture']
 @app.route('/get/plants/name')
 def get_plants_name():
   plants = []
-  for plant in Plant.select():
+  for plant in Plant.select(Plant.uuid, Plant.name):
     plants.append([str(plant.uuid), plant.name])
+  return json.dumps(plants)
+
+
+@app.route('/get/plants/name/extended')
+def get_plants_name_extended():
+  plants = Plant.select(Plant.uuid, Plant.name, Plant.role).dicts()
+  plants = list(plants)
   return json.dumps(plants)
 
 
@@ -34,7 +42,6 @@ def get_whole_plant(p_uuid):
 @app.route('/get/plant/<p_uuid>/intervals')
 def get_plant_intervals(p_uuid):
   plant = Plant.get(Plant.uuid == p_uuid)
-  plant
   return json.dumps({'connection_lost': plant.connection_lost,
                      'non_persistant': int(plant.persistant_hold * 5 / 60 / 24),
                      'notification': plant.interval})
@@ -205,15 +212,7 @@ def get_plant_sensor_data_after(p_uuid, sensor, until):
 
   sensor_data_set = list(sensor_data_set)
   for data in sensor_data_set:
-    if isinstance(data['created_at'], str):
-      try:
-        data['timestamp'] = data['created_at'].replace('+00:00', '')
-        data['timestamp'] = datetime.datetime.strptime(data['timestamp'], '%Y-%m-%d %H:%M:%S')
-      except:
-        data['timestamp'] = datetime.datetime.strptime(data['timestamp'], "%Y-%m-%d %H:%M:%S.%f")
-    else:
-      data['timestamp'] = data['created_at']
-    data['timestamp'] = data['timestamp'].timestamp()
+    data['timestamp'] = data['created_at'].timestamp()
     del data['created_at']
 
   return json.dumps(sensor_data_set)
@@ -451,33 +450,22 @@ def get_responsible_persons():
 
 @app.route('/get/plant/<p_uuid>/sensor/<sensor>/data/start/<int:start>/stop/<int:stop>')
 def get_plant_data_selective(p_uuid, sensor, start, stop):
-  plant = Plant.get(Plant.uuid == p_uuid)
-  sensor = Sensor.get(Sensor.name == sensor)
+  plant = Plant.get(uuid=p_uuid)
+  sensor = Sensor.get(name=sensor)
+
   if plant.role != 'master' and sensor.name not in slave_supported:
-    plant = Plant.get(Plant.uuid == UUID(plant.role))
+    plant = Plant.get(uuid=plant.role)
 
-  sensor_data_set = SensorData.select(SensorData.value, SensorData.created_at) \
-                              .where(SensorData.plant == plant) \
-                              .where(SensorData.sensor == sensor) \
-                              .order_by(SensorData.created_at.desc()) \
-                              .offset(start) \
-                              .limit(stop - start) \
-                              .dicts()
-  sensor_data_set = list(sensor_data_set)
+  dataset = SensorData.select(SensorData.value, fn.CAST(Clause(fn.strftime('%s', SensorData.created_at), SQL('AS INT'))).alias('timestamp')) \
+                      .where(SensorData.plant == plant) \
+                      .where(SensorData.sensor == sensor) \
+                      .order_by(SensorData.created_at.desc()) \
+                      .offset(start) \
+                      .limit(stop - start) \
+                      .dicts()
 
-  for data in sensor_data_set:
-    if isinstance(data['created_at'], str):
-      try:
-        data['timestamp'] = data['created_at'].replace('+00:00', '')
-        data['timestamp'] = datetime.datetime.strptime(data['timestamp'], '%Y-%m-%d %H:%M:%S')
-      except:
-        data['timestamp'] = datetime.datetime.strptime(data['timestamp'], "%Y-%m-%d %H:%M:%S.%f")
-    else:
-      data['timestamp'] = data['created_at']
-    data['timestamp'] = data['timestamp'].timestamp()
-    del data['created_at']
-
-  return json.dumps(sensor_data_set, default=json_util.default)
+  dataset = list(dataset)
+  return json.dumps(dataset)
 
 
 @app.route('/get/plant/<p_uuid>/sensor/<sensor>/data/count')

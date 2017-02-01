@@ -3,6 +3,7 @@ import time
 import socket
 import logging
 import tools.logger
+from copy import deepcopy
 from models.plant import Plant
 from tools.main import MeshString
 from multiprocessing import Process
@@ -147,7 +148,8 @@ class MeshNetwork(object):
     sender.close()
 
   def send(self, code, plant=None, messages=[], master=True, priority=255,
-           recipient=None, multicast=False, no_database=False):
+           recipient=None, multicast=False, no_database=False, encryption=False,
+           publickey='', port=EXTERNAL_PORT):
     """ main method for sending information in the mesh_network
         code - 5 digit number for mode
         plant - optional (origin, plant object)
@@ -211,7 +213,15 @@ class MeshNetwork(object):
       sender = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
       sender.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, 2)
 
-    sender.sendto(str_package, (address, EXTERNAL_PORT))
+    if encryption:
+      from Crypto.PublicKey import RSA
+      publickey = tools.hex2bin(publickey.encode())
+      crypter = RSA.importKey(publickey)
+
+      str_package = crypter.encrypt(str_package.encode(), 'x')[0]
+      str_package = tools.bin2hex(str_package).decode()
+
+    sender.sendto(str_package, (address, port))
 
     sender.close()
 
@@ -298,7 +308,6 @@ class MeshNetwork(object):
       plant = Plant.get(Plant.uuid == target[0])
       self.send_local(mode=1, code=1)
       self.send(60500, plant=local, recipient=target)
-
 
   def register(self, mode, ip=None, recipient=None, messages=None, origin=None, local_uuid=None):
     """ MODES:
@@ -560,7 +569,7 @@ class MeshNetwork(object):
 
   def deliver(self, mode, recipient=None, sub=None, sensor=None, message=[], change={}):
     from models.plant import Plant
-    plant = Plant.get(Plant.localhost == True)
+    plant = Plant.get(localhost=True)
     if mode == 1:
       if sub == 1:
         self.send(50101, recipient=recipient, messages=[sensor.name], plant=plant)
@@ -568,32 +577,18 @@ class MeshNetwork(object):
         import json
         import urllib.request
         from models.sensor import Sensor
-        # from tools.sensor import ToolChainSensor
 
-        plant = Plant.get(Plant.localhost == True)
-        # print('http://{0}:2902/get/plant/{1}/sensor/{2}/latest'.format(recipient[1], recipient[0], message[0]))
+        plant = Plant.get(localhost=True)
         with urllib.request.urlopen('http://{0}:2902/get/plant/{1}/sensor/{2}/latest'.format(recipient[1], recipient[0], message[0])) as response:
           dataset = json.loads(response.read().decode('utf8'))
 
-        # consider insert_sensor? - created_at only differs and predication not needed! - would solve a load of problems
-        # tesing!
-
         rec_obj = Plant.get(Plant.uuid == recipient[0])
         sensor = Sensor.get(Sensor.name == message[0])
-
-        # new_data = SensorData()
-        # new_data.plant = rec_obj
-        # new_data.sensor = sensor
-        # new_data.created_at = dataset['created_at']
-        # new_data.value = dataset['value']
-        # new_data.persistant = dataset['persistant']
-        # new_data.save()
 
         data = {'plant': rec_obj,
                 'sensor': sensor,
                 'value': dataset['value']}
         ToolChainSensor().insert_data(data, mesh=False)
-        # ToolChainSensor().modify_sensor_status(data)
 
         self.send(50102, recipient=recipient, plant=plant)
 
@@ -681,6 +676,321 @@ class MeshNetwork(object):
           current.save()
         # notify
 
+  def remove(self, mode, sub, target, initial={}, messages=[]):
+    local = Plant.get(localhost=True)
+    if mode > 2 or mode == 0:
+      logger.warning('not supported mode')
+    elif mode == 1:
+      from tools.mesh import MeshTools
+      import datetime
+      import json
+      from Crypto.PublicKey import RSA
+      from Crypto import Random
+      import re
+      import random
+
+      if sub == 1:
+        MeshTools().reinit_dir('remove')
+
+        if 'target' not in initial or 'mode' not in initial:
+          raise ValueError('initial not correctly provided')
+        elif 'relation' not in initial['destination'] or 'uuid' not in initial['destination'] or 'ip' not in initial['destination']:
+          raise ValueError('initial["target"] not correctly provided')
+
+        else:
+          initial['target'] = {'ip': target.ip,
+                               'uuid': str(target.uuid)}
+          with open('remove/transaction.json', 'w') as out:
+            out.write(json.dumps(initial))
+
+        self.send(80101, plant=local, recipient=target)
+
+      elif sub == 2:
+        toolchain = MeshTools()
+        toolchain.reinit_dir('remove')
+
+        information = {'target': {'uuid': target[1],
+                                  'ip': target[0]},
+                       'token': {'content': toolchain.random_string(100, digits=True),
+                                 'uses': 0,
+                                 'created_at': datetime.datetime.now().timestamp()}}
+        with open('remove/transaction.json', 'w') as out:
+          out.write(json.dumps(information))
+
+        self.send(80102, plant=local, recipient=target, messages=[information['token']['content']])
+
+      elif sub == 3:
+        toolchain = MeshTools()
+        random_generator = Random.new().read
+        key = RSA.generate(1024, random_generator)
+
+        public = key.publickey().exportKey('DER')
+
+        with open('remove/transaction.json', 'r') as out:
+          information = json.loads(out.read())
+
+        information['key'] = {str(local.uuid): {'public': toolchain.bin2hex(public).decode(), 'private': toolchain.bin2hex(key.exportKey('DER')).decode()}}
+        information['token'] = {'content': messages[0]}
+
+        with open('remove/transaction.json', 'w') as out:
+          out.write(json.dumps(information))
+
+        public = information['key'][str(local.uuid)]['public']
+        public = public.decode()
+        public = re.findall('.{1,100}', public)
+        logger.debug('generated publickey: ' + str(public))
+        public = public.append(information['token']['content'])
+
+        self.send(80103, recipient=target, messages=public)
+
+      elif sub == 4:
+        toolchain = MeshTools()
+        random_generator = Random.new().read
+        key = RSA.generate(1024, random_generator)
+
+        public = key.publickey().exportKey('DER')
+
+        with open('remove/transaction.json', 'r') as out:
+          information = json.loads(out.read())
+
+        information['key'] = {str(local.uuid): {'public': toolchain.bin2hex(public).decode(),
+                                                'private': toolchain.bin2hex(key.exportKey('DER')).decode()},
+                              target[1]: {'public': ''.join(messages[:-1])}}
+
+        if information['token']['content'] == messages[-1] and information['target']['uuid'] == target[1] and information['target']['ip'] == target[0]:
+          information['token']['uses'] += 1
+        else:
+          raise ValueError('not right machine')
+
+        with open('remove/transaction.json', 'w') as out:
+          out.write(json.dumps(information))
+
+        public = information['key'][str(local.uuid)]['public']
+        public = public.decode()
+        public = re.findall('.{1,100}', public)
+        logger.debug('generated publickey: ' + str(public))
+
+        self.send(80104, recipient=target, messages=public)
+
+      elif sub == 5:
+        with open('remove/transaction.json', 'r') as out:
+          information = json.loads(out.read())
+        information['key'][target[1]] = {'public': ''.join(messages)}
+
+        if target[1] != information['target']['uuid'] or target[0] != information['target']['ip']:
+          raise ValueError('not locked')
+
+        with open('remove/transaction.json', 'w') as out:
+          out.write(json.dumps(information))
+
+        self.send(80105, recipient=target, messages=[information['token']['content']])
+
+      elif sub == 6:
+        toolchain = MeshTools()
+        with open('remove/transaction.json', 'r') as out:
+          information = json.loads(out.read())
+
+        if information['token']['content'] == messages[-1] and information['target']['uuid'] == target[1] and information['target']['ip'] == target[0]:
+          information['token']['uses'] += 1
+        else:
+          raise ValueError('not right machine')
+
+        public = tools.hex2bin(information['key'][target[1]]['public'].encode())
+        crypter = RSA.importKey(public)
+
+        token = toolchain.random_string(100, digits=True)
+        information['token'] = {'content': token,
+                                'uses': 0,
+                                'created_at': datetime.datetime.now()}
+
+        token = crypter.encrypt(token.encode(), 'x')[0]
+        token = tools.bin2hex(token).decode()
+        token = re.findall('.{1,100}', token)
+
+        with open('remove/transaction.json', 'w') as out:
+          out.write(json.dumps(information))
+
+        self.send(80106, recipient=target, messages=token)
+
+      elif sub == 7:
+        # decrypt token
+        # insert token
+        # insert port
+        # encrypt port
+        # send
+
+        toolchain = MeshTools()
+        with open('remove/transaction.json', 'r') as out:
+          information = json.loads(out.read())
+
+        if target[1] != information['target']['uuid'] or target[0] != information['target']['ip']:
+          raise ValueError('not locked')
+
+        private = information['key'][str(local.uuid)]['private']
+        private = MeshTools().hex2bin(private.encode())
+        crypter = RSA.importKey(private)
+
+        token = tools.hex2bin(''.join(messages).encode())
+        token = crypter.decrypt(token).decode()
+
+        port = random.randint(6005, 6101)
+        uport = deepcopy(port)
+        information['token']['content'] = token
+        information['port'] = port
+
+        public = information['key'][target[1]]['public']
+        public = tools.hex2bin(public.encode())
+        crypter = RSA.importKey(public)
+
+        with open('remove/transaction.json', 'w') as out:
+          out.write(json.dumps(information))
+
+        port = crypter.encrypt(str(port).encode(), 'x')[0]
+        port = tools.bin2hex(port).decode()
+        port = re.findall('.{1,100}', port)
+        port = port.append(information['token']['content'])
+
+        self.send(80107, recipient=target, messages=port)
+
+        client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        host = '0.0.0.0'
+        client.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+
+        client.bind((host, uport))
+        for _ in range(3):
+          try:
+            received = client.recvfrom(65000)
+            received[0] = tools.hex2bin(received[0].encode())
+            received[0] = crypter.decrypt(received[0]).decode()
+
+            self.daemon_process(received)
+          except Exception as e:
+            logger.warning(e)
+
+      elif sub == 8:
+        toolchain = MeshTools()
+        with open('remove/transaction.json', 'r') as out:
+          information = json.loads(out.read())
+
+        if information['token']['content'] == messages[-1] and information['target']['uuid'] == target[1] and information['target']['ip'] == target[-1]:
+          information['token']['uses'] += 1
+        else:
+          raise ValueError('not right machine')
+
+        private = information['key'][str(local.uuid)]['private']
+        private = MeshTools().hex2bin(private[:-1].encode())
+        crypter = RSA.importKey(private)
+
+        port = tools.hex2bin(''.join(messages).encode())
+        port = crypter.decrypt(port).decode()
+        information['port'] = port
+
+        with open('remove/transaction.json', 'w') as out:
+          out.write(json.dumps(information))
+
+        self.send(80108, recipient=target, encryption=True, publickey=information['key'][target[1]]['public'], port=port)
+
+        client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        host = '0.0.0.0'
+        client.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+
+        client.bind((host, uport))
+        for _ in range(2):
+          try:
+            received = client.recvfrom(65000)
+            received[0] = tools.hex2bin(received[0].encode())
+            received[0] = crypter.decrypt(received[0]).decode()
+
+            self.daemon_process(received)
+          except Exception as e:
+            logger.warning(e)
+
+      elif sub == 9:
+        with open('remove/transaction.json', 'r') as out:
+          information = json.loads(out.read())
+
+        if target[1] != information['target']['uuid'] or target[0] != information['target']['ip']:
+          raise ValueError('not locked')
+
+        self.send(80109, recipient=target, encryption=True,
+                  publickey=information['key'][target[1]]['public'], port=information['port'],
+                  messages=[information['mode'], information['destination']['uuid'], information['destination']['relation'], information['token']['content']])
+
+      elif sub == 10:
+        with open('remove/transaction.json', 'r') as out:
+          information = json.loads(out.read())
+
+        if information['token']['content'] == messages[-1] and information['target']['uuid'] == target[1] and information['target']['ip'] == target[-1]:
+          information['token']['uses'] += 1
+        else:
+          raise ValueError('not right machine')
+
+        information['mode'] = messages[0]
+        information['destination'] = {}
+        information['destination']['uuid'] = messages[1]
+        information['destination']['relation'] = messages[2]
+
+        token = toolchain.random_string(100, digits=True)
+        information['token'] = {'content': token,
+                                'uses': 0,
+                                'created_at': datetime.datetime.now()}
+
+        with open('remove/transaction.json', 'w') as out:
+          out.write(json.dumps(information))
+
+        self.send(80110, recipient=target, encryption=True,
+                  publickey=information['key'][target[1]]['public'], port=information['port'],
+                  messages=[token])
+
+      elif sub == 11:
+        with open('remove/transaction.json', 'r') as out:
+          information = json.loads(out.read())
+
+        if target[1] != information['target']['uuid'] or target[0] != information['target']['ip']:
+          raise ValueError('not locked')
+
+        information['token']['content'] = messages[0]
+
+        self.send(80111, recipient=target, encryption=True,
+                  publickey=information['key'][target[1]]['public'], port=information['port'],
+                  messages=[messages[0]])
+
+      elif sub == 12:
+        with open('remove/transaction.json', 'r') as out:
+          information = json.loads(out.read())
+
+        if information['token']['content'] == messages[0] and information['target']['uuid'] == target[1] and information['target']['ip'] == target[-1]:
+          information['token']['uses'] += 1
+        else:
+          raise ValueError('not right machine')
+
+        if information['destination']['mode'] == 'remove':
+          if information['relation'] == 'local':
+            from settings.database import DATABASE_NAME
+            import os
+            os.remove(DATABASE_NAME)
+
+            from subprocess import call
+            call(["reboot"])
+
+          elif information['relation'] == 'foreign':
+            from models.sensor import *
+            from models.plant import Plant
+
+            plant = Plant.get(uuid=information['destination']['uuid'])
+            for model in [SensorData, SensorStatus, SensorCount, SensorSatisfactionValue, SensorDataPrediction]:
+              model.delete().where(plant=plant).execute()
+            plant.delete_instance()
+
+          print('currently not implemented')
+        elif information['destination']['mode'] == 'activate':
+          print('currently not implemented')
+        elif information['destination']['mode'] == 'deactivate':
+          print('currently not implemented')
+
+        self.send(80112, recipient=target, encryption=True,
+                  publickey=information['key'][target[1]]['public'], port=information['port'],
+                  messages=['done'])
 
 if __name__ == '__main__':
   import sys

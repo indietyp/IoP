@@ -37,9 +37,44 @@ MODE
     5       [SPREAD TO OTHERS][MASTER]
   7       [SLAVE UPDATE]
     1       [SLEEP] - [START, STOP]
-    2       [RANGE] - [MIN, MAX]
-  8       [SUCCESS]
-  9       [FAIL]
+    3       [RANGE] - [MIN, MAX]
+  8       [REMOVE]
+    check on every transaction if valid uuid and ip
+      origin - always with reference with initial target - if not block
+      target - always check if aquired lock and in database
+    modes:
+      purge
+      activate
+      deactivate
+    plant in deactivated mode, doesn't respond to anything else than mode 8
+
+    1       [MASTER]
+      1       [ASK TOKEN][ACQUIRE LOCK] (add file with token & selected mode, also TARGET)
+      2       [GENERATE AND SEND TOKEN][LOCKING TO UUID AND IP]
+      3       [GENERATE AND SEND PUBLICKEY][TO]
+      4       [SEND PUBLICKEY]
+      5       [ASK TOKEN][CR][TO]
+      6       [GENERATE AND SEND TOKEN][CR]
+      7       [GENERATE PORT AND LISTEN][CR][TO]
+      8       [ESTABLISH PORT AND LISTEN][CR][PO]
+      9       [ASK TOKEN][SELECTED MODE][TARGET][CR][PO][TO]
+      10      [GENERATE AND SEND TOKEN][CR][PO]
+      11      [PURGE/DEACTIVATE INSTRUCTION][CR][PO][TO]
+      12      [CONFIRMATION][CR][PO][TO]
+      13      [REMOVE RELEVANT DATA][ADD TO PURGED](send to other plants)(cleanup)
+    2      [SLAVE]
+      1       [ASK TOKEN AND SELECTED MODE][ACQUIRE LOCK][M]
+      2       [GENERATE AND SEND TOKEN][LOCKING TO UUID AND IP IF MASTER][S]
+      3       [PURGE INSTRUCTION][M][TO]
+      4       [CONFIRMATION][S]
+      5       [ASK TOKEN][M][TO]
+      6       [GENERATE AND SEND TOKEN][S]
+      7       [PURGE/DEACTIVATE INSTRUCTION/CONFIRMATION][MODE (0, 1)][M][TO]
+      8       [CONFIRMATION][S]
+      9       [REMOVE RELEVANT DATA][ADD TO PURGED](send to other plants)
+
+    (CR - encrypted, TO - token used, PO - alternative port used)
+  9       [NO FUNCTION]
 (mode in CODE ex. alive: 10100 response: 10200)
 
 SLAVE INCLUDED
@@ -47,6 +82,8 @@ SLAVE INCLUDED
   2       [DELIVER]
   4       [DISCOVER]
   6       [REGISTER][LITE]
+  7       [SLAVE UPDATE]
+  8       [REMOVE SLAVE]
 
 RETURN
   1       [ALIVE]
