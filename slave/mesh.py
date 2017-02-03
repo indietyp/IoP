@@ -1,6 +1,7 @@
 import os
 import json
 import socket
+import ubinascii
 EXTERNAL_PORT = 4012
 MULTICAST_ADDRESS = '224.0.0.1'
 
@@ -22,6 +23,25 @@ class MeshString(str):
     self = self.reverse().replace(old.reverse(), new.reverse(), maxcount)
     self = MeshString(self).reverse()
     return self
+
+
+class MeshTools:
+  def __init__(self):
+    pass
+
+  def random_string(self, length, digits=False, custom=''):
+    alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+    alphabet += '0123456789' if digits is True else ''
+    alphabet += custom
+
+    output = ''
+    for _ in range(0, length):
+      pointer = len(alphabet)
+      while pointer >= len(alphabet):
+        pointer = int(ubinascii.hexlify(os.urandom(1)), 16)
+      output += alphabet[pointer]
+
+    return output
 
 
 class MeshNetwork(object):
@@ -65,6 +85,7 @@ class MeshNetwork(object):
     return ustruct.pack('4B', *(int(x) for x in target.split('.')))
 
   def daemon(self):
+    print('started')
     client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     port = EXTERNAL_PORT
 
@@ -246,6 +267,13 @@ class MeshNetwork(object):
           out.write(json.dumps(config))
 
         self.send(code, recipient=target)
+
+  def remove(self, mode, sub, target, messages=[]):
+    if mode == 2:
+      if sub == 2:
+        pass
+        # MeshTools().random_string(50)
+
 
 if __name__ == '__main__':
   MeshNetwork().daemon()

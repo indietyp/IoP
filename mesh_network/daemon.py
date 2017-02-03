@@ -96,7 +96,12 @@ class MeshNetwork(object):
         self.register_lite(mode=int(code[1:3]) + 1, target=target)
 
       elif code[0] == '7':
+        target = [message[1][0], received[1][0]]
         self.slave_update(mode=int(code[1:3]), sub=int(code[3:]) + 1, target=target)
+
+      elif code[0] == '8':
+        target = [message[1][0], received[1][0]]
+        self.remove(int(code[1:3]), int(code[3:]) + 1, target, messages=message[4])
 
     else:
       logger.debug('not processing request - same ip')
@@ -692,7 +697,7 @@ class MeshNetwork(object):
       if sub == 1:
         MeshTools().reinit_dir('remove')
 
-        if 'target' not in initial or 'mode' not in initial:
+        if 'destination' not in initial or 'mode' not in initial:
           raise ValueError('initial not correctly provided')
         elif 'relation' not in initial['destination'] or 'uuid' not in initial['destination'] or 'ip' not in initial['destination']:
           raise ValueError('initial["target"] not correctly provided')
@@ -975,24 +980,68 @@ class MeshNetwork(object):
             from subprocess import call
             call(["reboot"])
           else:
-            from models.sensor import *
+            if plant.role != 'master' and plant.master == str(Plant.get(localhost=True).uuid):
+              self.remove(2, 1, plant)
+
+            from models.sensor import SensorData, SensorStatus, SensorCount, SensorSatisfactionValue, SensorDataPrediction
             for model in [SensorData, SensorStatus, SensorCount, SensorSatisfactionValue, SensorDataPrediction]:
               model.delete().where(plant=plant).execute()
             plant.delete_instance()
 
         elif information['destination']['mode'] == 'activate':
-          print('currently not implemented')
           plant.active = True
           plant.save()
 
         elif information['destination']['mode'] == 'deactivate':
-          print('currently not implemented')
           plant.active = False
           plant.save()
 
         self.send(80112, recipient=target, encryption=True,
                   publickey=information['key'][target[1]]['public'], port=information['port'],
                   messages=['done'])
+      elif sub == 13:
+        self.send_local(1, 1)
+
+    elif mode == 2:
+      if sub == 1:
+        MeshTools().reinit_dir('remove')
+
+        initial['target'] = {'ip': target.ip,
+                             'uuid': str(target.uuid)}
+
+        with open('remove/transaction.json', 'w') as out:
+          out.write(json.dumps(initial))
+
+        self.send(80201, recipient=target, plant=local)
+      elif sub == 3:
+        with open('remove/transaction.json', 'r') as out:
+          information = json.loads(out.read())
+
+        information['token'] = {}
+        information['token']['content'] = messages[0]
+
+        with open('remove/transaction.json', 'w') as out:
+          out.write(json.dumps(information))
+
+        self.send(80303, recipient=target, plant=local, messages=[messages[0]])
+      elif sub == 5:
+        with open('remove/transaction.json', 'r') as out:
+          information = json.loads(out.read())
+
+        self.send(80305, recipient=target, plant=local, messages=[information['token']['content']])
+      elif sub == 7:
+        with open('remove/transaction.json', 'r') as out:
+          information = json.loads(out.read())
+
+        information['token'] = {}
+        information['token']['content'] = messages[0]
+
+        with open('remove/transaction.json', 'w') as out:
+          out.write(json.dumps(information))
+
+        self.send(80307, recipient=target, plant=local, messages=[messages[0]])
+      elif sub == 9:
+        self.send_local(1, 1)
 
 if __name__ == '__main__':
   import sys
