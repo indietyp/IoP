@@ -965,28 +965,30 @@ class MeshNetwork(object):
           raise ValueError('not right machine')
 
         if information['destination']['mode'] == 'remove':
-          if information['relation'] == 'local':
+          from models.plant import Plant
+          plant = Plant.get(uuid=information['destination']['uuid'])
+          if plant.localhost:
             from settings.database import DATABASE_NAME
             import os
             os.remove(DATABASE_NAME)
 
             from subprocess import call
             call(["reboot"])
-
-          elif information['relation'] == 'foreign':
+          else:
             from models.sensor import *
-            from models.plant import Plant
-
-            plant = Plant.get(uuid=information['destination']['uuid'])
             for model in [SensorData, SensorStatus, SensorCount, SensorSatisfactionValue, SensorDataPrediction]:
               model.delete().where(plant=plant).execute()
             plant.delete_instance()
 
-          print('currently not implemented')
         elif information['destination']['mode'] == 'activate':
           print('currently not implemented')
+          plant.active = True
+          plant.save()
+
         elif information['destination']['mode'] == 'deactivate':
           print('currently not implemented')
+          plant.active = False
+          plant.save()
 
         self.send(80112, recipient=target, encryption=True,
                   publickey=information['key'][target[1]]['public'], port=information['port'],

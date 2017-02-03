@@ -36,6 +36,7 @@ class Plant(Base):
   role        = CharField(default='master')
   ip          = CharField()
   localhost   = BooleanField(default=False)
+  active      = BooleanField(default=True)
   host        = BooleanField(default=False)
 
   sat_streak      = IntegerField()  # satisfactionstreak
