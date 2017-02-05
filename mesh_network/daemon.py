@@ -100,7 +100,7 @@ class MeshNetwork(object):
         self.slave_update(mode=int(code[1:3]), sub=int(code[3:]) + 1, target=target)
 
       elif code[0] == '8':
-        target = [message[1][0], received[1][0]]
+        target = [received[1][0], message[1][0]]
         self.remove(int(code[1:3]), int(code[3:]) + 1, target, messages=message[4])
 
     else:
