@@ -204,7 +204,7 @@ class MeshDedicatedDispatch(object):
         print('nononononono')
 
     local = Plant.get(localhost=True)
-    if plant.master != 'master' and plant.master == str(local.uuid):
+    if plant.master != 'master' and plant.role == str(local.uuid):
       daemon.remove(2, 1, plant)
       status = self.get(120)
 

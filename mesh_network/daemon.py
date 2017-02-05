@@ -683,6 +683,8 @@ class MeshNetwork(object):
 
   def remove(self, mode, sub, target, initial={}, messages=[]):
     local = Plant.get(localhost=True)
+    import os
+    basedir = os.path.dirname(os.path.realpath(__file__))
     if mode > 2 or mode == 0:
       logger.warning('not supported mode')
     elif mode == 1:
@@ -695,7 +697,7 @@ class MeshNetwork(object):
       import random
 
       if sub == 1:
-        MeshTools().reinit_dir('remove')
+        MeshTools().reinit_dir(basedir + '/remove')
 
         if 'destination' not in initial or 'mode' not in initial:
           raise ValueError('initial not correctly provided')
@@ -705,21 +707,21 @@ class MeshNetwork(object):
         else:
           initial['target'] = {'ip': target.ip,
                                'uuid': str(target.uuid)}
-          with open('remove/transaction.json', 'w') as out:
+          with open(basedir + '/remove/transaction.json', 'w') as out:
             out.write(json.dumps(initial))
 
         self.send(80101, plant=local, recipient=target)
 
       elif sub == 2:
         toolchain = MeshTools()
-        toolchain.reinit_dir('remove')
+        toolchain.reinit_dir(basedir + '/remove')
 
         information = {'target': {'uuid': target[1],
                                   'ip': target[0]},
                        'token': {'content': toolchain.random_string(100, digits=True),
                                  'uses': 0,
                                  'created_at': datetime.datetime.now().timestamp()}}
-        with open('remove/transaction.json', 'w') as out:
+        with open(basedir + '/remove/transaction.json', 'w') as out:
           out.write(json.dumps(information))
 
         self.send(80102, plant=local, recipient=target, messages=[information['token']['content']])
@@ -731,13 +733,13 @@ class MeshNetwork(object):
 
         public = key.publickey().exportKey('DER')
 
-        with open('remove/transaction.json', 'r') as out:
+        with open(basedir + '/remove/transaction.json', 'r') as out:
           information = json.loads(out.read())
 
         information['key'] = {str(local.uuid): {'public': toolchain.bin2hex(public).decode(), 'private': toolchain.bin2hex(key.exportKey('DER')).decode()}}
         information['token'] = {'content': messages[0]}
 
-        with open('remove/transaction.json', 'w') as out:
+        with open(basedir + '/remove/transaction.json', 'w') as out:
           out.write(json.dumps(information))
 
         public = information['key'][str(local.uuid)]['public']
@@ -755,7 +757,7 @@ class MeshNetwork(object):
 
         public = key.publickey().exportKey('DER')
 
-        with open('remove/transaction.json', 'r') as out:
+        with open(basedir + '/remove/transaction.json', 'r') as out:
           information = json.loads(out.read())
 
         information['key'] = {str(local.uuid): {'public': toolchain.bin2hex(public).decode(),
@@ -767,7 +769,7 @@ class MeshNetwork(object):
         else:
           raise ValueError('not right machine')
 
-        with open('remove/transaction.json', 'w') as out:
+        with open(basedir + '/remove/transaction.json', 'w') as out:
           out.write(json.dumps(information))
 
         public = information['key'][str(local.uuid)]['public']
@@ -778,21 +780,21 @@ class MeshNetwork(object):
         self.send(80104, recipient=target, messages=public)
 
       elif sub == 5:
-        with open('remove/transaction.json', 'r') as out:
+        with open(basedir + '/remove/transaction.json', 'r') as out:
           information = json.loads(out.read())
         information['key'][target[1]] = {'public': ''.join(messages)}
 
         if target[1] != information['target']['uuid'] or target[0] != information['target']['ip']:
           raise ValueError('not locked')
 
-        with open('remove/transaction.json', 'w') as out:
+        with open(basedir + '/remove/transaction.json', 'w') as out:
           out.write(json.dumps(information))
 
         self.send(80105, recipient=target, messages=[information['token']['content']])
 
       elif sub == 6:
         toolchain = MeshTools()
-        with open('remove/transaction.json', 'r') as out:
+        with open(basedir + '/remove/transaction.json', 'r') as out:
           information = json.loads(out.read())
 
         if information['token']['content'] == messages[-1] and information['target']['uuid'] == target[1] and information['target']['ip'] == target[0]:
@@ -812,7 +814,7 @@ class MeshNetwork(object):
         token = tools.bin2hex(token).decode()
         token = re.findall('.{1,100}', token)
 
-        with open('remove/transaction.json', 'w') as out:
+        with open(basedir + '/remove/transaction.json', 'w') as out:
           out.write(json.dumps(information))
 
         self.send(80106, recipient=target, messages=token)
@@ -825,7 +827,7 @@ class MeshNetwork(object):
         # send
 
         toolchain = MeshTools()
-        with open('remove/transaction.json', 'r') as out:
+        with open(basedir + '/remove/transaction.json', 'r') as out:
           information = json.loads(out.read())
 
         if target[1] != information['target']['uuid'] or target[0] != information['target']['ip']:
@@ -847,7 +849,7 @@ class MeshNetwork(object):
         public = tools.hex2bin(public.encode())
         crypter = RSA.importKey(public)
 
-        with open('remove/transaction.json', 'w') as out:
+        with open(basedir + '/remove/transaction.json', 'w') as out:
           out.write(json.dumps(information))
 
         port = crypter.encrypt(str(port).encode(), 'x')[0]
@@ -874,7 +876,7 @@ class MeshNetwork(object):
 
       elif sub == 8:
         toolchain = MeshTools()
-        with open('remove/transaction.json', 'r') as out:
+        with open(basedir + '/remove/transaction.json', 'r') as out:
           information = json.loads(out.read())
 
         if information['token']['content'] == messages[-1] and information['target']['uuid'] == target[1] and information['target']['ip'] == target[-1]:
@@ -890,7 +892,7 @@ class MeshNetwork(object):
         port = crypter.decrypt(port).decode()
         information['port'] = port
 
-        with open('remove/transaction.json', 'w') as out:
+        with open(basedir + '/remove/transaction.json', 'w') as out:
           out.write(json.dumps(information))
 
         self.send(80108, recipient=target, encryption=True, publickey=information['key'][target[1]]['public'], port=port)
@@ -911,7 +913,7 @@ class MeshNetwork(object):
             logger.warning(e)
 
       elif sub == 9:
-        with open('remove/transaction.json', 'r') as out:
+        with open(basedir + '/remove/transaction.json', 'r') as out:
           information = json.loads(out.read())
 
         if target[1] != information['target']['uuid'] or target[0] != information['target']['ip']:
@@ -922,7 +924,7 @@ class MeshNetwork(object):
                   messages=[information['mode'], information['destination']['uuid'], information['destination']['relation'], information['token']['content']])
 
       elif sub == 10:
-        with open('remove/transaction.json', 'r') as out:
+        with open(basedir + '/remove/transaction.json', 'r') as out:
           information = json.loads(out.read())
 
         if information['token']['content'] == messages[-1] and information['target']['uuid'] == target[1] and information['target']['ip'] == target[-1]:
@@ -940,7 +942,7 @@ class MeshNetwork(object):
                                 'uses': 0,
                                 'created_at': datetime.datetime.now()}
 
-        with open('remove/transaction.json', 'w') as out:
+        with open(basedir + '/remove/transaction.json', 'w') as out:
           out.write(json.dumps(information))
 
         self.send(80110, recipient=target, encryption=True,
@@ -948,7 +950,7 @@ class MeshNetwork(object):
                   messages=[token])
 
       elif sub == 11:
-        with open('remove/transaction.json', 'r') as out:
+        with open(basedir + '/remove/transaction.json', 'r') as out:
           information = json.loads(out.read())
 
         if target[1] != information['target']['uuid'] or target[0] != information['target']['ip']:
@@ -961,7 +963,7 @@ class MeshNetwork(object):
                   messages=[messages[0]])
 
       elif sub == 12:
-        with open('remove/transaction.json', 'r') as out:
+        with open(basedir + '/remove/transaction.json', 'r') as out:
           information = json.loads(out.read())
 
         if information['token']['content'] == messages[0] and information['target']['uuid'] == target[1] and information['target']['ip'] == target[-1]:
@@ -1011,34 +1013,34 @@ class MeshNetwork(object):
         initial['target'] = {'ip': target.ip,
                              'uuid': str(target.uuid)}
 
-        with open('remove/transaction.json', 'w') as out:
+        with open(basedir + '/remove/transaction.json', 'w') as out:
           out.write(json.dumps(initial))
 
         self.send(80201, recipient=target, plant=local)
       elif sub == 3:
-        with open('remove/transaction.json', 'r') as out:
+        with open(basedir + '/remove/transaction.json', 'r') as out:
           information = json.loads(out.read())
 
         information['token'] = {}
         information['token']['content'] = messages[0]
 
-        with open('remove/transaction.json', 'w') as out:
+        with open(basedir + '/remove/transaction.json', 'w') as out:
           out.write(json.dumps(information))
 
         self.send(80303, recipient=target, plant=local, messages=[messages[0]])
       elif sub == 5:
-        with open('remove/transaction.json', 'r') as out:
+        with open(basedir + '/remove/transaction.json', 'r') as out:
           information = json.loads(out.read())
 
         self.send(80305, recipient=target, plant=local, messages=[information['token']['content']])
       elif sub == 7:
-        with open('remove/transaction.json', 'r') as out:
+        with open(basedir + '/remove/transaction.json', 'r') as out:
           information = json.loads(out.read())
 
         information['token'] = {}
         information['token']['content'] = messages[0]
 
-        with open('remove/transaction.json', 'w') as out:
+        with open(basedir + '/remove/transaction.json', 'w') as out:
           out.write(json.dumps(information))
 
         self.send(80307, recipient=target, plant=local, messages=[messages[0]])
