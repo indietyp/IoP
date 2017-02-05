@@ -1,10 +1,13 @@
 def measure():
   from machine import Pin, I2C
   from time import sleep
+  import ntptime
   import time
   import ubinascii
   import ustruct
   import json
+
+  ntptime.settime()
 
   with open('config.json', 'r') as out:
     config = json.loads(out.read())

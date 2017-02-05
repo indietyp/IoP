@@ -1,9 +1,9 @@
 test:
-  [ ] master --> slave
-    [ ] discover
-    [ ] deliver
-    [ ] alive
-    [ ] register [lite]
+  ✔ master --> slave @done (17-02-04 22:07)
+    ✔ discover @done (17-02-04 22:07)
+    ✔ deliver @done (17-02-04 22:07)
+    ✔ alive @done (17-02-04 22:07)
+    ✔ register [lite] @done (17-02-04 22:07)
   ✔ alive: register needed @done (16-09-14 21:26)
   ✔ register @done (16-09-13 20:42)
   ✔ discover @done (16-09-05 20:14)

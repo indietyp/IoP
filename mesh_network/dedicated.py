@@ -188,6 +188,37 @@ class MeshDedicatedDispatch(object):
     else:
       return False
 
+  def remove(self, mode, plant):
+    if mode not in ['remove', 'activate', 'deactivate']:
+      raise ValueError('remove mode not valid')
+
+    daemon = MeshNetwork()
+    for target in Plant.select().where(Plant.active == True, Plant.localhost == False, Plant.role == 'master'):
+      initial = {'mode': mode, 'destination': {'uuid': str(plant.uuid), 'ip': plant.ip}}
+      daemon.remove(1, 1, target, initial=initial)
+      status = self.get(120)
+
+      if status == 1:
+        print('successful')
+      else:
+        print('nononononono')
+
+    local = Plant.get(localhost=True)
+    if plant.master != 'master' and plant.master == str(local.uuid):
+      daemon.remove(2, 1, plant)
+      status = self.get(120)
+
+      if status == 1:
+        print('successful')
+      else:
+        print('nononononono')
+
+    # from models.sensor import SensorData, SensorStatus, SensorCount, SensorSatisfactionValue, SensorDataPrediction
+    # from models.plant import PlantNetworkUptime
+    # for model in [PlantNetworkUptime, SensorData, SensorStatus, SensorCount, SensorSatisfactionValue, SensorDataPrediction]:
+    #   model.delete().where(plant=plant).execute()
+    # plant.delete_instance()
+
 if __name__ == '__main__':
   logger = logging.getLogger('mesh')
   if VariousTools.verify_database():

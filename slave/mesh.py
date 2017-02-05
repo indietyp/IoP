@@ -271,8 +271,65 @@ class MeshNetwork(object):
   def remove(self, mode, sub, target, messages=[]):
     if mode == 2:
       if sub == 2:
-        pass
-        # MeshTools().random_string(50)
+        with open('config.json', 'r') as out:
+          config = json.loads(out.read())
+
+        if config['master']['ip'] == target[0] and config['master']['uuid'] == target[1]:
+          token = MeshTools().random_string(100)
+          information = {'token': token}
+
+          with open('transaction.json', 'w') as out:
+            out.write(json.dumps(information))
+
+          self.send(80202, recipient=target)
+
+      elif sub == 4:
+        with open('config.json', 'r') as out:
+          config = json.loads(out.read())
+
+        with open('transaction.json', 'r') as out:
+          information = json.loads(out.read())
+
+        if config['master']['ip'] == target[0] and config['master']['uuid'] == target[1] and information['token'] == messages[0]:
+          information['mode'] == 'remove'
+
+          with open('transaction.json', 'w') as out:
+            out.write(json.dumps(information))
+
+          self.send(80204, recipient=target)
+
+      elif sub == 6:
+        with open('config.json', 'r') as out:
+          config = json.loads(out.read())
+
+        with open('transaction.json', 'r') as out:
+          information = json.loads(out.read())
+
+        if config['master']['ip'] == target[0] and config['master']['uuid'] == target[1] and information['token'] == messages[0]:
+          information['token'] = MeshTools().random_string(100)
+
+          with open('transaction.json', 'w') as out:
+            out.write(json.dumps(information))
+
+          self.send(80206, recipient=target)
+
+      elif sub == 8:
+        with open('config.json', 'r') as out:
+          config = json.loads(out.read())
+
+        with open('transaction.json', 'r') as out:
+          information = json.loads(out.read())
+
+        if config['master']['ip'] == target[0] and config['master']['uuid'] == target[1] and information['token'] == messages[0]:
+          # import machine
+          # import os
+
+          # os.remove('config.json')
+          # os.remove('credentials.json')
+          # os.remove('transaction.json')
+          # machine.reboot()
+
+          self.send(80208, recipient=target)
 
 
 if __name__ == '__main__':
