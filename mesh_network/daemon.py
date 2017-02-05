@@ -969,6 +969,8 @@ class MeshNetwork(object):
         else:
           raise ValueError('not right machine')
 
+        logger.info(information)
+
         # if information['destination']['mode'] == 'remove':
         #   from models.plant import Plant
         #   plant = Plant.get(uuid=information['destination']['uuid'])
