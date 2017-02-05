@@ -194,7 +194,7 @@ class MeshDedicatedDispatch(object):
 
     daemon = MeshNetwork()
     for target in Plant.select().where(Plant.active == True, Plant.localhost == False, Plant.role == 'master'):
-      initial = {'mode': mode, 'destination': {'uuid': str(plant.uuid), 'ip': plant.ip}}
+      initial = {'mode': mode, 'destination': {'uuid': str(plant.uuid), 'ip': plant.ip, 'relation': 'master'}}
       daemon.remove(1, 1, target, initial=initial)
       status = self.get(120)
 
