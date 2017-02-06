@@ -743,7 +743,9 @@ class MeshNetwork(object):
           out.write(json.dumps(information))
 
         public = information['key'][str(local.uuid)]['public']
-        public = re.findall('.{1,100}', public)
+        length = len(public)
+        length = int(length / 3)
+        public = re.findall('.{1,' + length + '}', public)
         logger.debug('generated publickey: ' + str(public))
         public.append(information['token']['content'])
 
