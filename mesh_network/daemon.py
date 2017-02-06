@@ -920,7 +920,7 @@ class MeshNetwork(object):
         host = '0.0.0.0'
         client.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
-        client.bind((host, uport))
+        client.bind((host, port))
         for _ in range(2):
           try:
             received = client.recvfrom(65000)
