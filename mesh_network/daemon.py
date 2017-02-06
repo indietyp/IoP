@@ -822,6 +822,9 @@ class MeshNetwork(object):
         length = len(token)
         length = str(int(length / 4))
         token = re.findall('.{1,' + length + '}', token)
+        if len(token) > 4:
+          token[3] += token[3:]
+        token = token[:4]
 
         with open(basedir + '/remove/transaction.json', 'w') as out:
           out.write(json.dumps(information))
@@ -866,6 +869,9 @@ class MeshNetwork(object):
         length = len(port)
         length = str(int(length / 3))
         port = re.findall('.{1,' + length + '}', port)
+        if len(port) > 3:
+          port[2] += port[2:]
+        port = port[:3]
         port.append(information['token']['content'])
 
         self.send(80107, plant=local, recipient=target, messages=port)
