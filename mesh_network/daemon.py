@@ -225,8 +225,8 @@ class MeshNetwork(object):
       publickey = toolchain.hex2bin(publickey.encode())
       crypter = RSA.importKey(publickey)
 
-      str_package = crypter.encrypt(str_package.encode(), 'x')[0]
-      str_package = toolchain.bin2hex(str_package).decode()
+      str_package = crypter.encrypt(str_package, 'x')[0]
+      str_package = toolchain.bin2hex(str_package)
 
     sender.sendto(str_package, (address, port))
 
