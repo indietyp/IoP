@@ -884,8 +884,8 @@ class MeshNetwork(object):
         for _ in range(3):
           try:
             received = client.recvfrom(65000)
-            received[0] = toolchain.hex2bin(received[0].encode())
-            received[0] = crypter.decrypt(received[0]).decode()
+            received[0] = toolchain.hex2bin(received[0])
+            received[0] = crypter.decrypt(received[0])
 
             self.daemon_process(received)
           except Exception as e:
@@ -924,8 +924,8 @@ class MeshNetwork(object):
         for _ in range(2):
           try:
             received = client.recvfrom(65000)
-            received[0] = toolchain.hex2bin(received[0].encode())
-            received[0] = crypter.decrypt(received[0]).decode()
+            received[0] = toolchain.hex2bin(received[0])
+            received[0] = crypter.decrypt(received[0])
 
             self.daemon_process(received)
           except Exception as e:
