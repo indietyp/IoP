@@ -768,13 +768,16 @@ class MeshNetwork(object):
         if information['token']['content'] == messages[-1] and information['target']['uuid'] == target[0] and information['target']['ip'] == target[1]:
           information['token']['uses'] += 1
         else:
+          logger.warning('not right machine')
           raise ValueError('not right machine')
 
         with open(basedir + '/remove/transaction.json', 'w') as out:
           out.write(json.dumps(information))
 
         public = information['key'][str(local.uuid)]['public']
-        public = re.findall('.{1,100}', public)
+        length = len(public)
+        length = int(length / 3)
+        public = re.findall('.{1,' + length + '}', public)
         logger.debug('generated publickey: ' + str(public))
 
         self.send(80104, plant=local, recipient=target, messages=public)
