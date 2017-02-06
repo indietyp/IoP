@@ -908,7 +908,7 @@ class MeshNetwork(object):
 
         port = toolchain.hex2bin(''.join(messages[:-1]).encode())
         port = crypter.decrypt(port).decode()
-        information['port'] = port
+        information['port'] = int(port)
 
         with open(basedir + '/remove/transaction.json', 'w') as out:
           out.write(json.dumps(information))
