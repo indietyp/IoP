@@ -745,7 +745,7 @@ class MeshNetwork(object):
         public = information['key'][str(local.uuid)]['public']
         public = re.findall('.{1,100}', public)
         logger.debug('generated publickey: ' + str(public))
-        public = public.append(information['token']['content'])
+        public.append(information['token']['content'])
 
         self.send(80103, recipient=target, messages=public)
 
@@ -853,7 +853,7 @@ class MeshNetwork(object):
         port = crypter.encrypt(str(port).encode(), 'x')[0]
         port = tools.bin2hex(port).decode()
         port = re.findall('.{1,100}', port)
-        port = port.append(information['token']['content'])
+        port.append(information['token']['content'])
 
         self.send(80107, recipient=target, messages=port)
 
