@@ -815,7 +815,7 @@ class MeshNetwork(object):
         token = toolchain.random_string(100, digits=True)
         information['token'] = {'content': token,
                                 'uses': 0,
-                                'created_at': datetime.datetime.now()}
+                                'created_at': datetime.datetime.now().timestamp()}
 
         token = crypter.encrypt(token.encode(), 'x')[0]
         token = toolchain.bin2hex(token).decode()
@@ -953,7 +953,7 @@ class MeshNetwork(object):
         token = toolchain.random_string(100, digits=True)
         information['token'] = {'content': token,
                                 'uses': 0,
-                                'created_at': datetime.datetime.now()}
+                                'created_at': datetime.datetime.now().timestamp()}
 
         with open(basedir + '/remove/transaction.json', 'w') as out:
           out.write(json.dumps(information))
