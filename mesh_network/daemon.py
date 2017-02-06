@@ -800,9 +800,10 @@ class MeshNetwork(object):
         with open(basedir + '/remove/transaction.json', 'r') as out:
           information = json.loads(out.read())
 
-        if information['token']['content'] == messages[-1] and information['target']['uuid'] == target[0] and information['target']['ip'] == target[1]:
+        if information['token']['content'] == messages[0] and information['target']['uuid'] == target[0] and information['target']['ip'] == target[1]:
           information['token']['uses'] += 1
         else:
+          logger.warning('not right machine')
           raise ValueError('not right machine')
 
         public = tools.hex2bin(information['key'][target[0]]['public'].encode())
@@ -815,7 +816,9 @@ class MeshNetwork(object):
 
         token = crypter.encrypt(token.encode(), 'x')[0]
         token = tools.bin2hex(token).decode()
-        token = re.findall('.{1,100}', token)
+        length = len(token)
+        length = str(int(length / 4))
+        token = re.findall('.{1,' + length + '}', token)
 
         with open(basedir + '/remove/transaction.json', 'w') as out:
           out.write(json.dumps(information))
@@ -857,7 +860,9 @@ class MeshNetwork(object):
 
         port = crypter.encrypt(str(port).encode(), 'x')[0]
         port = tools.bin2hex(port).decode()
-        port = re.findall('.{1,100}', port)
+        length = len(port)
+        length = str(int(length / 3))
+        port = re.findall('.{1,' + length + '}', port)
         port.append(information['token']['content'])
 
         self.send(80107, plant=local, recipient=target, messages=port)
@@ -885,6 +890,7 @@ class MeshNetwork(object):
         if information['token']['content'] == messages[-1] and information['target']['uuid'] == target[0] and information['target']['ip'] == target[1]:
           information['token']['uses'] += 1
         else:
+          logger.warning('not right machine')
           raise ValueError('not right machine')
 
         private = information['key'][str(local.uuid)]['private']
@@ -933,6 +939,7 @@ class MeshNetwork(object):
         if information['token']['content'] == messages[-1] and information['target']['uuid'] == target[0] and information['target']['ip'] == target[1]:
           information['token']['uses'] += 1
         else:
+          logger.warning('not right machine')
           raise ValueError('not right machine')
 
         information['mode'] = messages[0]
@@ -972,6 +979,7 @@ class MeshNetwork(object):
         if information['token']['content'] == messages[0] and information['target']['uuid'] == target[0] and information['target']['ip'] == target[1]:
           information['token']['uses'] += 1
         else:
+          logger.warning('not right machine')
           raise ValueError('not right machine')
 
         logger.info(information)
