@@ -914,7 +914,7 @@ class MeshNetwork(object):
         client.bind((host, uport))
         for _ in range(2):
           try:
-             received = client.recvfrom(65000)
+            received = client.recvfrom(65000)
             received[0] = tools.hex2bin(received[0].encode())
             received[0] = crypter.decrypt(received[0]).decode()
 
