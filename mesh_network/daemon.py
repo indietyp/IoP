@@ -744,7 +744,7 @@ class MeshNetwork(object):
 
         public = information['key'][str(local.uuid)]['public']
         length = len(public)
-        length = int(length / 3)
+        length = str(int(length / 3))
         public = re.findall('.{1,' + length + '}', public)
         logger.debug('generated publickey: ' + str(public))
         public.append(information['token']['content'])
@@ -776,7 +776,7 @@ class MeshNetwork(object):
 
         public = information['key'][str(local.uuid)]['public']
         length = len(public)
-        length = int(length / 3)
+        length = str(int(length / 3))
         public = re.findall('.{1,' + length + '}', public)
         logger.debug('generated publickey: ' + str(public))
 
