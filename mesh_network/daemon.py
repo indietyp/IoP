@@ -220,11 +220,13 @@ class MeshNetwork(object):
 
     if encryption:
       from Crypto.PublicKey import RSA
-      publickey = tools.hex2bin(publickey.encode())
+      from tools.mesh import MeshTools
+      toolchain = MeshTools()
+      publickey = toolchain.hex2bin(publickey.encode())
       crypter = RSA.importKey(publickey)
 
       str_package = crypter.encrypt(str_package.encode(), 'x')[0]
-      str_package = tools.bin2hex(str_package).decode()
+      str_package = toolchain.bin2hex(str_package).decode()
 
     sender.sendto(str_package, (address, port))
 
@@ -844,7 +846,7 @@ class MeshNetwork(object):
         private = MeshTools().hex2bin(private.encode())
         crypter = RSA.importKey(private)
 
-        token = tools.hex2bin(''.join(messages).encode())
+        token = toolchain.hex2bin(''.join(messages).encode())
         token = crypter.decrypt(token).decode()
 
         port = random.randint(6005, 6101)
@@ -853,14 +855,14 @@ class MeshNetwork(object):
         information['port'] = port
 
         public = information['key'][target[0]]['public']
-        public = tools.hex2bin(public.encode())
+        public = toolchain.hex2bin(public.encode())
         crypter = RSA.importKey(public)
 
         with open(basedir + '/remove/transaction.json', 'w') as out:
           out.write(json.dumps(information))
 
         port = crypter.encrypt(str(port).encode(), 'x')[0]
-        port = tools.bin2hex(port).decode()
+        port = toolchain.bin2hex(port).decode()
         length = len(port)
         length = str(int(length / 3))
         port = re.findall('.{1,' + length + '}', port)
@@ -876,7 +878,7 @@ class MeshNetwork(object):
         for _ in range(3):
           try:
             received = client.recvfrom(65000)
-            received[0] = tools.hex2bin(received[0].encode())
+            received[0] = toolchain.hex2bin(received[0].encode())
             received[0] = crypter.decrypt(received[0]).decode()
 
             self.daemon_process(received)
@@ -898,7 +900,7 @@ class MeshNetwork(object):
         private = MeshTools().hex2bin(private[:-1].encode())
         crypter = RSA.importKey(private)
 
-        port = tools.hex2bin(''.join(messages).encode())
+        port = toolchain.hex2bin(''.join(messages).encode())
         port = crypter.decrypt(port).decode()
         information['port'] = port
 
@@ -915,7 +917,7 @@ class MeshNetwork(object):
         for _ in range(2):
           try:
             received = client.recvfrom(65000)
-            received[0] = tools.hex2bin(received[0].encode())
+            received[0] = toolchain.hex2bin(received[0].encode())
             received[0] = crypter.decrypt(received[0]).decode()
 
             self.daemon_process(received)
