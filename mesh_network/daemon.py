@@ -776,7 +776,7 @@ class MeshNetwork(object):
 
         public = information['key'][str(local.uuid)]['public']
         length = len(public)
-        length = str(int(length / 3))
+        length = str(int(length / 4))
         public = re.findall('.{1,' + length + '}', public)
         logger.debug('generated publickey: ' + str(public))
 
@@ -785,9 +785,10 @@ class MeshNetwork(object):
       elif sub == 5:
         with open(basedir + '/remove/transaction.json', 'r') as out:
           information = json.loads(out.read())
-        information['key'][target[1]] = {'public': ''.join(messages)}
+        information['key'][target[0]] = {'public': ''.join(messages)}
 
         if target[0] != information['target']['uuid'] or target[1] != information['target']['ip']:
+          logger.warning('not locked')
           raise ValueError('not locked')
 
         with open(basedir + '/remove/transaction.json', 'w') as out:
@@ -913,7 +914,7 @@ class MeshNetwork(object):
         client.bind((host, uport))
         for _ in range(2):
           try:
-            received = client.recvfrom(65000)
+             received = client.recvfrom(65000)
             received[0] = tools.hex2bin(received[0].encode())
             received[0] = crypter.decrypt(received[0]).decode()
 
