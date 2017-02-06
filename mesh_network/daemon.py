@@ -100,7 +100,7 @@ class MeshNetwork(object):
         self.slave_update(mode=int(code[1:3]), sub=int(code[3:]) + 1, target=target)
 
       elif code[0] == '8':
-        target = [received[1][0], message[1][0]]
+        target = [message[1][0], received[1][0]]
         self.remove(int(code[1:3]), int(code[3:]) + 1, target, messages=message[4])
 
     else:
@@ -716,8 +716,8 @@ class MeshNetwork(object):
         toolchain = MeshTools()
         toolchain.reinit_dir(basedir + '/remove')
 
-        information = {'target': {'uuid': target[1],
-                                  'ip': target[0]},
+        information = {'target': {'uuid': target[0],
+                                  'ip': target[1]},
                        'token': {'content': toolchain.random_string(100, digits=True),
                                  'uses': 0,
                                  'created_at': datetime.datetime.now().timestamp()}}
@@ -761,9 +761,9 @@ class MeshNetwork(object):
 
         information['key'] = {str(local.uuid): {'public': toolchain.bin2hex(public).decode(),
                                                 'private': toolchain.bin2hex(key.exportKey('DER')).decode()},
-                              target[1]: {'public': ''.join(messages[:-1])}}
+                              target[0]: {'public': ''.join(messages[:-1])}}
 
-        if information['token']['content'] == messages[-1] and information['target']['uuid'] == target[1] and information['target']['ip'] == target[0]:
+        if information['token']['content'] == messages[-1] and information['target']['uuid'] == target[0] and information['target']['ip'] == target[1]:
           information['token']['uses'] += 1
         else:
           raise ValueError('not right machine')
@@ -782,7 +782,7 @@ class MeshNetwork(object):
           information = json.loads(out.read())
         information['key'][target[1]] = {'public': ''.join(messages)}
 
-        if target[1] != information['target']['uuid'] or target[0] != information['target']['ip']:
+        if target[0] != information['target']['uuid'] or target[1] != information['target']['ip']:
           raise ValueError('not locked')
 
         with open(basedir + '/remove/transaction.json', 'w') as out:
@@ -795,12 +795,12 @@ class MeshNetwork(object):
         with open(basedir + '/remove/transaction.json', 'r') as out:
           information = json.loads(out.read())
 
-        if information['token']['content'] == messages[-1] and information['target']['uuid'] == target[1] and information['target']['ip'] == target[0]:
+        if information['token']['content'] == messages[-1] and information['target']['uuid'] == target[0] and information['target']['ip'] == target[1]:
           information['token']['uses'] += 1
         else:
           raise ValueError('not right machine')
 
-        public = tools.hex2bin(information['key'][target[1]]['public'].encode())
+        public = tools.hex2bin(information['key'][target[0]]['public'].encode())
         crypter = RSA.importKey(public)
 
         token = toolchain.random_string(100, digits=True)
@@ -828,7 +828,7 @@ class MeshNetwork(object):
         with open(basedir + '/remove/transaction.json', 'r') as out:
           information = json.loads(out.read())
 
-        if target[1] != information['target']['uuid'] or target[0] != information['target']['ip']:
+        if target[0] != information['target']['uuid'] or target[1] != information['target']['ip']:
           raise ValueError('not locked')
 
         private = information['key'][str(local.uuid)]['private']
@@ -843,7 +843,7 @@ class MeshNetwork(object):
         information['token']['content'] = token
         information['port'] = port
 
-        public = information['key'][target[1]]['public']
+        public = information['key'][target[0]]['public']
         public = tools.hex2bin(public.encode())
         crypter = RSA.importKey(public)
 
@@ -877,7 +877,7 @@ class MeshNetwork(object):
         with open(basedir + '/remove/transaction.json', 'r') as out:
           information = json.loads(out.read())
 
-        if information['token']['content'] == messages[-1] and information['target']['uuid'] == target[1] and information['target']['ip'] == target[-1]:
+        if information['token']['content'] == messages[-1] and information['target']['uuid'] == target[0] and information['target']['ip'] == target[1]:
           information['token']['uses'] += 1
         else:
           raise ValueError('not right machine')
@@ -893,7 +893,7 @@ class MeshNetwork(object):
         with open(basedir + '/remove/transaction.json', 'w') as out:
           out.write(json.dumps(information))
 
-        self.send(80108, recipient=target, encryption=True, publickey=information['key'][target[1]]['public'], port=port)
+        self.send(80108, recipient=target, encryption=True, publickey=information['key'][target[0]]['public'], port=port)
 
         client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         host = '0.0.0.0'
@@ -914,18 +914,18 @@ class MeshNetwork(object):
         with open(basedir + '/remove/transaction.json', 'r') as out:
           information = json.loads(out.read())
 
-        if target[1] != information['target']['uuid'] or target[0] != information['target']['ip']:
+        if target[0] != information['target']['uuid'] or target[1] != information['target']['ip']:
           raise ValueError('not locked')
 
         self.send(80109, recipient=target, encryption=True,
-                  publickey=information['key'][target[1]]['public'], port=information['port'],
+                  publickey=information['key'][target[0]]['public'], port=information['port'],
                   messages=[information['mode'], information['destination']['uuid'], information['destination']['relation'], information['token']['content']])
 
       elif sub == 10:
         with open(basedir + '/remove/transaction.json', 'r') as out:
           information = json.loads(out.read())
 
-        if information['token']['content'] == messages[-1] and information['target']['uuid'] == target[1] and information['target']['ip'] == target[-1]:
+        if information['token']['content'] == messages[-1] and information['target']['uuid'] == target[0] and information['target']['ip'] == target[1]:
           information['token']['uses'] += 1
         else:
           raise ValueError('not right machine')
@@ -944,27 +944,27 @@ class MeshNetwork(object):
           out.write(json.dumps(information))
 
         self.send(80110, recipient=target, encryption=True,
-                  publickey=information['key'][target[1]]['public'], port=information['port'],
+                  publickey=information['key'][target[0]]['public'], port=information['port'],
                   messages=[token])
 
       elif sub == 11:
         with open(basedir + '/remove/transaction.json', 'r') as out:
           information = json.loads(out.read())
 
-        if target[1] != information['target']['uuid'] or target[0] != information['target']['ip']:
+        if target[0] != information['target']['uuid'] or target[1] != information['target']['ip']:
           raise ValueError('not locked')
 
         information['token']['content'] = messages[0]
 
         self.send(80111, recipient=target, encryption=True,
-                  publickey=information['key'][target[1]]['public'], port=information['port'],
+                  publickey=information['key'][target[0]]['public'], port=information['port'],
                   messages=[messages[0]])
 
       elif sub == 12:
         with open(basedir + '/remove/transaction.json', 'r') as out:
           information = json.loads(out.read())
 
-        if information['token']['content'] == messages[0] and information['target']['uuid'] == target[1] and information['target']['ip'] == target[-1]:
+        if information['token']['content'] == messages[0] and information['target']['uuid'] == target[0] and information['target']['ip'] == target[1]:
           information['token']['uses'] += 1
         else:
           raise ValueError('not right machine')
@@ -999,7 +999,7 @@ class MeshNetwork(object):
         #   plant.save()
 
         self.send(80112, recipient=target, encryption=True,
-                  publickey=information['key'][target[1]]['public'], port=information['port'],
+                  publickey=information['key'][target[0]]['public'], port=information['port'],
                   messages=['done'])
       elif sub == 13:
         self.send_local(1, 1)
