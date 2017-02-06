@@ -903,10 +903,10 @@ class MeshNetwork(object):
           raise ValueError('not right machine')
 
         private = information['key'][str(local.uuid)]['private']
-        private = MeshTools().hex2bin(private[:-1].encode())
+        private = MeshTools().hex2bin(private.encode())
         crypter = RSA.importKey(private)
 
-        port = toolchain.hex2bin(''.join(messages).encode())
+        port = toolchain.hex2bin(''.join(messages[:-1]).encode())
         port = crypter.decrypt(port).decode()
         information['port'] = port
 
