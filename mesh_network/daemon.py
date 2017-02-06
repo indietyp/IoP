@@ -884,6 +884,7 @@ class MeshNetwork(object):
         for _ in range(3):
           try:
             received = client.recvfrom(65000)
+            received = list(received)
             received[0] = toolchain.hex2bin(received[0])
             received[0] = crypter.decrypt(received[0])
 
@@ -924,6 +925,7 @@ class MeshNetwork(object):
         for _ in range(2):
           try:
             received = client.recvfrom(65000)
+            received = list(received)
             received[0] = toolchain.hex2bin(received[0])
             received[0] = crypter.decrypt(received[0])
 
