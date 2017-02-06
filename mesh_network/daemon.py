@@ -823,7 +823,7 @@ class MeshNetwork(object):
         length = str(int(length / 4))
         token = re.findall('.{1,' + length + '}', token)
         if len(token) > 4:
-          token[3] += token[3:]
+          token[3] = ''.join(token[3:])
         token = token[:4]
 
         with open(basedir + '/remove/transaction.json', 'w') as out:
@@ -870,7 +870,7 @@ class MeshNetwork(object):
         length = str(int(length / 3))
         port = re.findall('.{1,' + length + '}', port)
         if len(port) > 3:
-          port[2] += port[2:]
+          port[2] = ''.join(port[2:])
         port = port[:3]
         port.append(information['token']['content'])
 
