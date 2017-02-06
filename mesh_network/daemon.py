@@ -809,7 +809,7 @@ class MeshNetwork(object):
           logger.warning('not right machine')
           raise ValueError('not right machine')
 
-        public = tools.hex2bin(information['key'][target[0]]['public'].encode())
+        public = toolchain.hex2bin(information['key'][target[0]]['public'].encode())
         crypter = RSA.importKey(public)
 
         token = toolchain.random_string(100, digits=True)
@@ -818,7 +818,7 @@ class MeshNetwork(object):
                                 'created_at': datetime.datetime.now()}
 
         token = crypter.encrypt(token.encode(), 'x')[0]
-        token = tools.bin2hex(token).decode()
+        token = toolchain.bin2hex(token).decode()
         length = len(token)
         length = str(int(length / 4))
         token = re.findall('.{1,' + length + '}', token)
