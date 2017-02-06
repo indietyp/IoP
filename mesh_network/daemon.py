@@ -747,7 +747,7 @@ class MeshNetwork(object):
         logger.debug('generated publickey: ' + str(public))
         public.append(information['token']['content'])
 
-        self.send(80103, recipient=target, messages=public)
+        self.send(80103, plant=local, recipient=target, messages=public)
 
       elif sub == 4:
         toolchain = MeshTools()
@@ -775,7 +775,7 @@ class MeshNetwork(object):
         public = re.findall('.{1,100}', public)
         logger.debug('generated publickey: ' + str(public))
 
-        self.send(80104, recipient=target, messages=public)
+        self.send(80104, plant=local, recipient=target, messages=public)
 
       elif sub == 5:
         with open(basedir + '/remove/transaction.json', 'r') as out:
@@ -788,7 +788,7 @@ class MeshNetwork(object):
         with open(basedir + '/remove/transaction.json', 'w') as out:
           out.write(json.dumps(information))
 
-        self.send(80105, recipient=target, messages=[information['token']['content']])
+        self.send(80105, plant=local, recipient=target, messages=[information['token']['content']])
 
       elif sub == 6:
         toolchain = MeshTools()
@@ -815,7 +815,7 @@ class MeshNetwork(object):
         with open(basedir + '/remove/transaction.json', 'w') as out:
           out.write(json.dumps(information))
 
-        self.send(80106, recipient=target, messages=token)
+        self.send(80106, plant=local, recipient=target, messages=token)
 
       elif sub == 7:
         # decrypt token
@@ -855,7 +855,7 @@ class MeshNetwork(object):
         port = re.findall('.{1,100}', port)
         port.append(information['token']['content'])
 
-        self.send(80107, recipient=target, messages=port)
+        self.send(80107, plant=local, recipient=target, messages=port)
 
         client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         host = '0.0.0.0'
@@ -893,7 +893,7 @@ class MeshNetwork(object):
         with open(basedir + '/remove/transaction.json', 'w') as out:
           out.write(json.dumps(information))
 
-        self.send(80108, recipient=target, encryption=True, publickey=information['key'][target[0]]['public'], port=port)
+        self.send(80108, plant=local, recipient=target, encryption=True, publickey=information['key'][target[0]]['public'], port=port)
 
         client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         host = '0.0.0.0'
@@ -917,7 +917,7 @@ class MeshNetwork(object):
         if target[0] != information['target']['uuid'] or target[1] != information['target']['ip']:
           raise ValueError('not locked')
 
-        self.send(80109, recipient=target, encryption=True,
+        self.send(80109, plant=local, recipient=target, encryption=True,
                   publickey=information['key'][target[0]]['public'], port=information['port'],
                   messages=[information['mode'], information['destination']['uuid'], information['destination']['relation'], information['token']['content']])
 
@@ -943,7 +943,7 @@ class MeshNetwork(object):
         with open(basedir + '/remove/transaction.json', 'w') as out:
           out.write(json.dumps(information))
 
-        self.send(80110, recipient=target, encryption=True,
+        self.send(80110, plant=local, recipient=target, encryption=True,
                   publickey=information['key'][target[0]]['public'], port=information['port'],
                   messages=[token])
 
@@ -956,7 +956,7 @@ class MeshNetwork(object):
 
         information['token']['content'] = messages[0]
 
-        self.send(80111, recipient=target, encryption=True,
+        self.send(80111, plant=local, recipient=target, encryption=True,
                   publickey=information['key'][target[0]]['public'], port=information['port'],
                   messages=[messages[0]])
 
@@ -998,7 +998,7 @@ class MeshNetwork(object):
         #   plant.active = False
         #   plant.save()
 
-        self.send(80112, recipient=target, encryption=True,
+        self.send(80112, plant=local, recipient=target, encryption=True,
                   publickey=information['key'][target[0]]['public'], port=information['port'],
                   messages=['done'])
       elif sub == 13:
