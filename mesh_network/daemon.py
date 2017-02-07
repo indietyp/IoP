@@ -889,11 +889,10 @@ class MeshNetwork(object):
           try:
             received = client.recvfrom(65000)
             received = list(received)
+            logger.info(received)
             received[0] = toolchain.hex2bin(received[0])
             received[0] = crypter.decrypt(received[0])
-            print(received[0])
-            logger.info(type(received[0]))
-            received[0] = received[0].decode().encode('ascii')
+            logger.info(received[0])
             logger.info(type(received[0]))
 
             self.daemon_process(received)
