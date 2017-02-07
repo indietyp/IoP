@@ -891,6 +891,9 @@ class MeshNetwork(object):
             received = list(received)
             received[0] = toolchain.hex2bin(received[0])
             received[0] = crypter.decrypt(received[0])
+            print(type(received[0]))
+            received[0] = received[0].decode().encode()
+            print(type(received[0]))
 
             self.daemon_process(received)
           except Exception as e:
@@ -932,6 +935,9 @@ class MeshNetwork(object):
             received = list(received)
             received[0] = toolchain.hex2bin(received[0])
             received[0] = crypter.decrypt(received[0])
+            print(type(received[0]))
+            received[0] = received[0].decode().encode()
+            print(type(received[0]))
 
             self.daemon_process(received)
           except Exception as e:
