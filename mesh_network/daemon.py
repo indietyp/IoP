@@ -877,7 +877,7 @@ class MeshNetwork(object):
         self.send(80107, plant=local, recipient=target, messages=port)
 
         private = information['key'][str(local.uuid)]['private']
-        private = MeshTools().hex2bin(private.encode())
+        private = toolchain.hex2bin(private.encode())
         crypter = RSA.importKey(private)
 
         client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
