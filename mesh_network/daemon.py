@@ -971,6 +971,8 @@ class MeshNetwork(object):
                   messages=[information['mode'], information['destination']['uuid'], information['destination']['relation'], information['token']['content']])
 
       elif sub == 10:
+        toolchain = MeshTools()
+
         with open(basedir + '/remove/transaction.json', 'r') as out:
           information = json.loads(out.read())
 
