@@ -226,10 +226,10 @@ class MeshNetwork(object):
       publickey = toolchain.hex2bin(publickey.encode())
       crypter = RSA.importKey(publickey)
 
-      pkg = ''
+      pkg = b''
       for partial in re.findall('.{1,128}', str_package.decode()):
         partial = crypter.encrypt(partial.encode(), 'x')[0]
-        pkg += toolchain.bin2hex(partial) + '-'
+        pkg += toolchain.bin2hex(partial) + b'-'
 
       str_package = pkg[:-1]
       logger.info(str_package)
