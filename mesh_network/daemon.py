@@ -221,12 +221,18 @@ class MeshNetwork(object):
     if encryption:
       from Crypto.PublicKey import RSA
       from tools.mesh import MeshTools
+      import re
       toolchain = MeshTools()
       publickey = toolchain.hex2bin(publickey.encode())
       crypter = RSA.importKey(publickey)
 
-      str_package = crypter.encrypt(str_package, 'x')[0]
-      str_package = toolchain.bin2hex(str_package)
+      pkg = ''
+      for partial in re.findall('.{1,128}', str_package):
+        partial = crypter.encrypt(partial, 'x')[0]
+        pkg += toolchain.bin2hex(str_package) + '-'
+
+      str_package = pkg[:-1]
+      logger.info(str_package)
 
     sender.sendto(str_package, (address, port))
 
@@ -889,11 +895,16 @@ class MeshNetwork(object):
           try:
             received = client.recvfrom(65000)
             received = list(received)
-            logger.info(received)
-            received[0] = toolchain.hex2bin(received[0])
-            received[0] = crypter.decrypt(received[0])
             logger.info(received[0])
-            logger.info(type(received[0]))
+
+            message = ''
+            for partial in received[0].split('-'):
+              partial = toolchain.hex2bin(partial)
+              message += crypter.decrypt(partial)
+
+            received[0] = deepcopy(message.decode())
+            received[0] = received[0].encode()
+            logger.info(received[0])
 
             self.daemon_process(received)
           except Exception as e:
@@ -933,11 +944,16 @@ class MeshNetwork(object):
           try:
             received = client.recvfrom(65000)
             received = list(received)
-            received[0] = toolchain.hex2bin(received[0])
-            received[0] = crypter.decrypt(received[0])
-            logger.info(type(received[0]))
-            received[0] = received[0].decode().encode()
-            logger.info(type(received[0]))
+            logger.info(received[0])
+
+            message = ''
+            for partial in received[0].split('-'):
+              partial = toolchain.hex2bin(partial)
+              message += crypter.decrypt(partial)
+
+            received[0] = deepcopy(message.decode())
+            received[0] = received[0].encode()
+            logger.info(received[0])
 
             self.daemon_process(received)
           except Exception as e:
