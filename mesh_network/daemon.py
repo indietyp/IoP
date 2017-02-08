@@ -895,7 +895,6 @@ class MeshNetwork(object):
           try:
             received = client.recvfrom(65000)
             received = list(received)
-            logger.info(received[0])
 
             message = b''
             for partial in received[0].decode().split('-'):
@@ -904,7 +903,6 @@ class MeshNetwork(object):
 
             received[0] = deepcopy(message.decode())
             received[0] = received[0].encode()
-            logger.info(received[0])
 
             self.daemon_process(received)
           except Exception as e:
@@ -944,7 +942,6 @@ class MeshNetwork(object):
           try:
             received = client.recvfrom(65000)
             received = list(received)
-            logger.info(received[0])
 
             message = b''
             for partial in received[0].decode().split('-'):
@@ -953,7 +950,6 @@ class MeshNetwork(object):
 
             received[0] = deepcopy(message.decode())
             received[0] = received[0].encode()
-            logger.info(received[0])
 
             self.daemon_process(received)
           except Exception as e:
