@@ -897,9 +897,9 @@ class MeshNetwork(object):
             received = list(received)
             logger.info(received[0])
 
-            message = ''
-            for partial in received[0].split('-'):
-              partial = toolchain.hex2bin(partial)
+            message = b''
+            for partial in received[0].decode().split('-'):
+              partial = toolchain.hex2bin(partial.encode())
               message += crypter.decrypt(partial)
 
             received[0] = deepcopy(message.decode())
@@ -946,9 +946,9 @@ class MeshNetwork(object):
             received = list(received)
             logger.info(received[0])
 
-            message = ''
-            for partial in received[0].split('-'):
-              partial = toolchain.hex2bin(partial)
+            message = b''
+            for partial in received[0].decode().split('-'):
+              partial = toolchain.hex2bin(partial.encode())
               message += crypter.decrypt(partial)
 
             received[0] = deepcopy(message.decode())
