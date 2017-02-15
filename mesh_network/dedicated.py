@@ -204,14 +204,14 @@ class MeshDedicatedDispatch(object):
     #     print('nononononono')
 
     local = Plant.get(localhost=True)
-    if plant.master != 'master' and plant.role == str(local.uuid):
+    if plant.role != 'master' and plant.role == str(local.uuid):
       daemon.remove(2, 1, plant)
-      status = self.get(120)
+      # status = self.get(120)
 
-      if status == 1:
-        print('successful')
-      else:
-        print('nononononono')
+      # if status == 1:
+      #   print('successful')
+      # else:
+      #   print('nononononono')
 
     # from models.sensor import SensorData, SensorStatus, SensorCount, SensorSatisfactionValue, SensorDataPrediction
     # from models.plant import PlantNetworkUptime
