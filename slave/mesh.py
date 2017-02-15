@@ -77,6 +77,9 @@ class MeshNetwork(object):
       elif code[0] == '7':
         target = [message[1][0], received[1][0]]
         self.slave_update(mode=int(code[1:3]), sub=int(code[3:]) + 1, target=target, messages=message[4])
+      elif code[0] == '8':
+        target = [message[1][0], received[1][0]]
+        self.remove(int(code[1:3]), int(code[3:]) + 1, target, messages=message[4])
     else:
       print('not processing request - same ip')
 
@@ -274,6 +277,7 @@ class MeshNetwork(object):
         with open('config.json', 'r') as out:
           config = json.loads(out.read())
 
+        print(target)
         if config['master']['ip'] == target[1] and config['master']['uuid'] == target[0]:
           token = MeshTools().random_string(100)
           information = {'token': token}
@@ -281,7 +285,7 @@ class MeshNetwork(object):
           with open('transaction.json', 'w') as out:
             out.write(json.dumps(information))
 
-          self.send(80202, recipient=target)
+          self.send(80202, recipient=target, messages=[token])
 
       elif sub == 4:
         with open('config.json', 'r') as out:
@@ -290,6 +294,8 @@ class MeshNetwork(object):
         with open('transaction.json', 'r') as out:
           information = json.loads(out.read())
 
+        print(messages)
+        print(target)
         if config['master']['ip'] == target[1] and config['master']['uuid'] == target[0] and information['token'] == messages[0]:
           information['mode'] == 'remove'
 

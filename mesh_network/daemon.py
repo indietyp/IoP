@@ -1082,7 +1082,7 @@ class MeshNetwork(object):
         with open(basedir + '/remove/transaction.json', 'w') as out:
           out.write(json.dumps(information))
 
-        self.send(80303, recipient=target, plant=local, messages=[messages[0]])
+        self.send(80203, recipient=target, plant=local, messages=[messages[0]])
       elif sub == 5:
         with open(basedir + '/remove/transaction.json', 'r') as out:
           information = json.loads(out.read())
@@ -1090,7 +1090,7 @@ class MeshNetwork(object):
         if target[0] != information['target']['uuid'] or target[1] != information['target']['ip']:
           raise ValueError('not locked')
 
-        self.send(80305, recipient=target, plant=local, messages=[information['token']['content']])
+        self.send(80205, recipient=target, plant=local, messages=[information['token']['content']])
       elif sub == 7:
         with open(basedir + '/remove/transaction.json', 'r') as out:
           information = json.loads(out.read())
@@ -1104,7 +1104,7 @@ class MeshNetwork(object):
         with open(basedir + '/remove/transaction.json', 'w') as out:
           out.write(json.dumps(information))
 
-        self.send(80307, recipient=target, plant=local, messages=[messages[0]])
+        self.send(80207, recipient=target, plant=local, messages=[messages[0]])
       elif sub == 9:
         self.send_local(1, 1)
 
