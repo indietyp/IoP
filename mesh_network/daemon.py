@@ -1057,6 +1057,7 @@ class MeshNetwork(object):
 
     elif mode == 2:
       from tools.mesh import MeshTools
+      import json
 
       if sub == 1:
         MeshTools().reinit_dir(basedir + '/remove')
