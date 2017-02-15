@@ -1020,32 +1020,32 @@ class MeshNetwork(object):
 
         logger.info(information)
 
-        # if information['destination']['mode'] == 'remove':
-        #   from models.plant import Plant
-        #   plant = Plant.get(uuid=information['destination']['uuid'])
-        #   if plant.localhost:
-        #     from settings.database import DATABASE_NAME
-        #     import os
-        #     os.remove(DATABASE_NAME)
+        if information['destination']['mode'] == 'remove':
+          from models.plant import Plant
+          plant = Plant.get(uuid=information['destination']['uuid'])
+          if plant.localhost:
+            from settings.database import DATABASE_NAME
+            import os
+            os.remove(DATABASE_NAME)
 
-        #     from subprocess import call
-        #     call(["reboot"])
-        #   else:
-        #     if plant.role != 'master' and plant.master == str(Plant.get(localhost=True).uuid):
-        #       self.remove(2, 1, plant)
+            from subprocess import call
+            call(["reboot"])
+          else:
+            if plant.role != 'master' and plant.master == str(Plant.get(localhost=True).uuid):
+              self.remove(2, 1, plant)
 
-        #     from models.sensor import SensorData, SensorStatus, SensorCount, SensorSatisfactionValue, SensorDataPrediction
-        #     for model in [SensorData, SensorStatus, SensorCount, SensorSatisfactionValue, SensorDataPrediction]:
-        #       model.delete().where(plant=plant).execute()
-        #     plant.delete_instance()
+            from models.sensor import SensorData, SensorStatus, SensorCount, SensorSatisfactionValue, SensorDataPrediction
+            for model in [SensorData, SensorStatus, SensorCount, SensorSatisfactionValue, SensorDataPrediction]:
+              model.delete().where(plant=plant).execute()
+            plant.delete_instance()
 
-        # elif information['destination']['mode'] == 'activate':
-        #   plant.active = True
-        #   plant.save()
+        elif information['destination']['mode'] == 'activate':
+          plant.active = True
+          plant.save()
 
-        # elif information['destination']['mode'] == 'deactivate':
-        #   plant.active = False
-        #   plant.save()
+        elif information['destination']['mode'] == 'deactivate':
+          plant.active = False
+          plant.save()
 
         self.send(80112, plant=local, recipient=target, encryption=True,
                   publickey=information['key'][target[0]]['public'], port=information['port'],

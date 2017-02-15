@@ -55,7 +55,9 @@ def get_latest_dataset(p_uuid, s_uuid):
   if plant.role != 'master' and sensor.name not in slave_supported:
     plant = Plant.get(Plant.uuid == UUID(plant.role))
 
-  sd = SensorData.select(SensorData.value, SensorData.persistant, SensorData.created_at) \
+  sd = SensorData.select(SensorData.value,
+                         SensorData.persistant,
+                         fn.CAST(Clause(fn.strftime('%s', SensorData.created_at), SQL('AS INT'))).alias('timestamp')) \
                  .where(SensorData.plant == plant) \
                  .where(SensorData.sensor == sensor) \
                  .order_by(SensorData.created_at.desc()) \
@@ -63,9 +65,6 @@ def get_latest_dataset(p_uuid, s_uuid):
                  .dicts()
 
   selected = list(sd)[0]
-  selected['timestamp'] = selected['created_at'].timestamp()
-  del selected['created_at']
-
   return json.dumps(selected)
 
 
@@ -169,29 +168,14 @@ def get_plant_sensor_data(p_uuid, sensor):
   if plant.role != 'master' and sensor.name not in slave_supported:
     plant = Plant.get(Plant.uuid == UUID(plant.role))
 
-  sensor_data_set = SensorData.select() \
+  sensor_data_set = SensorData.select(SensorData.value, fn.CAST(Clause(fn.strftime('%s', SensorData.created_at), SQL('AS INT'))).alias('timestamp')) \
                               .where(SensorData.plant == plant) \
                               .where(SensorData.sensor == sensor) \
                               .order_by(SensorData.created_at.asc())
 
-  content = []
-  for data in sensor_data_set:
-    data = model_to_dict(data)
-    if isinstance(data['created_at'], str):
-      try:
-        data['timestamp'] = data['created_at'].replace('+00:00', '')
-        data['timestamp'] = datetime.datetime.strptime(data['timestamp'], '%Y-%m-%d %H:%M:%S')
-      except:
-        data['timestamp'] = datetime.datetime.strptime(data['timestamp'], "%Y-%m-%d %H:%M:%S.%f")
-    else:
-      data['timestamp'] = data['created_at']
-    data['timestamp'] = data['timestamp'].timestamp()
 
-    del data['id']
-    del data['plant']
-    del data['sensor']
-    content.append(data)
-  return json.dumps(content, default=json_util.default)
+  content = list(sensor_data_set)
+  return json.dumps(content)
 
 
 @app.route('/get/plant/<p_uuid>/sensor/<sensor>/data/<float:until>')
@@ -203,7 +187,8 @@ def get_plant_sensor_data_after(p_uuid, sensor, until):
     plant = Plant.get(Plant.uuid == UUID(plant.role))
 
   date_time = datetime.datetime.fromtimestamp(until + 1)
-  sensor_data_set = SensorData.select(SensorData.created_at, SensorData.value) \
+  sensor_data_set = SensorData.select(SensorData.value,
+                                      fn.CAST(Clause(fn.strftime('%s', SensorData.created_at), SQL('AS INT'))).alias('timestamp')) \
                               .where(SensorData.plant == plant) \
                               .where(SensorData.sensor == sensor) \
                               .where(SensorData.created_at > date_time) \
@@ -211,10 +196,6 @@ def get_plant_sensor_data_after(p_uuid, sensor, until):
                               .dicts()
 
   sensor_data_set = list(sensor_data_set)
-  for data in sensor_data_set:
-    data['timestamp'] = data['created_at'].timestamp()
-    del data['created_at']
-
   return json.dumps(sensor_data_set)
 
 
@@ -260,7 +241,8 @@ def get_plant_sensor_range(p_uuid, sensor):
 def get_sensor_data_high_low(plant, sensor, configuration, target=None):
   mode = SensorData.created_at.asc() if configuration is False else SensorData.created_at.desc()
 
-  dataset = SensorData.select(SensorData.value, SensorData.created_at) \
+  dataset = SensorData.select(SensorData.value.alias('v'),
+                              fn.CAST(Clause(fn.strftime('%s', SensorData.created_at), SQL('AS INT'))).alias('t')) \
                       .where(SensorData.plant == plant) \
                       .where(SensorData.sensor == sensor) \
                       .order_by(mode)
@@ -272,17 +254,8 @@ def get_sensor_data_high_low(plant, sensor, configuration, target=None):
 
   if dataset.count() == 0:
     return None
-  dataset = list(dataset)
-  print(len(dataset))
 
-  data = dataset[0]
-  data['t'] = data['created_at'].timestamp()
-
-  data['v'] = data['value']
-
-  del data['created_at']
-  del data['value']
-
+  data = list(dataset)[0]
   return data
 
 
@@ -365,7 +338,6 @@ def get_sensor_status_average_percent(p_uuid):
     average[key] /= c
     summary += average[key]
 
-  print(summary, file=sys.stdout)
   output = {}
   for key, item in average.items():
     try:

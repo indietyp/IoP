@@ -274,7 +274,7 @@ class MeshNetwork(object):
         with open('config.json', 'r') as out:
           config = json.loads(out.read())
 
-        if config['master']['ip'] == target[0] and config['master']['uuid'] == target[1]:
+        if config['master']['ip'] == target[1] and config['master']['uuid'] == target[0]:
           token = MeshTools().random_string(100)
           information = {'token': token}
 
@@ -290,7 +290,7 @@ class MeshNetwork(object):
         with open('transaction.json', 'r') as out:
           information = json.loads(out.read())
 
-        if config['master']['ip'] == target[0] and config['master']['uuid'] == target[1] and information['token'] == messages[0]:
+        if config['master']['ip'] == target[1] and config['master']['uuid'] == target[0] and information['token'] == messages[0]:
           information['mode'] == 'remove'
 
           with open('transaction.json', 'w') as out:
@@ -305,7 +305,7 @@ class MeshNetwork(object):
         with open('transaction.json', 'r') as out:
           information = json.loads(out.read())
 
-        if config['master']['ip'] == target[0] and config['master']['uuid'] == target[1] and information['token'] == messages[0]:
+        if config['master']['ip'] == target[1] and config['master']['uuid'] == target[0] and information['token'] == messages[0]:
           information['token'] = MeshTools().random_string(100)
 
           with open('transaction.json', 'w') as out:
@@ -320,7 +320,7 @@ class MeshNetwork(object):
         with open('transaction.json', 'r') as out:
           information = json.loads(out.read())
 
-        if config['master']['ip'] == target[0] and config['master']['uuid'] == target[1] and information['token'] == messages[0]:
+        if config['master']['ip'] == target[1] and config['master']['uuid'] == target[0] and information['token'] == messages[0]:
           # import machine
           # import os
 

@@ -193,9 +193,9 @@ class MeshDedicatedDispatch(object):
       raise ValueError('remove mode not valid')
 
     daemon = MeshNetwork()
-    for target in Plant.select().where(Plant.active == True, Plant.localhost == False, Plant.role == 'master'):
-      initial = {'mode': mode, 'destination': {'uuid': str(plant.uuid), 'ip': plant.ip, 'relation': 'master'}}
-      daemon.remove(1, 1, target, initial=initial)
+    # for target in Plant.select().where(Plant.active == True, Plant.localhost == False, Plant.role == 'master'):
+    #   initial = {'mode': mode, 'destination': {'uuid': str(plant.uuid), 'ip': plant.ip, 'relation': 'master'}}
+    #   daemon.remove(1, 1, target, initial=initial)
     #   status = self.get(120)
 
     #   if status == 1:
@@ -203,15 +203,15 @@ class MeshDedicatedDispatch(object):
     #   else:
     #     print('nononononono')
 
-    # local = Plant.get(localhost=True)
-    # if plant.master != 'master' and plant.role == str(local.uuid):
-    #   daemon.remove(2, 1, plant)
-    #   status = self.get(120)
+    local = Plant.get(localhost=True)
+    if plant.master != 'master' and plant.role == str(local.uuid):
+      daemon.remove(2, 1, plant)
+      status = self.get(120)
 
-    #   if status == 1:
-    #     print('successful')
-    #   else:
-    #     print('nononononono')
+      if status == 1:
+        print('successful')
+      else:
+        print('nononononono')
 
     # from models.sensor import SensorData, SensorStatus, SensorCount, SensorSatisfactionValue, SensorDataPrediction
     # from models.plant import PlantNetworkUptime
