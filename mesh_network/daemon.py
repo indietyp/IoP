@@ -690,8 +690,10 @@ class MeshNetwork(object):
         # notify
 
   def remove(self, mode, sub, target, initial={}, messages=[]):
-    local = Plant.get(localhost=True)
     import os
+    from models.plant import Plant
+
+    local = Plant.get(localhost=True)
     basedir = os.path.dirname(os.path.realpath(__file__))
     if mode > 2 or mode == 0:
       logger.warning('not supported mode')
@@ -1055,7 +1057,7 @@ class MeshNetwork(object):
 
     elif mode == 2:
       if sub == 1:
-        MeshTools().reinit_dir('remove')
+        MeshTools().reinit_dir(basedir + '/remove')
 
         initial['target'] = {'ip': target.ip,
                              'uuid': str(target.uuid)}
@@ -1068,6 +1070,9 @@ class MeshNetwork(object):
         with open(basedir + '/remove/transaction.json', 'r') as out:
           information = json.loads(out.read())
 
+        if target[0] != information['target']['uuid'] or target[1] != information['target']['ip']:
+          raise ValueError('not locked')
+
         information['token'] = {}
         information['token']['content'] = messages[0]
 
@@ -1079,10 +1084,16 @@ class MeshNetwork(object):
         with open(basedir + '/remove/transaction.json', 'r') as out:
           information = json.loads(out.read())
 
+        if target[0] != information['target']['uuid'] or target[1] != information['target']['ip']:
+          raise ValueError('not locked')
+
         self.send(80305, recipient=target, plant=local, messages=[information['token']['content']])
       elif sub == 7:
         with open(basedir + '/remove/transaction.json', 'r') as out:
           information = json.loads(out.read())
+
+        if target[0] != information['target']['uuid'] or target[1] != information['target']['ip']:
+          raise ValueError('not locked')
 
         information['token'] = {}
         information['token']['content'] = messages[0]
