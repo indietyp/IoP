@@ -3,4 +3,5 @@ __pycache__/
 *$py.class
 settings/debug.py
 settings/logging.py
+settings/database.py
 *.pid
