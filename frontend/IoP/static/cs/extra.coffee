@@ -370,6 +370,8 @@ init_manage = () ->
         # role = 'Slave'
 
     for k, plant in masters
+      console.log plant
+      console.log k
       html += main.replace('[[MASTER]]', 'Master').replace('[[NAME]]', plant.name).replace('[[SLAVE]]', '')
 
     console.log slaves
