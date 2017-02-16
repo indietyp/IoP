@@ -327,7 +327,7 @@ init_manage = () ->
     <div class='item'>
       <div class='ui equal width grid'>
         <div class='column'>
-          <a class='ui red ribbon label'>[[MASTER]]</a>
+          <a class='ui [[COLOR]] ribbon label' [[ADDITIONAL]]>[[MASTER]]</a>
           <span style='font-weight:bold'>[[NAME]]</span>
         </div>
         [[SLAVE]]
@@ -355,7 +355,7 @@ init_manage = () ->
         <div class='menu'>
           [[MASTERS]]
         </div>
-      </div
+      </div>
     </div>
     <script>
       $('.[[NAME]].slave').dropdown({});
@@ -373,10 +373,10 @@ init_manage = () ->
         # role = 'Slave'
 
     for k, plant of masters
-      html += main.replace('[[MASTER]]', 'Master').replace('[[NAME]]', plant.name).replace('[[SLAVE]]', '')
+      html += main.replace('[[MASTER]]', 'Master').replace('[[NAME]]', plant.name).replace('[[SLAVE]]', '').replace('[[COLOR]]', 'red').replace('[[ADDITIONAL]]', '')
 
     for k, plant of slaves
-      content = main.replace('[[MASTER]]', 'Slave').replace(/\[\[NAME\]\]/, plant.name)
+      content = main.replace('[[MASTER]]', 'Slave').replace(/\[\[NAME\]\]/, plant.name).replace('[[COLOR]]', 'orange').replace('[[ADDITIONAL]]', style='padding-right:2em')
       processed_slave = slave.replace('[[NAME]]', plant.name).replace('[[HOST]]', masters[plant.role].name)
       processed_masters = ''
 
