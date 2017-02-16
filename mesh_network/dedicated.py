@@ -192,6 +192,7 @@ class MeshDedicatedDispatch(object):
     if mode not in ['remove', 'activate', 'deactivate']:
       raise ValueError('remove mode not valid')
 
+    from mesh_network import daemon
     daemon = MeshNetwork()
     # for target in Plant.select().where(Plant.active == True, Plant.localhost == False, Plant.role == 'master'):
     #   initial = {'mode': mode, 'destination': {'uuid': str(plant.uuid), 'ip': plant.ip, 'relation': 'master'}}
