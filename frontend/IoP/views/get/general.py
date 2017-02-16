@@ -61,3 +61,11 @@ def change_day_night():
     data = response.read().decode('utf8')
 
   return data
+
+
+@app.route('/get/manage', methods=['POST'])
+def get_manage():
+  with urllib.request.urlopen('http://localhost:2902/get/plants/name/extended') as response:
+    output = response.read().decode('utf8')
+
+  return output
