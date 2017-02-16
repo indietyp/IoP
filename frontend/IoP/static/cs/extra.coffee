@@ -370,15 +370,15 @@ init_manage = () ->
         # role = 'Slave'
 
     for k, plant of masters
-      html += main.replace('[[MASTER]]', 'Master').replace('[[NAME]]', plant.name).replace('[[SLAVE]]', '').replace('[[COLOR]]', 'red').replace('[[ADDITIONAL]]', '')
+      html += main.replace('[[MASTER]]', 'Master').replace('[[NAME]]', _.capitalize(plant.name)).replace('[[SLAVE]]', '').replace('[[COLOR]]', 'red').replace('[[ADDITIONAL]]', '')
 
     for k, plant of slaves
       content = main.replace('[[MASTER]]', 'Slave').replace(/\[\[NAME\]\]/, plant.name).replace('[[COLOR]]', 'orange').replace('[[ADDITIONAL]]', style="style='padding-right:2em'")
-      processed_slave = slave.replace('[[NAME]]', plant.name).replace('[[HOST]]', masters[plant.role].name)
+      processed_slave = slave.replace('[[NAME]]', _.capitalize(plant.name)).replace('[[HOST]]', masters[plant.role].name)
       processed_masters = ''
 
       for k, master of masters
-        processed_masters += "<div class='item' data-value='#{master.uuid}'>#{master.name}</div>"
+        processed_masters += "<div class='item' data-value='#{master.uuid}'>#{_.capitalize(master.name)}</div>"
 
       processed_slave = processed_slave.replace('[[MASTERS]]', processed_masters)
       html += content.replace('[[SLAVE]]', processed_slave)
