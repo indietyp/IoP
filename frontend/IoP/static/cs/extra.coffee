@@ -327,7 +327,7 @@ init_manage = () ->
     <div class='item'>
       <div class='ui equal width grid'>
         <div class='column'>
-          <a class='ui red ibbon label'>[[MASTER]]</a>
+          <a class='ui red ribbon label'>[[MASTER]]</a>
           <span style='font-weight:bold'>[[NAME]]</span>
         </div>
         [[SLAVE]]
@@ -376,7 +376,7 @@ init_manage = () ->
       html += main.replace('[[MASTER]]', 'Master').replace('[[NAME]]', plant.name).replace('[[SLAVE]]', '')
 
     for k, plant of slaves
-      content = main.replace('[[MASTER]]', 'Slave').replace('[[NAME]]', plant.name)
+      content = main.replace('[[MASTER]]', 'Slave').replace(/\[\[NAME\]\]/, plant.name)
       processed_slave = slave.replace('[[NAME]]', plant.name).replace('[[HOST]]', masters[plant.role].name)
       processed_masters = ''
 
