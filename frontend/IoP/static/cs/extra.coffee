@@ -362,7 +362,7 @@ init_manage = () ->
     slaves = {}
 
     for plant in msg
-      if plant.role != 'master'
+      if plant.role == 'master'
         masters[plant.uuid] = plant
         # role = 'Master'
       else
@@ -370,21 +370,18 @@ init_manage = () ->
         # role = 'Slave'
 
     for k, plant of masters
-      console.log plant
-      console.log k
       html += main.replace('[[MASTER]]', 'Master').replace('[[NAME]]', plant.name).replace('[[SLAVE]]', '')
 
-    console.log slaves
-    console.log masters
-    console.log html
-
     for k, plant of slaves
-      processed_slave = slave.replace('[[NAME]]', plant.name).replace('[[HOST]]', main[plant.uuid].name)
+      content = main.replace('[[MASTER]]', 'Slave').replace('[[NAME]]', plant.name)
+      processed_slave = slave.replace('[[NAME]]', plant.name).replace('[[HOST]]', masters[plant.uuid].name)
       processed_masters = ''
+
       for k, master of masters
         processed_masters += "<div class='item' data-value='#{master.uuid}'>#{master.name}</div>"
+
       processed_slave = processed_slave.replace('[[MASTERS]]', processed_masters)
-      html += processed_slave
+      html += content.replace('[[SLAVE]]', processed_slave)
 
     console.log html
 
