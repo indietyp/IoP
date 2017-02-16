@@ -363,10 +363,10 @@ init_manage = () ->
 
     for plant in msg
       if plant.role != 'master'
-        master[plant.uuid] = plant
+        masters[plant.uuid] = plant
         # role = 'Master'
       else
-        slave[plant.uuid] = plant
+        slaves[plant.uuid] = plant
         # role = 'Slave'
 
     for k, plant in masters
