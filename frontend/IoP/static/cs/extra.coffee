@@ -337,10 +337,10 @@ init_manage = () ->
               <i class='edit icon' />
             </button>
             <button class='ui button'>
-              <i class='checkmark icon' />
+              <i class='[[CHECKMARK_ICON]] icon' />
             </button>
             <button class='ui button'>
-              <i class='erase icon' />
+              <i class='[[ERASE_ICON]] icon' />
             </button>
           </div>
         </div>
@@ -371,6 +371,10 @@ init_manage = () ->
 
     for k, plant of masters
       html += main.replace('[[MASTER]]', 'Master').replace('[[NAME]]', _.capitalize(plant.name)).replace('[[SLAVE]]', '').replace('[[COLOR]]', 'red').replace('[[ADDITIONAL]]', '')
+      if plant.localhost
+        html = html.replace('[[CHECKMARK_ICON]]', 'ban disabled').replace('[[EDIT_ICON]]', 'ban disabled')
+      else
+        html = html.replace('[[CHECKMARK_ICON]]', 'checkmark').replace('[[EDIT_ICON]]', 'edit')
 
     for k, plant of slaves
       content = main.replace('[[MASTER]]', 'Slave').replace(/\[\[NAME\]\]/, _.capitalize(plant.name)).replace('[[COLOR]]', 'orange').replace('[[ADDITIONAL]]', style="style='padding-right:2em'")
@@ -381,7 +385,7 @@ init_manage = () ->
         processed_masters += "<div class='item' data-value='#{master.uuid}'>#{_.capitalize(master.name)}</div>"
 
       processed_slave = processed_slave.replace('[[MASTERS]]', processed_masters)
-      html += content.replace('[[SLAVE]]', processed_slave)
+      html += content.replace('[[SLAVE]]', processed_slave).replace('[[ERASE_ICON]]', 'erase').replace('[[CHECKMARK_ICON]]', 'checkmark')
 
     $('.ui.relaxed.divided.list').html html
 
