@@ -372,9 +372,9 @@ init_manage = () ->
     for k, plant of masters
       html += main.replace('[[MASTER]]', 'Master').replace('[[NAME]]', _.capitalize(plant.name)).replace('[[SLAVE]]', '').replace('[[COLOR]]', 'red').replace('[[ADDITIONAL]]', '')
       if plant.localhost
-        html = html.replace('[[CHECKMARK_ICON]]', 'ban disabled').replace('[[EDIT_ICON]]', 'ban disabled')
+        html = html.replace('[[CHECKMARK_ICON]]', 'ban disabled').replace('[[ERASE_ICON]]', 'ban disabled')
       else
-        html = html.replace('[[CHECKMARK_ICON]]', 'checkmark').replace('[[EDIT_ICON]]', 'edit')
+        html = html.replace('[[CHECKMARK_ICON]]', 'checkmark').replace('[[ERASE_ICON]]', 'edit')
 
     for k, plant of slaves
       content = main.replace('[[MASTER]]', 'Slave').replace(/\[\[NAME\]\]/, _.capitalize(plant.name)).replace('[[COLOR]]', 'orange').replace('[[ADDITIONAL]]', style="style='padding-right:2em'")
