@@ -374,7 +374,7 @@ init_manage = () ->
 
     for k, plant of slaves
       content = main.replace('[[MASTER]]', 'Slave').replace('[[NAME]]', plant.name)
-      processed_slave = slave.replace('[[NAME]]', plant.name).replace('[[HOST]]', masters[plant.uuid].name)
+      processed_slave = slave.replace('[[NAME]]', plant.name).replace('[[HOST]]', masters[plant.role].name)
       processed_masters = ''
 
       for k, master of masters
