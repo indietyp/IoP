@@ -374,6 +374,7 @@ init_manage = () ->
 
     console.log slaves
     console.log masters
+    console.log html
 
     for k, plant in slaves
       processed_slave = slave.replace('[[NAME]]', plant.name).replace('[[HOST]]', main[plant.uuid].name)
