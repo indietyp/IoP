@@ -373,8 +373,8 @@ init_manage = () ->
       html += main.replace('[[MASTER]]', 'Master').replace('[[NAME]]', _.capitalize(plant.name)).replace('[[SLAVE]]', '').replace('[[COLOR]]', 'red').replace('[[ADDITIONAL]]', '')
 
     for k, plant of slaves
-      content = main.replace('[[MASTER]]', 'Slave').replace(/\[\[NAME\]\]/, plant.name).replace('[[COLOR]]', 'orange').replace('[[ADDITIONAL]]', style="style='padding-right:2em'")
-      processed_slave = slave.replace('[[NAME]]', _.capitalize(plant.name)).replace('[[HOST]]', masters[plant.role].name)
+      content = main.replace('[[MASTER]]', 'Slave').replace(/\[\[NAME\]\]/, _.capitalize(plant.name)).replace('[[COLOR]]', 'orange').replace('[[ADDITIONAL]]', style="style='padding-right:2em'")
+      processed_slave = slave.replace('[[NAME]]', _.capitalize(plant.name)).replace('[[HOST]]', _.capitalize(masters[plant.role].name))
       processed_masters = ''
 
       for k, master of masters
