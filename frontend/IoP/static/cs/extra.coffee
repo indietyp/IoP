@@ -386,7 +386,7 @@ init_manage = () ->
     $('.ui.relaxed.divided.list').html html
 
     for k, plant of slaves
-      $(".#{plant.name}.slave").dropdown({});
+      $(".#{_.capitalize(plant.name)}.slave").dropdown({});
 
   return
 window.init_manage = init_manage
