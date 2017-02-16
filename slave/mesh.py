@@ -294,10 +294,8 @@ class MeshNetwork(object):
         with open('transaction.json', 'r') as out:
           information = json.loads(out.read())
 
-        print(messages)
-        print(target)
         if config['master']['ip'] == target[1] and config['master']['uuid'] == target[0] and information['token'] == messages[0]:
-          information['mode'] == 'remove'
+          information['mode'] = 'remove'
 
           with open('transaction.json', 'w') as out:
             out.write(json.dumps(information))
@@ -317,7 +315,7 @@ class MeshNetwork(object):
           with open('transaction.json', 'w') as out:
             out.write(json.dumps(information))
 
-          self.send(80206, recipient=target)
+          self.send(80206, recipient=target, messages=[information['token']])
 
       elif sub == 8:
         with open('config.json', 'r') as out:
@@ -327,13 +325,13 @@ class MeshNetwork(object):
           information = json.loads(out.read())
 
         if config['master']['ip'] == target[1] and config['master']['uuid'] == target[0] and information['token'] == messages[0]:
-          # import machine
-          # import os
+          import machine
+          import os
 
-          # os.remove('config.json')
-          # os.remove('credentials.json')
-          # os.remove('transaction.json')
-          # machine.reboot()
+          os.remove('config.json')
+          os.remove('credentials.json')
+          os.remove('transaction.json')
+          machine.reboot()
 
           self.send(80208, recipient=target)
 

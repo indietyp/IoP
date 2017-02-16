@@ -313,3 +313,77 @@ modify_day_night = (that) ->
     $(that).removeClass 'loading'
   return
 window.modify_day_night = modify_day_night
+
+init_manage = () ->
+  request = $.ajax
+    url: '/get/manage'
+    method: 'POST'
+
+  request.done (msg) ->
+    msg = JSON.parse msg
+
+    html = ""
+    main = "
+    <div class='item'>
+      <div class='ui equal width grid'>
+        <div class='column'>
+          <a class='ui red ibbon label'>[[MASTER]]</a>
+          <span style='font-weight:bold'>[[NAME]]</span>
+        </div>
+        [[SLAVE]]
+        <div class='column right aligned'>
+          <div class='ui icon buttons'>
+            <button class='ui button'>
+              <i class='edit icon' />
+            </button>
+            <button class='ui button'>
+              <i class='checkmark icon' />
+            </button>
+            <button class='ui button'>
+              <i class='erase icon' />
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>"
+    slave = "
+    <div class='column'>
+      My master is
+      <div class='ui inline dropdown [[NAME]] slave'>
+        <div class='text'>[[HOST]]</div>
+        <i class='dropdown icon' />
+        <div class='menu'>
+          [[MASTERS]]
+        </div>
+      </div
+    </div>"
+
+    masters = {}
+    slaves = {}
+
+    for plant in msg.plant
+      if plant.role != 'master'
+        master[plant.uuid] = plant
+        # role = 'Master'
+      else
+        slave[plant.uuid] = plant
+        # role = 'Slave'
+
+    for k, plant in masters
+      html += main.replace('[[MASTER]]', 'Master').replace('[[NAME]]', plant.name).replace('[[SLAVE]]', '')
+
+    console.log slaves
+    console.log masters
+
+    for k, plant in slaves
+      processed_slave = slave.replace('[[NAME]]', plant.name).replace('[[HOST]]', main[plant.uuid].name)
+      processed_masters = ''
+      for k, master in masters
+        processed_masters += "<div class='item' data-value='#{master.uuid}'>#{master.name}</div>"
+      processed_slave = processed_slave.replace('[[MASTERS]]', processed_masters)
+      html += processed_slave
+
+    console.log html
+
+  return
+window.init_manage = init_manage
