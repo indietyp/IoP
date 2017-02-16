@@ -28,6 +28,8 @@ def get_plants_name():
 def get_plants_name_extended():
   plants = Plant.select(Plant.uuid, Plant.name, Plant.role).dicts()
   plants = list(plants)
+  for plant in plants:
+    plant['uuid'] = str(plant['uuid'])
   return json.dumps(plants)
 
 
