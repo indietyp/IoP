@@ -336,10 +336,10 @@ init_manage = () ->
             <button class='ui button'>
               <i class='edit icon' />
             </button>
-            <button class='ui button'>
+            <button class='ui [[CHECKMARK_DISABLED]] button'>
               <i class='[[CHECKMARK_ICON]] icon' />
             </button>
-            <button class='ui button'>
+            <button class='ui [[ERASE_DISABLED]] button'>
               <i class='[[ERASE_ICON]] icon' />
             </button>
           </div>
@@ -372,9 +372,9 @@ init_manage = () ->
     for k, plant of masters
       html += main.replace('[[MASTER]]', 'Master').replace('[[NAME]]', _.capitalize(plant.name)).replace('[[SLAVE]]', '').replace('[[COLOR]]', 'red').replace('[[ADDITIONAL]]', '')
       if plant.localhost
-        html = html.replace('[[CHECKMARK_ICON]]', 'ban disabled').replace('[[ERASE_ICON]]', 'ban disabled')
+        html = html.replace('[[CHECKMARK_ICON]]', 'ban').replace('[[ERASE_ICON]]', 'ban').replace('[[CHECKMARK_DISABLED]]', 'disabled').replace('[[ERASE_DISABLED]]', 'disabled')
       else
-        html = html.replace('[[CHECKMARK_ICON]]', 'checkmark').replace('[[ERASE_ICON]]', 'edit')
+        html = html.replace('[[CHECKMARK_ICON]]', 'checkmark').replace('[[ERASE_ICON]]', 'edit').replace('[[CHECKMARK_DISABLED]]', '').replace('[[ERASE_DISABLED]]', '')
 
     for k, plant of slaves
       content = main.replace('[[MASTER]]', 'Slave').replace(/\[\[NAME\]\]/, _.capitalize(plant.name)).replace('[[COLOR]]', 'orange').replace('[[ADDITIONAL]]', style="style='padding-right:2em'")
@@ -385,7 +385,7 @@ init_manage = () ->
         processed_masters += "<div class='item' data-value='#{master.uuid}'>#{_.capitalize(master.name)}</div>"
 
       processed_slave = processed_slave.replace('[[MASTERS]]', processed_masters)
-      html += content.replace('[[SLAVE]]', processed_slave).replace('[[ERASE_ICON]]', 'erase').replace('[[CHECKMARK_ICON]]', 'checkmark')
+      html += content.replace('[[SLAVE]]', processed_slave).replace('[[ERASE_ICON]]', 'erase').replace('[[CHECKMARK_ICON]]', 'checkmark').replace('[[CHECKMARK_DISABLED]]', '').replace('[[ERASE_DISABLED]]', '')
 
     $('.ui.relaxed.divided.list').html html
 
