@@ -374,7 +374,7 @@ init_manage = () ->
       if plant.localhost
         html = html.replace('[[CHECKMARK_ICON]]', 'ban').replace('[[ERASE_ICON]]', 'ban').replace('[[CHECKMARK_DISABLED]]', 'disabled').replace('[[ERASE_DISABLED]]', 'disabled')
       else
-        html = html.replace('[[CHECKMARK_ICON]]', 'checkmark').replace('[[ERASE_ICON]]', 'edit').replace('[[CHECKMARK_DISABLED]]', '').replace('[[ERASE_DISABLED]]', '')
+        html = html.replace('[[CHECKMARK_ICON]]', 'checkmark').replace('[[ERASE_ICON]]', 'erase').replace('[[CHECKMARK_DISABLED]]', '').replace('[[ERASE_DISABLED]]', '')
 
     for k, plant of slaves
       content = main.replace('[[MASTER]]', 'Slave').replace(/\[\[NAME\]\]/, _.capitalize(plant.name)).replace('[[COLOR]]', 'orange').replace('[[ADDITIONAL]]', style="style='padding-right:2em'")
