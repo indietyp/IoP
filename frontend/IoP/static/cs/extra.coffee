@@ -361,7 +361,7 @@ init_manage = () ->
     masters = {}
     slaves = {}
 
-    for plant in msg.plant
+    for plant in msg
       if plant.role != 'master'
         master[plant.uuid] = plant
         # role = 'Master'
