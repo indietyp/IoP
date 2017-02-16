@@ -356,10 +356,7 @@ init_manage = () ->
           [[MASTERS]]
         </div>
       </div>
-    </div>
-    <script>
-      $('.[[NAME]].slave').dropdown({});
-    </script>"
+    </div>"
 
     masters = {}
     slaves = {}
@@ -376,7 +373,7 @@ init_manage = () ->
       html += main.replace('[[MASTER]]', 'Master').replace('[[NAME]]', plant.name).replace('[[SLAVE]]', '').replace('[[COLOR]]', 'red').replace('[[ADDITIONAL]]', '')
 
     for k, plant of slaves
-      content = main.replace('[[MASTER]]', 'Slave').replace(/\[\[NAME\]\]/, plant.name).replace('[[COLOR]]', 'orange').replace('[[ADDITIONAL]]', style='padding-right:2em')
+      content = main.replace('[[MASTER]]', 'Slave').replace(/\[\[NAME\]\]/, plant.name).replace('[[COLOR]]', 'orange').replace('[[ADDITIONAL]]', style="style='padding-right:2em'")
       processed_slave = slave.replace('[[NAME]]', plant.name).replace('[[HOST]]', masters[plant.role].name)
       processed_masters = ''
 
@@ -387,6 +384,9 @@ init_manage = () ->
       html += content.replace('[[SLAVE]]', processed_slave)
 
     $('.ui.relaxed.divided.list').html html
+
+    for k, plant of slaves
+      $(".#{plant.name}.slave").dropdown({});
 
   return
 window.init_manage = init_manage
