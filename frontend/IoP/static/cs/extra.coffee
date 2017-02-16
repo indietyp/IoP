@@ -356,7 +356,10 @@ init_manage = () ->
           [[MASTERS]]
         </div>
       </div
-    </div>"
+    </div>
+    <script>
+      $('.[[NAME]].slave').dropdown({});
+    </script>"
 
     masters = {}
     slaves = {}
@@ -383,7 +386,7 @@ init_manage = () ->
       processed_slave = processed_slave.replace('[[MASTERS]]', processed_masters)
       html += content.replace('[[SLAVE]]', processed_slave)
 
-    $('.ui.relaxed.divided.list').html = html
+    $('.ui.relaxed.divided.list').html html
 
   return
 window.init_manage = init_manage
