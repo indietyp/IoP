@@ -123,7 +123,7 @@ class MeshDedicatedDispatch(object):
       del dict_plant['id']
       del dict_plant['person']
 
-      for rest in Plant.select().where(Plant.ip != plant.ip, Plant.localhost == False, Plant.role == 'master'):
+      for rest in list(Plant.select().where(Plant.ip != plant.ip, Plant.localhost == False, Plant.role == 'master')):
         data = urllib.parse.urlencode(dict_plant).encode('ascii')
         req = urllib.request.Request('http://' + rest.ip + ':2902/create/plant', data)
         try:
@@ -136,7 +136,7 @@ class MeshDedicatedDispatch(object):
     from models.plant import Plant
 
     daemon = MeshNetwork()
-    for plant in Plant.select().where(Plant.localhost == False, Plant.role == 'master'):
+    for plant in list(Plant.select().where(Plant.localhost == False, Plant.role == 'master')):
       daemon.deliver(1, sub=1, recipient=plant, sensor=sensor)
 
   def reboot(self):
@@ -144,7 +144,7 @@ class MeshDedicatedDispatch(object):
     from models.plant import Plant
     daemon = MeshNetwork()
 
-    for plant in Plant.select().where(Plant.localhost == False):
+    for plant in list(Plant.select().where(Plant.localhost == False)):
       daemon.deliver(2, sub=1, recipient=plant)
 
     return True
@@ -168,7 +168,7 @@ class MeshDedicatedDispatch(object):
 
     daemon = MeshNetwork()
 
-    for plant in Plant.select().where(Plant.localhost == False, Plant.role == 'master'):
+    for plant in list(Plant.select().where(Plant.localhost == False, Plant.role == 'master')):
       daemon.deliver(3, sub=1, recipient=plant, change={'object': counter, 'uuid': uuid})
 
     return True
@@ -193,31 +193,31 @@ class MeshDedicatedDispatch(object):
       raise ValueError('remove mode not valid')
 
     daemon = MeshNetwork()
-    # for target in Plant.select().where(Plant.active == True, Plant.localhost == False, Plant.role == 'master'):
-    #   initial = {'mode': mode, 'destination': {'uuid': str(plant.uuid), 'ip': plant.ip, 'relation': 'master'}}
-    #   daemon.remove(1, 1, target, initial=initial)
-    #   status = self.get(120)
+    for target in list(Plant.select().where(Plant.active == True, Plant.localhost == False, Plant.role == 'master')):
+      initial = {'mode': mode, 'destination': {'uuid': str(plant.uuid), 'ip': plant.ip, 'relation': 'master'}}
+      daemon.remove(1, 1, target, initial=initial)
+      status = self.get(120)
 
-    #   if status == 1:
-    #     print('successful')
-    #   else:
-    #     print('nononononono')
+      if status == 1:
+        print('successful')
+      else:
+        print('nononononono')
 
     local = Plant.get(localhost=True)
     if plant.role != 'master' and plant.role == str(local.uuid):
       daemon.remove(2, 1, plant)
-      # status = self.get(120)
+      status = self.get(120)
 
-      # if status == 1:
-      #   print('successful')
-      # else:
-      #   print('nononononono')
+      if status == 1:
+        print('successful')
+      else:
+        print('nononononono')
 
-    # from models.sensor import SensorData, SensorStatus, SensorCount, SensorSatisfactionValue, SensorDataPrediction
-    # from models.plant import PlantNetworkUptime
-    # for model in [PlantNetworkUptime, SensorData, SensorStatus, SensorCount, SensorSatisfactionValue, SensorDataPrediction]:
-    #   model.delete().where(plant=plant).execute()
-    # plant.delete_instance()
+    from models.sensor import SensorData, SensorStatus, SensorCount, SensorSatisfactionValue, SensorDataPrediction
+    from models.plant import PlantNetworkUptime
+    for model in [PlantNetworkUptime, SensorData, SensorStatus, SensorCount, SensorSatisfactionValue, SensorDataPrediction]:
+      model.delete().where(plant=plant).execute()
+    plant.delete_instance()
 
 if __name__ == '__main__':
   logger = logging.getLogger('mesh')

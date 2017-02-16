@@ -5,39 +5,40 @@ block content
   .ui.segment
     h1.ui.header Manage Plants
     .ui.relaxed.divided.list
-      .item
-        .ui.equal.width.grid
-          .column
-            a.ui.red.ribbon.label Master
-            span(style='font-weight:bold') Marta
-          .column.right.aligned
-            .ui.icon.buttons
-              button.ui.button
-                i.edit.icon
-              button.ui.button
-                i.checkmark.icon
-              button.ui.button
-                i.erase.icon
-      .item
-        .ui.equal.width.grid
-          .column
-            a.ui.orange.ribbon.label(style='padding-right:2em') Slave
-            span(style='font-weight:bold') Gertrud
-          .column
-            | My master is
-            .ui.inline.dropdown.gertrud.slave
-              .text Marta
-              i.dropdown.icon
-              .menu
-                .item Marta
-                .item Thomas
-          .column.right.aligned
-            .ui.icon.buttons
-              button.ui.button
-                i.edit.icon
-              button.ui.button
-                i.checkmark.icon
-              button.ui.button
-                i.erase.icon
+      //- .item
+      //-   .ui.equal.width.grid
+      //-     .column
+      //-       a.ui.red.ribbon.label Master
+      //-       span(style='font-weight:bold') Marta
+      //-     .column.right.aligned
+      //-       .ui.icon.buttons
+      //-         button.ui.button
+      //-           i.edit.icon
+      //-         button.ui.button
+      //-           i.checkmark.icon
+      //-         button.ui.button
+      //-           i.erase.icon
+      //- .item
+      //-   .ui.equal.width.grid
+      //-     .column
+      //-       a.ui.orange.ribbon.label(style='padding-right:2em') Slave
+      //-       span(style='font-weight:bold') Gertrud
+      //-     .column
+      //-       | My master is
+      //-       .ui.inline.dropdown.gertrud.slave
+      //-         .text Marta
+      //-         i.dropdown.icon
+      //-         .menu
+      //-           .item Marta
+      //-           .item Thomas
+      //-     .column.right.aligned
+      //-       .ui.icon.buttons
+      //-         button.ui.button
+      //-           i.edit.icon
+      //-         button.ui.button
+      //-           i.checkmark.icon
+      //-         button.ui.button
+      //-           i.erase.icon
       script.
         $('.gertrud.slave').dropdown({});
+        init_manage()
