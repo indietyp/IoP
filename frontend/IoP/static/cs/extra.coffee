@@ -383,7 +383,7 @@ init_manage = () ->
       processed_slave = processed_slave.replace('[[MASTERS]]', processed_masters)
       html += content.replace('[[SLAVE]]', processed_slave)
 
-    console.log html
+    $('.ui.relaxed.divided.list').html = html
 
   return
 window.init_manage = init_manage
