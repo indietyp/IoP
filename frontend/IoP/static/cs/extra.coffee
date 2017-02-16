@@ -369,7 +369,7 @@ init_manage = () ->
         slaves[plant.uuid] = plant
         # role = 'Slave'
 
-    for k, plant in masters
+    for k, plant of masters
       console.log plant
       console.log k
       html += main.replace('[[MASTER]]', 'Master').replace('[[NAME]]', plant.name).replace('[[SLAVE]]', '')
@@ -378,10 +378,10 @@ init_manage = () ->
     console.log masters
     console.log html
 
-    for k, plant in slaves
+    for k, plant of slaves
       processed_slave = slave.replace('[[NAME]]', plant.name).replace('[[HOST]]', main[plant.uuid].name)
       processed_masters = ''
-      for k, master in masters
+      for k, master of masters
         processed_masters += "<div class='item' data-value='#{master.uuid}'>#{master.name}</div>"
       processed_slave = processed_slave.replace('[[MASTERS]]', processed_masters)
       html += processed_slave
