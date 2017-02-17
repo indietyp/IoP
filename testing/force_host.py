@@ -1,3 +1,3 @@
 from models.plant import Plant
-target = Plant.get(localhost=True)
+target = Plant.get(name='marta')
 target.save()
