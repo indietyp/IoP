@@ -198,8 +198,7 @@ class ToolChainSensor(object):
 
     self.delete_non_persistant_overflow(data['sensor'], data['plant'])
     logger.debug('{} - {} persistant: {}'.format(data['plant'].name, data['sensor'].name, persistant))
-    # start block
-    ###################
+
     if persistant:
       data['satisfaction'] = self.modify_sensor_status(data, mesh)
       self.mail_evaluation(data)
@@ -209,7 +208,7 @@ class ToolChainSensor(object):
 
       if mesh:
         from mesh_network.dedicated import MeshDedicatedDispatch
-        MeshDedicatedDispatch().new_data(data['sensor'])
+        MeshDedicatedDispatch().new_data(data['sensor'], plant=data['plant'])
 
         if data['plant'].localhost:
           slaves = Plant.select().where(Plant.role == str(data['plant'].uuid))
@@ -218,8 +217,6 @@ class ToolChainSensor(object):
           for slave in slaves:
             MeshDedicatedDispatch().slave_data(slave, data['sensor'])
 
-    ###################
-    # 60.02 seconds
     logger.debug('time elapsed: {}'.format(datetime.datetime.now() - start))
     return persistant
 

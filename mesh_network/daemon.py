@@ -580,11 +580,14 @@ class MeshNetwork(object):
       self.send_local(mode=4, code=1)
       self.send(30900, recipient=recipient, plant=plant)
 
-  def deliver(self, mode, recipient=None, sub=None, sensor=None, message=[], change={}):
+  def deliver(self, mode, recipient=None, sub=None, sensor=None, message=[], change={}, origin=None):
     from models.plant import Plant
     plant = Plant.get(localhost=True)
     if mode == 1:
       if sub == 1:
+        if origin is not None:
+          plant = origin
+
         self.send(50101, recipient=recipient, messages=[sensor.name], plant=plant)
       elif sub == 2:
         import json

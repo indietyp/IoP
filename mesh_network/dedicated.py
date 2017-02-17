@@ -132,12 +132,15 @@ class MeshDedicatedDispatch(object):
         except Exception as e:
           print(e)
 
-  def new_data(self, sensor):
+  def new_data(self, sensor, plant=None):
     from models.plant import Plant
 
+    if plant is None:
+      plant = Plant.get(localhost=True)
+
     daemon = MeshNetwork()
-    for plant in list(Plant.select().where(Plant.active == True, Plant.localhost == False, Plant.role == 'master')):
-      daemon.deliver(1, sub=1, recipient=plant, sensor=sensor)
+    for target in list(Plant.select().where(Plant.active == True, Plant.localhost == False, Plant.role == 'master')):
+      daemon.deliver(1, sub=1, recipient=target, sensor=sensor, origin=plant)
 
   def reboot(self):
     """ for system reboot """
