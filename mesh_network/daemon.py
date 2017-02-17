@@ -670,6 +670,7 @@ class MeshNetwork(object):
         elif int(message[0]) == 3:
           # sensor satisfaction
           pass
+
         elif int(message[0]) == 4:
           with urllib.request.urlopen('http://{}:2902/get/message/{}'.format(recipient[1], message[1])) as response:
             data = json.loads(response.read().decode('utf8'))
@@ -679,15 +680,17 @@ class MeshNetwork(object):
           for key in data.keys():
             setattr(message_preset, key, message_preset[key])
           message_preset.save()
+
         elif int(message[0]) == 5:
-          current = Plant.get(Plant.host == True)
+          current = Plant.get(host=True)
           current.host = False
           current.save()
 
-          new = Plant.get(Plant.uuid == message[1])
+          new = Plant.get(uuid=message[1])
           new.host = True
-          current.save()
-        # notify
+          new.save()
+
+        self.send(50302, recipient=recipient, plant=plant)
 
   def remove(self, mode, sub, target, initial={}, messages=[]):
     import os
