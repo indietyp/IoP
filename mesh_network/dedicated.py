@@ -218,12 +218,9 @@ class MeshDedicatedDispatch(object):
       if mode == 'remove':
         from models.sensor import SensorData, SensorStatus, SensorCount, SensorSatisfactionValue, SensorDataPrediction
         from models.plant import PlantNetworkUptime
-        logger.warning('test')
         for model in [PlantNetworkUptime, SensorData, SensorStatus, SensorCount, SensorSatisfactionValue, SensorDataPrediction]:
-          logger.debug('deleting stuff')
-          model.delete().where(plant=plant).execute()
+          model.delete().where(model.plant == plant).execute()
         plant.delete_instance()
-        logger.info('finished')
       elif mode == 'activate':
         plant.active = True
         plant.save()

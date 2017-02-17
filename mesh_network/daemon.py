@@ -1041,7 +1041,7 @@ class MeshNetwork(object):
             from models.sensor import SensorData, SensorStatus, SensorCount, SensorSatisfactionValue, SensorDataPrediction
             from models.plant import PlantNetworkUptime
             for model in [SensorData, SensorStatus, SensorCount, SensorSatisfactionValue, SensorDataPrediction, PlantNetworkUptime]:
-              model.delete().where(plant=plant).execute()
+              model.delete().where(model.plant == plant).execute()
             plant.delete_instance()
 
         elif information['mode'] == 'activate':
