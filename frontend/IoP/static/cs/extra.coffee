@@ -413,7 +413,7 @@ manage_active_toggle = (that, uuid) ->
     target.removeClass('remove').addClass('checkmark')
 
   return
-windows.manage_active_toggle = manage_active_toggle
+window.manage_active_toggle = manage_active_toggle
 
 manage_purge = (uuid) ->
   request = $.ajax
