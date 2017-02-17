@@ -389,7 +389,7 @@ init_manage = () ->
         processed_masters += "<div class='item' data-value='#{master.uuid}'>#{_.capitalize(master.name)}</div>"
 
       processed_slave = processed_slave.replace('[[MASTERS]]', processed_masters)
-      html += content.replace('[[SLAVE]]', processed_slave).replace('[[ERASE_ICON]]', 'erase').replace('[[CHECKMARK_ICON]]', 'checkmark').replace('[[CHECKMARK_DISABLED]]', '').replace('[[ERASE_DISABLED]]', '').replace(/\[\[UUID\]\]/g, plant.uuid)
+      html += content.replace('[[SLAVE]]', processed_slave).replace('[[ERASE_ICON]]', 'erase').replace('[[CHECKMARK_ICON]]', 'ban').replace('[[CHECKMARK_DISABLED]]', 'disabled').replace('[[ERASE_DISABLED]]', '').replace(/\[\[UUID\]\]/g, plant.uuid)
 
     $('.ui.relaxed.divided.list').html html
 
