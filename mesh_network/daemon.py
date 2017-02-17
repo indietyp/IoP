@@ -1021,8 +1021,7 @@ class MeshNetwork(object):
           raise ValueError('not right machine')
 
         logger.info(information)
-
-        if information['destination']['mode'] == 'remove':
+        if information['mode'] == 'remove':
           from models.plant import Plant
           plant = Plant.get(uuid=information['destination']['uuid'])
           if plant.localhost:
@@ -1042,13 +1041,15 @@ class MeshNetwork(object):
               model.delete().where(plant=plant).execute()
             plant.delete_instance()
 
-        elif information['destination']['mode'] == 'activate':
+        elif information['mode'] == 'activate':
           plant.active = True
           plant.save()
 
-        elif information['destination']['mode'] == 'deactivate':
+        elif information['mode'] == 'deactivate':
           plant.active = False
           plant.save()
+        else:
+          logger.info('missed')
 
         self.send(80112, plant=local, recipient=target, encryption=True,
                   publickey=information['key'][target[0]]['public'], port=information['port'],

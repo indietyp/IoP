@@ -201,9 +201,9 @@ class MeshDedicatedDispatch(object):
         status = self.get(120)
 
         if status == 1:
-          print('successful')
+          logger.info('successful')
         else:
-          print('nononononono')
+          logger.info('could not reach host')
 
       local = Plant.get(localhost=True)
       if plant.role != 'master' and plant.role == str(local.uuid):
@@ -211,15 +211,32 @@ class MeshDedicatedDispatch(object):
         status = self.get(120)
 
         if status == 1:
-          print('successful')
+          logger.info('successful')
         else:
-          print('nononononono')
+          logger.info('could not reach host')
 
-      from models.sensor import SensorData, SensorStatus, SensorCount, SensorSatisfactionValue, SensorDataPrediction
-      from models.plant import PlantNetworkUptime
-      for model in [PlantNetworkUptime, SensorData, SensorStatus, SensorCount, SensorSatisfactionValue, SensorDataPrediction]:
-        model.delete().where(plant=plant).execute()
-      plant.delete_instance()
+      if mode == 'remove':
+        from models.sensor import SensorData, SensorStatus, SensorCount, SensorSatisfactionValue, SensorDataPrediction
+        from models.plant import PlantNetworkUptime
+        logger.warning('test')
+        for model in [PlantNetworkUptime, SensorData, SensorStatus, SensorCount, SensorSatisfactionValue, SensorDataPrediction]:
+          logger.debug('deleting stuff')
+          model.delete().where(plant=plant).execute()
+        plant.delete_instance()
+        logger.info('finished')
+      elif mode == 'activate':
+        plant.active = True
+        plant.save()
+      elif mode == 'deactivate':
+        plant.active = False
+        plant.save()
+      else:
+        logger.error('not supported mode')
+
+      return True
+
+    else:
+      return False
 
 if __name__ == '__main__':
   logger = logging.getLogger('mesh')
