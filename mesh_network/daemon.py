@@ -1033,11 +1033,12 @@ class MeshNetwork(object):
             from subprocess import call
             call(["reboot"])
           else:
-            if plant.role != 'master' and plant.master == str(Plant.get(localhost=True).uuid):
+            if plant.role != 'master' and plant.role == str(Plant.get(localhost=True).uuid):
               self.remove(2, 1, plant)
 
             from models.sensor import SensorData, SensorStatus, SensorCount, SensorSatisfactionValue, SensorDataPrediction
-            for model in [SensorData, SensorStatus, SensorCount, SensorSatisfactionValue, SensorDataPrediction]:
+            from models.plant import PlantNetworkUptime
+            for model in [SensorData, SensorStatus, SensorCount, SensorSatisfactionValue, SensorDataPrediction, PlantNetworkUptime]:
               model.delete().where(plant=plant).execute()
             plant.delete_instance()
 

@@ -15,6 +15,11 @@ def getGeneralSettings():
   return render_template('general/settings.jade', content={'current_active': 'Global Settings', 'type': 'setting', 'get': False})
 
 
+@app.route('/get/manage/template', methods=['POST'])
+def get_manage_template():
+  return render_template('general/manage.jade', content={'current_active': 'Manage', 'type': 'setting', 'get': False})
+
+
 @app.route('/get/discover', methods=['POST'])
 def get_device_discover():
   with urllib.request.urlopen('http://localhost:2902/execute/discover') as response:
@@ -69,3 +74,25 @@ def get_manage():
     output = response.read().decode('utf8')
 
   return output
+
+
+@app.route('/update/plant/toggle', methods=['POST'])
+def update_plant_toggle():
+  from mesh_network.dedicated import MeshDedicatedDispatch
+
+  target = Plant.get(uuid=request.form['uuid'])
+  mode = 'deactivate' if target.active else 'active'
+  MeshDedicatedDispatch().remove(mode, target)
+
+
+@app.route('/update/plant/purge', methods=['POST'])
+def update_plant_purge():
+  from mesh_network.dedicated import MeshDedicatedDispatch
+
+  target = Plant.get(uuid=request.form['uuid'])
+  MeshDedicatedDispatch().remove('remove', target)
+
+
+@app.route('/update/slave/master', methods=['POST'])
+def update_slave_master():
+  pass

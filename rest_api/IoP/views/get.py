@@ -26,7 +26,7 @@ def get_plants_name():
 
 @app.route('/get/plants/name/extended')
 def get_plants_name_extended():
-  plants = Plant.select(Plant.uuid, Plant.name, Plant.role, Plant.localhost).dicts()
+  plants = Plant.select(Plant.uuid, Plant.name, Plant.role, Plant.localhost, Plant.active).dicts()
   plants = list(plants)
   for plant in plants:
     plant['uuid'] = str(plant['uuid'])

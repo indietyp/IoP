@@ -336,10 +336,10 @@ init_manage = () ->
             <button class='ui button'>
               <i class='edit icon' />
             </button>
-            <button class='ui [[CHECKMARK_DISABLED]] button'>
+            <button class='ui [[CHECKMARK_DISABLED]] button' onclick='manage_active_toggle(this, \"[[UUID]]\")'>
               <i class='[[CHECKMARK_ICON]] icon' />
             </button>
-            <button class='ui [[ERASE_DISABLED]] button'>
+            <button class='ui [[ERASE_DISABLED]] button' onclick='manage_purge(\"[[UUID]]\")'>
               <i class='[[ERASE_ICON]] icon' />
             </button>
           </div>
@@ -370,11 +370,15 @@ init_manage = () ->
         # role = 'Slave'
 
     for k, plant of masters
-      html += main.replace('[[MASTER]]', 'Master').replace('[[NAME]]', _.capitalize(plant.name)).replace('[[SLAVE]]', '').replace('[[COLOR]]', 'red').replace('[[ADDITIONAL]]', '')
+      html += main.replace('[[MASTER]]', 'Master').replace('[[NAME]]', _.capitalize(plant.name)).replace('[[SLAVE]]', '').replace('[[COLOR]]', 'red').replace('[[ADDITIONAL]]', '').replace(/\[\[UUID\]\]/g, plant.uuid)
       if plant.localhost
         html = html.replace('[[CHECKMARK_ICON]]', 'ban').replace('[[ERASE_ICON]]', 'ban').replace('[[CHECKMARK_DISABLED]]', 'disabled').replace('[[ERASE_DISABLED]]', 'disabled')
       else
-        html = html.replace('[[CHECKMARK_ICON]]', 'checkmark').replace('[[ERASE_ICON]]', 'erase').replace('[[CHECKMARK_DISABLED]]', '').replace('[[ERASE_DISABLED]]', '')
+        if plant.active
+          toggle = 'remove'
+        else
+          toggle = 'checkmark'
+        html = html.replace('[[CHECKMARK_ICON]]', toggle).replace('[[ERASE_ICON]]', 'erase').replace('[[CHECKMARK_DISABLED]]', '').replace('[[ERASE_DISABLED]]', '')
 
     for k, plant of slaves
       content = main.replace('[[MASTER]]', 'Slave').replace(/\[\[NAME\]\]/, _.capitalize(plant.name)).replace('[[COLOR]]', 'orange').replace('[[ADDITIONAL]]', style="style='padding-right:2em'")
@@ -385,12 +389,36 @@ init_manage = () ->
         processed_masters += "<div class='item' data-value='#{master.uuid}'>#{_.capitalize(master.name)}</div>"
 
       processed_slave = processed_slave.replace('[[MASTERS]]', processed_masters)
-      html += content.replace('[[SLAVE]]', processed_slave).replace('[[ERASE_ICON]]', 'erase').replace('[[CHECKMARK_ICON]]', 'checkmark').replace('[[CHECKMARK_DISABLED]]', '').replace('[[ERASE_DISABLED]]', '')
+      html += content.replace('[[SLAVE]]', processed_slave).replace('[[ERASE_ICON]]', 'erase').replace('[[CHECKMARK_ICON]]', 'checkmark').replace('[[CHECKMARK_DISABLED]]', '').replace('[[ERASE_DISABLED]]', '').replace(/\[\[UUID\]\]/g, plant.uuid)
 
     $('.ui.relaxed.divided.list').html html
 
     for k, plant of slaves
       $(".#{_.capitalize(plant.name)}.slave").dropdown({});
 
+    return
   return
 window.init_manage = init_manage
+
+manage_active_toggle = (that, uuid) ->
+  request = $.ajax
+    url: '/update/plant/toggle'
+    method: 'POST'
+    data: uuid: uuid
+
+  target = $(that).children()[0]
+  if target.hasClass('checkmark')
+    target.removeClass('checkmark').addClass('remove')
+  else
+    target.removeClass('remove').addClass('checkmark')
+
+  return
+windows.manage_active_toggle = manage_active_toggle
+
+manage_purge = (uuid) ->
+  request = $.ajax
+    url: '/update/plant/purge'
+    method: 'POST'
+    data: uuid: uuid
+  return
+windows.manage_purge = manage_purge

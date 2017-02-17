@@ -621,6 +621,27 @@ $ ->
     window.history.pushState({}, '', '/global/settings')
     return
 
+  $('a.item.manage').click (e) ->
+    request = $.ajax
+      url: '/get/manage/template',
+      method: 'POST'
+
+    request.done (msg) ->
+      $('section.mainContent').html(msg)
+      window.history.pushState({}, '', '/manage')
+      $('div.menu.mainMenu a').parent().children('.active').removeClass 'active'
+      # $('div.menu.mainMenu a.overview').addClass 'active'
+      $('div.pusher div.ui.segment div.information h1.ui.header.plant_header').html _.capitalize('Global Settings')
+      $('div.iopheader div.ui.menu.secondary').css('display', 'none')
+      return
+
+    request.fail (jqXHR, textStatus) ->
+      $('section.mainContent').html('Request failed:' + textStatus)
+      return
+
+    window.history.pushState({}, '', '/manage')
+    return
+
   $('a.item.plant_settings').click (e) ->
     request = $.ajax
       url: '/get/plant/settings',
