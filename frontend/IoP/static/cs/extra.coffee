@@ -339,7 +339,7 @@ init_manage = () ->
             <button class='ui [[CHECKMARK_DISABLED]] button' onclick='manage_active_toggle(this, \"[[UUID]]\")'>
               <i class='[[CHECKMARK_ICON]] icon' />
             </button>
-            <button class='ui [[ERASE_DISABLED]] button' onclick='manage_purge(\"[[UUID]]\")'>
+            <button class='ui [[ERASE_DISABLED]] button' onclick='manage_purge(\'[[UUID]]\')'>
               <i class='[[ERASE_ICON]] icon' />
             </button>
           </div>
