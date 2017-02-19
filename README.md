@@ -1,16 +1,14 @@
-IMPORTANT
-add top dir (IoP) to the PYTHONPATH
+# Internet of Plants
+## milestones for IoP development
 
-- [ ] Add slave mode
-- [ ] use esp8266 module
-- [ ] change registration to active in frontend
-- [ ] integrate modify messages
-- [ ] add global settings layout
-- [ ] extend mesh_network + rest_api
+- [x] add slave mode
+- [x] use esp8266 module
+- [x] change registration to active in frontend
+- [x] add global settings layout
+- [x] extend mesh_network + rest_api
 - [ ] add water pump
+- [ ] rewrite setup with frontend, instead of CLI
+- [ ] documentation
 
-more are coming later
-
-in future
-- [ ] write android app
-- [ ] add magnetic field esp
+## What is Internet of Plants?
+----

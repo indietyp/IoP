@@ -333,7 +333,7 @@ init_manage = () ->
         [[SLAVE]]
         <div class='column right aligned'>
           <div class='ui icon buttons'>
-            <button class='ui button'>
+            <button class='ui button' onclick='window.location.href = \"/plant/[[LNAME]]/settings\">
               <i class='edit icon' />
             </button>
             <button class='ui [[CHECKMARK_DISABLED]] button' onclick='manage_active_toggle(this, \"[[UUID]]\")'>
@@ -349,7 +349,7 @@ init_manage = () ->
     slave = "
     <div class='column'>
       My master is
-      <div class='ui inline dropdown [[NAME]] slave'>
+      <div class='ui inline dropdown [[LNAME]] slave'>
         <div class='text'>[[HOST]]</div>
         <i class='dropdown icon' />
         <div class='menu'>
@@ -370,7 +370,7 @@ init_manage = () ->
         # role = 'Slave'
 
     for k, plant of masters
-      html += main.replace('[[MASTER]]', 'Master').replace('[[NAME]]', _.capitalize(plant.name)).replace('[[SLAVE]]', '').replace('[[COLOR]]', 'red').replace('[[ADDITIONAL]]', '').replace(/\[\[UUID\]\]/g, plant.uuid)
+      html += main.replace('[[MASTER]]', 'Master').replace('[[NAME]]', _.capitalize(plant.name)).replace('[[SLAVE]]', '').replace('[[COLOR]]', 'red').replace('[[ADDITIONAL]]', '').replace(/\[\[UUID\]\]/g, plant.uuid).replace(/\[\[LNAME\]\]/g, plant.name)
       if plant.localhost
         html = html.replace('[[CHECKMARK_ICON]]', 'ban').replace('[[ERASE_ICON]]', 'ban').replace('[[CHECKMARK_DISABLED]]', 'disabled').replace('[[ERASE_DISABLED]]', 'disabled')
       else
@@ -382,7 +382,7 @@ init_manage = () ->
 
     for k, plant of slaves
       content = main.replace('[[MASTER]]', 'Slave').replace(/\[\[NAME\]\]/, _.capitalize(plant.name)).replace('[[COLOR]]', 'orange').replace('[[ADDITIONAL]]', style="style='padding-right:2em'")
-      processed_slave = slave.replace('[[NAME]]', _.capitalize(plant.name)).replace('[[HOST]]', _.capitalize(masters[plant.role].name))
+      processed_slave = slave.replace('[[NAME]]', _.capitalize(plant.name)).replace('[[HOST]]', _.capitalize(masters[plant.role].name)).replace(/\[\[LNAME\]\]/g, plant.name)
       processed_masters = ''
 
       for k, master of masters
@@ -394,7 +394,7 @@ init_manage = () ->
     $('.ui.relaxed.divided.list').html html
 
     for k, plant of slaves
-      $(".#{_.capitalize(plant.name)}.slave").dropdown({});
+      $(".#{plant.name}.slave").dropdown({});
 
     return
   return

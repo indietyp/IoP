@@ -625,7 +625,10 @@ class MeshNetwork(object):
     elif mode == 3:
       if sub == 1:
         if 'object' in change and 'uuid' in change:
-          self.send(50301, recipient=recipient, plant=plant, messages=[change['object'], str(change['uuid'])])
+          message = [change['object'], str(change['uuid'])]
+          if 'sensor' in change:
+            message.append(str(change['sensor']))
+          self.send(50301, recipient=recipient, plant=plant, messages=message)
         else:
           raise ValueError('no full change object')
       if sub == 2:
@@ -692,6 +695,31 @@ class MeshNetwork(object):
           new = Plant.get(uuid=message[1])
           new.host = True
           new.save()
+
+        elif int(message[1]) == 6:
+          from models.sensor import SensorSatisfactionLevel, SensorSatisfactionValue
+          cau_gen = SensorSatisfactionLevel.get(SensorSatisfactionLevel.name_color == 'yellow')
+          opt_gen = SensorSatisfactionLevel.get(SensorSatisfactionLevel.name_color == 'green')
+
+          caution = SensorSatisfactionValue.get(SensorSatisfactionValue.plant == plant,
+                                                SensorSatisfactionValue.sensor == sensor,
+                                                SensorSatisfactionValue.level == cau_gen)
+
+          optimum = SensorSatisfactionValue.get(SensorSatisfactionValue.plant == plant,
+                                                SensorSatisfactionValue.sensor == sensor,
+                                                SensorSatisfactionValue.level == opt_gen)
+
+          url = 'http://{}:2902/get/plant/{}/sensor/{}/range'.format(recipient[1], message[1], message[2])
+          with urllib.request.urlopen(url) as response:
+            data = json.loads(response.read().decode('utf8'))
+
+          caution.min_value = data['yellow']['min']
+          optimum.min_value = data['green']['min']
+          optimum.max_value = data['green']['max']
+          caution.max_value = data['yellow']['max']
+
+          optimum.save()
+          caution.save()
 
         self.send(50302, recipient=recipient, plant=plant)
 

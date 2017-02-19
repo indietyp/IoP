@@ -152,7 +152,7 @@ class MeshDedicatedDispatch(object):
 
     return True
 
-  def update(self, name, uuid):
+  def update(self, name, uuid, *args, **kwargs):
     from models.plant import Plant
     if name.lower() == 'plant':
       counter = 0
@@ -166,13 +166,22 @@ class MeshDedicatedDispatch(object):
       counter = 4
     elif name.lower() == 'host':
       counter = 5
+    elif name.lower() == 'plant satisfaction level':
+      counter = 6
     else:
       return False
 
     daemon = MeshNetwork()
+    change = {'object': counter, 'uuid': uuid}
+
+    if counter == 6:
+      if 'sensor' in kwargs:
+        change['sensor'] = kwargs['sensor'].uuid
+      else:
+        return False
 
     for plant in list(Plant.select().where(Plant.active == True, Plant.localhost == False, Plant.role == 'master')):
-      daemon.deliver(3, sub=1, recipient=plant, change={'object': counter, 'uuid': uuid})
+      daemon.deliver(3, sub=1, recipient=plant, change=change)
 
     return True
 

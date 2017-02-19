@@ -3,15 +3,6 @@ from flask import request
 import json
 from copy import deepcopy
 
-# UPDATE
-# PLANT:
-# - NAME
-# - RESPONSIBLE
-# - RANGE
-# -- GREEN
-# -- YELLOW
-# - LOCATION
-# - TYPE
 from models.plant import Plant, Person
 from models.plant import PlantNetworkStatus, PlantNetworkUptime
 from models.sensor import SensorSatisfactionValue, SensorSatisfactionLevel, Sensor
@@ -77,7 +68,7 @@ def update_plant_ranges(p_uuid):
   value_green.save()
   value_yellow.save()
 
-  MeshDedicatedDispatch().update('plant', plant.uuid)
+  MeshDedicatedDispatch().update('plant satisfaction level', plant.uuid)
   if sensor.name == 'moisture' and plant.role != 'master':
     logger.info('executing slave update')
     information = {'min': value_yellow.min_value, 'max': value_yellow.max_value}

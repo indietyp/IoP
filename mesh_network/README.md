@@ -1,13 +1,9 @@
-# Plants of Things
-## mesh network integration
+# Internet of Plants (IoP)
+## mesh network
 
 ### summary
-PoT_mesh is a extension of PoT
-It's a system for the communication of n raspberry pis to share there sensor values.
-
-### modes integrated
-- [x] MASTER <-> MASTER
-- [ ] MASTER --> SLAVE
+The mesh_netowork is a crucial part of Internet of Plants (IoP)
+The network is designed for the communication of master and slave objects in an decentralized network
 
 ### network protocol
-network protocol is provided in an extra file
+The designed protocol is provided in the seperate file *network_protocoal.txt*

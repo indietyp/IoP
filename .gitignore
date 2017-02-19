@@ -5,4 +5,6 @@ settings/debug.py
 settings/logging.py
 settings/database.py
 mesh_network/remove
+mesh_network/keys
+mesh_network/database_serve
 *.pid

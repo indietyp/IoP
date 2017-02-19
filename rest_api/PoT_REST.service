@@ -1,8 +1,0 @@
-[Unit]
-Description=uWSGI instance for REST-API
-
-[Service]
-ExecStart=/bin/bash -c 'cd /home/[USERNAME]/PoT_REST; uwsgi --ini rest.ini'
-
-[Install]
-WantedBy=multi-user.target

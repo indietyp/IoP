@@ -1,7 +1,5 @@
-from flask import url_for
 from flask_script import Manager
 from IoP import app
-import urllib.parse
 
 manager = Manager(app)
 
@@ -14,6 +12,7 @@ def list_routes():
 
     for line in sorted(output):
         print(line)
+
 
 if __name__ == "__main__":
     manager.run()
