@@ -412,6 +412,10 @@ manage_active_toggle = (that, uuid) ->
   else
     target.removeClass('remove').addClass('checkmark')
 
+  request.done (msg) ->
+    window.location.href = '/'
+    return
+
   return
 window.manage_active_toggle = manage_active_toggle
 
@@ -420,5 +424,10 @@ manage_purge = (uuid) ->
     url: '/update/plant/purge'
     method: 'POST'
     data: uuid: uuid
+
+  request.done (msg) ->
+    window.location.href = '/'
+    return
+
   return
 window.manage_purge = manage_purge

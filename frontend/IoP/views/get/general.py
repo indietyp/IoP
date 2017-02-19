@@ -84,6 +84,8 @@ def update_plant_toggle():
   mode = 'deactivate' if target.active else 'active'
   MeshDedicatedDispatch().remove(mode, target)
 
+  return json.dumps(True)
+
 
 @app.route('/update/plant/purge', methods=['POST'])
 def update_plant_purge():
@@ -91,6 +93,8 @@ def update_plant_purge():
 
   target = Plant.get(uuid=request.form['uuid'])
   MeshDedicatedDispatch().remove('remove', target)
+
+  return json.dumps(True)
 
 
 @app.route('/update/slave/master', methods=['POST'])
