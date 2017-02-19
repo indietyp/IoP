@@ -548,9 +548,17 @@ def get_current_satifaction():
   output = {}
   sensors = Sensor.select()
   for plant in Plant.select():
+    host = None
+    if plant.role != 'master':
+      host = Plant.get(Plant.uuid == plant.role)
+
     statuses = []
     for sensor in sensors:
-      status = SensorStatus.get(SensorStatus.sensor == sensor, SensorStatus.plant == plant)
+      selected = plant
+      if sensor.name in slave_supported and host is not None:
+        selected = host
+
+      status = SensorStatus.get(SensorStatus.sensor == sensor, SensorStatus.plant == selected)
       inserted = 1
       if status.level.label == 'threat':
         inserted = 3
