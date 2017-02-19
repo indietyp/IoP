@@ -555,7 +555,7 @@ def get_current_satifaction():
     statuses = []
     for sensor in sensors:
       selected = plant
-      if sensor.name in slave_supported and host is not None:
+      if sensor.name not in slave_supported and host is not None:
         selected = host
 
       status = SensorStatus.get(SensorStatus.sensor == sensor, SensorStatus.plant == selected)
@@ -590,7 +590,7 @@ def get_current_sensor_satifaction():
     output[str(plant.uuid)] = {}
     for sensor in sensors:
       selected = plant
-      if sensor.name in slave_supported and host is not None:
+      if sensor.name not in slave_supported and host is not None:
         selected = host
 
       status = SensorStatus.get(SensorStatus.sensor == sensor, SensorStatus.plant == selected)
