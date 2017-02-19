@@ -371,6 +371,9 @@ def get_sensor_staus_online(p_uuid):
   if output == {}:
     output = {'online': [0, 0.0, 0.0], 'offline': [0, 0.0, 0.0]}
 
+  if plant.localhost:
+    output = {'online': [100, 1, 1], 'offline': [100, 1, 1]}
+
   return json.dumps(output)
 
 
@@ -572,9 +575,17 @@ def get_current_sensor_satifaction():
   output = {}
   sensors = Sensor.select()
   for plant in Plant.select():
+    host = None
+    if plant.role != 'master':
+      host = Plant.get(Plant.uuid == plant.role)
+
     output[str(plant.uuid)] = {}
     for sensor in sensors:
-      status = SensorStatus.get(SensorStatus.sensor == sensor, SensorStatus.plant == plant)
+      selected = plant
+      if sensor.name in slave_supported and host is not None:
+        selected = host
+
+      status = SensorStatus.get(SensorStatus.sensor == sensor, SensorStatus.plant == selected)
       if status.level.label not in output[str(plant.uuid)]:
         output[str(plant.uuid)][status.level.label] = []
 
