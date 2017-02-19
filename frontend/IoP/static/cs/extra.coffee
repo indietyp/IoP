@@ -333,7 +333,7 @@ init_manage = () ->
         [[SLAVE]]
         <div class='column right aligned'>
           <div class='ui icon buttons'>
-            <button class='ui button' onclick='window.location.href = \"/plant/[[LNAME]]/settings\">
+            <button class='ui button' onclick='window.location.href = \"/plant/[[LNAME]]/settings\"'>
               <i class='edit icon' />
             </button>
             <button class='ui [[CHECKMARK_DISABLED]] button' onclick='manage_active_toggle(this, \"[[UUID]]\")'>
