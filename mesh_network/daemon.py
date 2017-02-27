@@ -109,7 +109,7 @@ class MeshNetwork(object):
     message = message.replace('<', '[').replace('>', ']')
     message = eval(message)
 
-    verified = self.verification(message, received[1], received[0])
+    verified = self.verification(message, received[1], received[0].decode('utf-8'))
     logger.info(verified)
 
     if self.IP != received[1][0] and verified:
