@@ -61,7 +61,7 @@ class MeshNetwork(object):
     database = VariousTools.verify_database()
 
     if database:
-      target = Plant.select().where(uuid=message[1][0])
+      target = Plant.select().where(Plant.uuid == message[1][0])
 
       if target.count() == 0:
         if code[0] == '4':
