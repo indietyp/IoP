@@ -394,7 +394,13 @@ init_manage = () ->
     $('.ui.relaxed.divided.list').html html
 
     for k, plant of slaves
-      $(".#{plant.name}.slave").dropdown({});
+      $(".#{plant.name}.slave")
+        .dropdown(
+          action: 'activate'
+          onChange: (value, text, $selectedItem) ->
+            change_slave_host(value, slave.role)
+        )
+      ;
 
     return
   return
@@ -431,3 +437,13 @@ manage_purge = (uuid) ->
 
   return
 window.manage_purge = manage_purge
+
+change_slave_host = (target, host) ->
+  request = $.ajax
+    url: '/update/slave/master'
+    method: 'POST'
+    data: target: target
+          slave: host
+
+  return
+window.change_slave_host = change_slave_host

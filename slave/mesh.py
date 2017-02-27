@@ -58,7 +58,17 @@ class MeshNetwork(object):
     message = message.replace('<', '[').replace('>', ']')
     message = eval(message)
 
-    if self.IP != received[1][0]:
+    passthrough = False
+    if 'config.json' in os.listdir():
+      with open('config.json', 'r') as out:
+        config = json.loads(out.read())
+
+      if config['master']['uuid'] == message[1][0] and config['master']['ip'] == received[1][0]:
+        passthrough = True
+      elif str(message[3][0])[0] in ['4', '6']:
+        passthrough = True
+
+    if self.IP != received[1][0] and passthrough:
       code = str(message[3][0])
       if code[0] == '1':
         if int(code[1:3]) == 1:
@@ -201,15 +211,13 @@ class MeshNetwork(object):
     if mode == 1:
       print('not supported in slave module')
     elif mode == 2:
-      code = 40200
-
       if 'config.json' not in os.listdir():
         print('discovered - slave not registered')
-        code = 40300
+        code = 40400
         self.send(code, plant=False, recipient=target, messages=['NOT_LOGGED', 'NOT_CONFIGURED', 'SLAVE'])
       else:
         print('discovered - slave registered')
-        code = 40400
+        code = 40500
         self.send(code, recipient=target, messages=['NOT_LOGGED', 'CONFIGURED', 'SLAVE'])
 
   def slave(self, target=None, mode=2, messages=[]):
@@ -252,7 +260,7 @@ class MeshNetwork(object):
   def slave_update(self, mode=1, sub=1, target=None, messages=[]):
     if mode > 3:
       print('mode currently not supported')
-    elif mode == 1 or mode == 3:
+    elif mode in [1, 3]:
       if sub != 2:
         print('not supported sub mode')
       elif sub == 2:
@@ -270,6 +278,43 @@ class MeshNetwork(object):
           out.write(json.dumps(config))
 
         self.send(code, recipient=target)
+    elif mode in [2]:
+      if sub != 2:
+        print('not supported sub mode')
+      else:
+        code = 70202
+
+        with open('config.json', 'r') as out:
+          config = json.loads(out.read())
+
+        if config['master']['uuid'] == target[0] and config['master']['ip'] == target[1]:
+          config['master']['uuid'] = messages[0]
+          config['master']['ip'] = messages[1]
+
+          with open('config.json', 'w') as out:
+            out.write(json.dumps(config))
+
+          self.send(code, recipient=target)
+
+          import machine
+          machine.reboot()
+    elif mode in [4]:
+      if sub != 2:
+        print('not supported sub mode')
+      else:
+        code = 70402
+
+        with open('config.json', 'r') as out:
+          config = json.loads(out.read())
+
+        if config['master']['uuid'] == target[0]:
+          changed = True if config['master']['ip'] != target[1] else False
+          config['master']['ip'] = target[1]
+
+          with open('config.json', 'w') as out:
+            out.write(json.dumps(config))
+
+          self.send(code, recipient=target, messages=[changed])
 
   def remove(self, mode, sub, target, messages=[]):
     if mode == 2:

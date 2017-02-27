@@ -5,7 +5,7 @@ import logging
 import tools.logger
 from copy import deepcopy
 from models.plant import Plant
-from tools.main import MeshString
+from tools.main import MeshString, VariousTools
 from multiprocessing import Process
 from tools.sensor import ToolChainSensor
 from models.mesh import MeshMessage, MeshObject
@@ -37,13 +37,82 @@ class MeshNetwork(object):
     for _ in range(0, 5):
       httpd.handle_request()
 
+  def verification(self, message, origin, raw):
+    # TODO verification of the integrete of the package
+    verification = False
+    if (raw[0] != '<' or
+        raw[-1] != '>' or
+        len(message) != 6 or
+        len(message[1]) != 2 or
+        len(message[2]) != 2 or
+        len(message[3]) != 1 or
+        len(message[4]) != 2 or
+        len(message[3][0]) != 5 or
+        not message[3][0].isdigit() or
+        message[0] not in [0, 1] or
+        message[6] not in [0, 1] or
+        not message[2][0].isdigit() or
+        int(message[2][0]) > 255):
+
+      logger.warning('potential spoofing attack - no valid package')
+      return False
+
+    code = str(message[3][0])
+    database = VariousTools.verify_database()
+
+    if database:
+      target = Plant.select().where(uuid=message[1][0])
+
+      if target.count() == 0:
+        if code[0] == '4':
+          # discover is crossover
+          verification = True
+        elif code[0] == '3' and int(code[1:3]) % 2 == 1:
+          # plant doesn't know itself - uuid not known
+          verification = True
+        else:
+          return False
+      target = target[0]
+
+      if target.ip != origin[0]:
+        if code[0] == '5' and int(code[1:3]) == 2:
+          # method for updating own ip - would be a bit dumb to disable that
+          verification = True
+        elif code[0] == '4':
+          # discover is crossover
+          verification = True
+        else:
+          return False
+      elif code[0] == '3' and int(code[1:3]) % 2 == 0:
+        # even code numbers indicate the recipient - therefor having a database and
+        # still getting registered is not a valid method
+        return False
+      else:
+        verification = True
+
+    else:
+      if code[0] == '4':
+        # discover is crossover
+        verification = True
+      elif code[0] == '3' and int(code[1:3]) % 2 == 0:
+        # even code numbers indicate the recipient - therefor having no databse\
+        # and getting registered is only valid method
+        verification = True
+      else:
+        return False
+    # for additional extra cases testing is required, but I don't think that I forgot one
+    return verification
+
   def daemon_process(self, received):
     message = received[0].decode('utf-8')
     logger.info('received following package: \n' + message)
     message = message.replace('<', '[').replace('>', ']')
     message = eval(message)
 
-    if self.IP != received[1][0]:
+    verified = self.verification(message, received[1], received)
+    logger.info(verified)
+
+    if self.IP != received[1][0] and verified:
       code = str(message[3][0])
       if code[0] == '1':
         if int(code[1:3]) == 1:
@@ -62,21 +131,14 @@ class MeshNetwork(object):
       elif code[0] == '4':
         if int(code[1:3]) == 1:
           self.discover(target=[message[1][0], received[1][0]], mode=2)
-        elif int(code[1:3]) == 2:
-          registered = False if message[1][0] == '' else True
-
+        elif int(code[1:3]) in [2, 3, 4, 5]:
+          registered = False if int(code[1:3]) % 2 == 0 else True
+          master = False if int(code[1:3]) > 3 else True
           status, result = MeshObject.get_or_create(
               ip=received[1][0],
-              defaults={'registered': registered})
+              defaults={'registered': registered, 'master': master})
           status.registered = registered
-          status.save()
-        elif int(code[1:3]) in [3, 4]:
-          registered = False if int(code[1:3]) == 3 else True
-          status, result = MeshObject.get_or_create(
-              ip=received[1][0],
-              defaults={'registered': registered, 'master': False})
-          status.registered = registered
-          status.master = False
+          status.master = master
           status.save()
 
       elif code[0] == '5':
@@ -256,19 +318,17 @@ class MeshNetwork(object):
         if mode is 2 - target == list [UUID, IP]
     """
     if mode == 1:
-      plant = Plant.get(Plant.localhost == True)
+      plant = Plant.get(localhost=True)
       code = 40100
       self.send(code, plant=plant, recipient=None, multicast=True)
     elif mode == 2:
-      code = 40200
-      try:
-        plant = Plant.get(Plant.localhost == True)
+      if VariousTools.verify_database():
         logger.debug('discovered - database exists')
-        code += 1
+        code = 40300
         self.send(code, plant=plant, recipient=target, messages=['LOGGED', 'DATABASE', 'MASTER'])
-      except:
+      else:
         logger.debug('discovered - no database exists')
-        code += 2
+        code = 40200
         self.send(code, no_database=True, recipient=target, messages=['NOT_LOGGED', 'NO_DATABASE', 'MASTER'])
 
   def slave(self, mode=1, target=None, sensor=None, messages=[]):
@@ -292,9 +352,9 @@ class MeshNetwork(object):
 
   def slave_update(self, mode=1, sub=1, target=None, messages=[], information={}):
     local = Plant.get(localhost=True)
-    if mode > 3:
+    if mode > 4:
       logger.warning('mode currently not supported')
-    if mode == 1 or mode == 3:
+    elif mode in [1, 3]:
       if sub == 2 or sub > 3:
         logger.warning('not supported sub mode')
       elif sub == 1:
@@ -303,6 +363,20 @@ class MeshNetwork(object):
         self.send(code, recipient=target, plant=local, messages=[information['min'], information['max']])
       elif sub == 3:
         self.send_local(1, 1)
+    elif mode in [2]:
+      if sub == 2 or sub > 3:
+        logger.warning('not supported sub mode')
+      elif sub == 1:
+        if information['uuid'] == local.uuid:
+          return False
+        self.send(70201, recipient=target, plant=local, messages=[str(information['uuid']), information['ip']])
+      else:
+        self.send_local(1, 1)
+    elif mode in [4]:
+      if sub == 2 or sub > 3:
+        logger.warning('not supported sub mode')
+      elif sub == 1:
+        self.send(70301, recipeint=target, plant=local)
 
   def register_lite(self, target=None, mode=1, messages=[], plant=None):
     local = Plant.get(localhost=True)
@@ -628,6 +702,9 @@ class MeshNetwork(object):
           message = [change['object'], str(change['uuid'])]
           if 'sensor' in change:
             message.append(str(change['sensor']))
+          elif 'target' in change:
+            message.append(str(change['target']))
+
           self.send(50301, recipient=recipient, plant=plant, messages=message)
         else:
           raise ValueError('no full change object')
@@ -720,6 +797,17 @@ class MeshNetwork(object):
 
           optimum.save()
           caution.save()
+
+        elif int(message[1]) == 7:
+          slave = Plant.get(uuid=message[1])
+          target = Plant.get(uuid=message[2])
+
+          local = Plant.get(localhost=True)
+          if slave.role == str(local.uuid):
+            MeshDedicatedDispatch().slave_update(1, {'uuid': target.uuid, 'ip': target.ip}, slave)
+
+          slave.role = str(target.uuid)
+          slave.save()
 
         self.send(50302, recipient=recipient, plant=plant)
 
@@ -1061,6 +1149,10 @@ class MeshNetwork(object):
           if plant.localhost:
             from settings.database import DATABASE_NAME
             import os
+            if os.path.isdir('/local/backup'):
+              for file in os.listdir('/local/backup'):
+                os.remove('/local/backup/' + file)
+
             os.remove(DATABASE_NAME)
 
             from subprocess import call
@@ -1068,6 +1160,10 @@ class MeshNetwork(object):
           else:
             if plant.role != 'master' and plant.role == str(Plant.get(localhost=True).uuid):
               self.remove(2, 1, plant)
+
+            for slave in list(Plant.select().where(Plant.role == str(plant.uuid))):
+              slave.role = information['target']['uuid']
+              slave.save()
 
             from models.sensor import SensorData, SensorStatus, SensorCount, SensorSatisfactionValue, SensorDataPrediction
             from models.plant import PlantNetworkUptime

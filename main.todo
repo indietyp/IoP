@@ -1,21 +1,34 @@
+general:
+  ✔ mesh remove add removal of /local/backup files if existing @done (17-02-24 19:20)
+  ✔ master foreign influence protection (with tailored only master <-> master or master --> slave communication) MLIP+(R) @done (17-02-24 20:04)
+  ✔ discover change @done (17-02-24 23:30)
+  ✔ ip change slave @done (17-02-24 23:40)
+  ✔ mesh network: reassign slaves to origin of remove message @done (17-02-24 19:13)
+  [ ] day/night change
+  [ ] device offline notification
+
 test:
+  [ ] new daemon verification system
+    [ ] watch logs
+    [ ] virtualbox discover
+    [ ] new plant c: (another pi please - also required for testing remove)
   [ ] extensions
     [ ] water_pump
   [ ] range update
+  [ ] js fix
+  [ ] host change
+  [ ] SLIP
+  [ ] discover
 
 mesh network:
-  [ ] local connection lost?
+  [ ] local connection lost? @low
     [ ] potential too few data simulated recover?
   update:
-    [ ] sensorsatisfactionlevel update
+    [ ] daynighttime update
 
 frontend:
-  add plant:
-    [ ] redirect if done
-  manage:
-    [ ] point to settings plant
   no database configuration:
-    [ ] activate init branch if no database existent
+    [ ] activate init branch if no database existent @high
       [ ] check if network already exists - warning (only for advanced - proceed)
       [ ] create database - name
         [ ] create folders
@@ -30,18 +43,30 @@ frontend:
 
  rest:
    settings:
-     [ ] SensorSatisfactionValue
-     [ ] Day/Night time
+     [ ] get Day/Night @critical
 
  sensor_scripts:
    extensions:
      [ ] integrate water pump
 
 slave:
+  mesh:
+    ✔ host change @done (17-02-23 11:12)
 
 
 ＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿
 Archive:
+ ✔ slave foreign influence protection SLIP(R) @done (17-02-23 11:11) @project(general)
+ ✔ frontend integration @done (17-02-22 20:52) @project(general)
+ ✔ update masters on slave host change @done (17-02-22 20:43) @project(general)
+ ✘ rest api integration @cancelled (17-02-22 20:42) @project(general)
+ ✔ check if plant own slave and change @done (17-02-22 20:42) @project(general)
+ ✔ add slave master update @done (17-02-22 20:42) @project(general)
+ ✔ redirect if done @done (17-02-19 23:03) @project(frontend / add plant)
+ ✔ point to settings plant @done (17-02-19 23:03) @project(frontend / manage)
+ ✔ SensorSatisfactionValue @done (17-02-19 23:03) @project(frontend / rest / settings)
+ ✔ sensorsatisfactionlevel update @done (17-02-19 23:02) @project(mesh network / update)
+ ✔ investigate possible bug - no js calling? -- added eval() statement @done (17-02-19 23:01) @project(general)
  ✔ add persistant duration @high @done (17-02-18 17:34) @project(frontend / add plant)
  ✔ retire json_util @critical - replace datetime with timestamp @done (17-02-18 17:28) @project(frontend / rest)
  ✔ register @done (17-02-18 17:25) @project(slave / mesh)

@@ -1,13 +1,13 @@
 <INIT, [PLANT_UUID, MESSAGE_UUID], [PRIORITY, RECIPIENT_UUID], [CODE], [MESSAGE, MESSAGE, MESSAGE, MESSAGE], END>
 
 MODE
-  1       [ALIVE][EXTERNAL TEST AND MONITORING]
+  1       [ALIVE][PING][MASTER]
     1       [ASK]
     2       [RESPONSE TO ALIVE]
-  2       [DELIVER]
-    1       [REQUEST] - [MASTER --> SLAVE FEATURE]
-    2       [SEND]    - [MASTER --> SLAVE FEATURE]
-  3       [REGISTER][EXTERNAL TEST AND MONITORING]
+  2       [DELIVER][SLAVE]
+    1       [REQUEST]
+    2       [SEND]
+  3       [REGISTER][MASTER]
     1       [ASK PUBLICKEY]
     2       [GENERATE PUBLICKEY]
     3       [SAVE AND SEND AES][ENCRYPTED]
@@ -20,34 +20,28 @@ MODE
     95      [SUCCESS]
     98      [RECORD ALREADY EXISTS]
     99      [FAIL]
-  4       [DISCOVER]
+  4       [DISCOVER][MASTER][SLAVE]
     1       [INITIAL]
-    2       [RESPONSE I'M THERE][MASTER]
-    3       [RESPONSE I'M THERE][SLAVE][NOT REGISTERED]
-    4       [RESPONSE I'M THERE][SLAVE][REGISTERED]
+    2       [RESPONSE][NOT REGISTERED][MASTER]
+    3       [RESPONSE][REGISTERED]    [MASTER]
+    4       [RESPONSE][NOT REGISTERED][SLAVE]
+    5       [RESPONSE][REGISTERED]    [SLAVE]
   5       [NOTIFY]
     1       [NEW_DATA]  - [A_MESSAGE - UUID sensor]
     2       [IP]
-    3       [CHANGE]    - [A_MESSAGE - OBJECT, B_MESSAGE - UUID]
+    3       [CHANGE]    - [A_MESSAGE - OBJECT, B_MESSAGE - UUID, C_MESSAGE - ADDITIONAL DATA]
   6       [REGISTER][LITE][SLAVE]
     1       [REQUEST][MASTER]
     2       [CHECK][SLAVE]
     3       [SEND GENERATED UUID AND CREATE OBJECT][MASTER]
     4       [CHECK AND CONFIRM][SLAVE]
     5       [SPREAD TO OTHERS][MASTER]
-  7       [SLAVE UPDATE]
+  7       [UPDATE][SLAVE]
     1       [SLEEP] - [START, STOP]
+    2       [HOST CHANGE] - [UUID, IP]
     3       [RANGE] - [MIN, MAX]
+    4       [CHANGE IP]
   8       [REMOVE]
-    check on every transaction if valid uuid and ip
-      origin - always with reference with initial target - if not block
-      target - always check if aquired lock and in database
-    modes:
-      purge
-      activate
-      deactivate
-    plant in deactivated mode, doesn't respond to anything else than mode 8
-
     1       [MASTER]
       1       [ASK TOKEN][ACQUIRE LOCK] (add file with token & selected mode, also TARGET)
       2       [GENERATE AND SEND TOKEN][LOCKING TO UUID AND IP]
@@ -74,7 +68,7 @@ MODE
       9       [REMOVE RELEVANT DATA][ADD TO PURGED](send to other plants)
 
     (CR - encrypted, TO - token used, PO - alternative port used)
-  9       [NO FUNCTION]
+  9       [NO FUNCTION ASSIGNED]
 (mode in CODE ex. alive: 10100 response: 10200)
 
 SLAVE INCLUDED
@@ -82,24 +76,22 @@ SLAVE INCLUDED
   2       [DELIVER]
   4       [DISCOVER]
   6       [REGISTER][LITE]
-  7       [SLAVE UPDATE]
-  8       [REMOVE SLAVE]
+  7       [UPDATE]
+  8       [REMOVE][SLAVE]
 
-RETURN
-  1       [ALIVE]
-    1      [SUCESS]
-    254    [FAIL - NO RESPONSE]
-    255    [FAIL - PROCESS]
-  3       [REGISTER]
+SEND LOCAL RETURN
+  [MODE, CODE]
+  MODE
+    1 - 9  [SPECIFIED ABOVE]
+  CODE
     1      [SUCESS]
     254    [FAIL - NO RESPONSE]
     255    [FAIL - PROCESS]
 
 
 INIT + END
-  1       [MASTER <-> MASTER]
-  2       [MASTER --> SLAVE]
-  3       [MASTER <-- SLAVE]
+  0       [ORIGIN = SLAVE]
+  1       [ORIGIN = MASTER]
 
 PLANT_UUID
   UUID4   [SENDER UUID]
@@ -120,7 +112,7 @@ CODE
   5 DIGIT [INTEGER]
     1 DIGIT [ref. MODE]
     2 DIGIT [SUBMODE]
-    2 DIGIT [SUBSUBMODE OR 00]
+    2 DIGIT [SUBSUBMODE]
 
 A_MESSAGE
   255CHAR [EXTRA INFORMATION]
@@ -139,5 +131,8 @@ NOTIFY CHANGE OBJECTS
   0 - Plant
   1 - Sensor
   2 - Person
-  3 - SensorSatisfactionValue
+  3 - Day Night Time
   4 - Message
+  5 - Host
+  6 - Plant Satisfaction Level
+  7 - Slave Host Change

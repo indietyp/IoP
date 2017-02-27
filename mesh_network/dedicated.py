@@ -168,6 +168,8 @@ class MeshDedicatedDispatch(object):
       counter = 5
     elif name.lower() == 'plant satisfaction level':
       counter = 6
+    elif name.lower() == 'slave host change':
+      counter = 7
     else:
       return False
 
@@ -177,6 +179,11 @@ class MeshDedicatedDispatch(object):
     if counter == 6:
       if 'sensor' in kwargs:
         change['sensor'] = kwargs['sensor'].uuid
+      else:
+        return False
+    elif counter == 7:
+      if 'target' in kwargs:
+        change['target'] = kwargs['target'].uuid
       else:
         return False
 
@@ -228,6 +235,11 @@ class MeshDedicatedDispatch(object):
           logger.info('could not reach host')
 
       if mode == 'remove':
+        local = Plant.get(localhost=True)
+        for slave in list(Plant.select().where(Plant.role == str(plant.uuid))):
+          slave.role = str(local.uuid)
+          slave.save()
+
         from models.sensor import SensorData, SensorStatus, SensorCount, SensorSatisfactionValue, SensorDataPrediction
         from models.plant import PlantNetworkUptime
         for model in [PlantNetworkUptime, SensorData, SensorStatus, SensorCount, SensorSatisfactionValue, SensorDataPrediction]:

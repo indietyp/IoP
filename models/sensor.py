@@ -22,8 +22,8 @@ class Sensor(Base):
 
 class SensorData(Base):
   value       = FloatField()
-  plant       = ForeignKeyField(Plant)
-  sensor      = ForeignKeyField(Sensor)
+  plant       = ForeignKeyField(Plant, index=True)
+  sensor      = ForeignKeyField(Sensor, index=True)
 
   persistant  = BooleanField(default=False)
   created_at  = DateTimeField(default=datetime.datetime.now)
@@ -91,8 +91,8 @@ class SensorHardwareConnector(Base):
 
 
 class SensorDataPrediction(Base):
-  plant       = ForeignKeyField(Plant)
-  sensor      = ForeignKeyField(Sensor)
+  plant       = ForeignKeyField(Plant, index=True)
+  sensor      = ForeignKeyField(Sensor, index=True)
 
   value       = FloatField()
   time        = DateTimeField()

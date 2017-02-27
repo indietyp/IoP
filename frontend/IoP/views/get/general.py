@@ -99,4 +99,22 @@ def update_plant_purge():
 
 @app.route('/update/slave/master', methods=['POST'])
 def update_slave_master():
-  pass
+  from mesh_network.dedicated import MeshDedicatedDispatch
+  from models.plant import Plant
+
+  slave = Plant.get(uuid=request.form['slave'])
+  local = Plant.get(localhost=True)
+
+  if request.form['target'] == slave.role:
+    return json.dumps(False)
+
+  target = Plant.get(uuid=request.form['target'])
+
+  if slave.role == str(local.uuid):
+    MeshDedicatedDispatch().slave_update(1, {'uuid': target.uuid, 'ip': target.ip}, slave)
+
+  slave.role = str(target.uuid)
+  slave.save()
+  MeshDedicatedDispatch().update('slave host change', slave.uuid, target=target)
+
+  return json.dumps(True)

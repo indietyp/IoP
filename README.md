@@ -8,6 +8,7 @@
 - [x] extend mesh_network + rest_api
 - [ ] add water pump
 - [ ] rewrite setup with frontend, instead of CLI
+- [ ] installation guide
 - [ ] documentation
 
 ## What is Internet of Plants?
