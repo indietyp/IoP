@@ -46,13 +46,13 @@ class MeshNetwork(object):
         len(message[1]) != 2 or
         len(message[2]) != 2 or
         len(message[3]) != 1 or
-        len(message[4]) != 2 or
-        len(message[3][0]) != 5 or
-        not message[3][0].isdigit() or
+        len(message[4]) != 4 or
+        len(str(message[3][0])) != 5 or
+        not str(message[3][0]).isdigit() or
         message[0] not in [0, 1] or
-        message[6] not in [0, 1] or
-        not message[2][0].isdigit() or
-        int(message[2][0]) > 255):
+        message[0] != message[5] or
+        not str(message[2][0]).isdigit() or
+        message[2][0] > 255):
 
       logger.warning('potential spoofing attack - no valid package')
       return False
