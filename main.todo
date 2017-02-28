@@ -1,5 +1,6 @@
 general:
-  ✔ mesh remove add removal of /local/backup files if existing @done (17-02-24 19:20)
+  ✔ up files if existing @done (17-02-28 21:00)
+  ✔ mesh remove add removal of /local/back02-24 19:20)
   ✔ master foreign influence protection (with tailored only master <-> master or master --> slave communication) MLIP+(R) @done (17-02-24 20:04)
   ✔ discover change @done (17-02-24 23:30)
   ✔ ip change slave @done (17-02-24 23:40)
@@ -9,7 +10,7 @@ general:
 
 test:
   [ ] new daemon verification system
-    [ ] watch logs
+    ✔ watch logs @done (17-02-27 21:21)
     [ ] virtualbox discover
     [ ] new plant c: (another pi please - also required for testing remove)
   [ ] extensions
@@ -17,7 +18,7 @@ test:
   [ ] range update
   [ ] js fix
   [ ] host change
-  [ ] SLIP
+  ✔ SLIP @done (17-02-27 21:21)
   [ ] discover
 
 mesh network:

@@ -66,10 +66,10 @@ class MeshNetwork(object):
       if target.count() == 0:
         if code[0] == '4':
           # discover is crossover
-          verification = True
+          return True
         elif code[0] == '3' and int(code[1:3]) % 2 == 1:
           # plant doesn't know itself - uuid not known
-          verification = True
+          return True
         else:
           return False
       target = target[0]
@@ -110,7 +110,7 @@ class MeshNetwork(object):
     message = eval(message)
 
     verified = self.verification(message, received[1], received[0].decode('utf-8'))
-    logger.info(verified)
+    logger.info('Verification: ' + str(verified))
 
     if self.IP != received[1][0] and verified:
       code = str(message[3][0])
