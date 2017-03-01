@@ -408,6 +408,7 @@ init_manage = () ->
         .dropdown(
           action: 'activate'
           onChange: (value, text, $selectedItem) ->
+            console.log 'testing stuff!'
             change_slave_host(value, slave.role)
         )
       ;
