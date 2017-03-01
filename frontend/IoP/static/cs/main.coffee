@@ -650,11 +650,10 @@ $ ->
 
     request.done (msg) ->
       $('section.mainContent').html(msg)
-      eval(msg)
       $('div.menu.mainMenu a').parent().children('.active').removeClass 'active'
-
-      # sg_nsps == settings get - non specific plant stuff
-      # sg_nsps()
+      sg_nsps()
+      sg_ssps()
+      sg_rsps()
       return
 
     request.fail (jqXHR, textStatus) ->
