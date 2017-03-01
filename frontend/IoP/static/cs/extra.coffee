@@ -318,8 +318,9 @@ change_slave_host = (target, host) ->
   request = $.ajax
     url: '/update/slave/master'
     method: 'POST'
-    data: target: target
-          slave: host
+    data:
+      target: target
+      slave: host
 
   return
 window.change_slave_host = change_slave_host
