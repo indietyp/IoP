@@ -315,6 +315,9 @@ modify_day_night = (that) ->
 window.modify_day_night = modify_day_night
 
 change_slave_host = (target, host) ->
+  console.log 'target: ' + target
+  console.log 'host: ' + host
+
   request = $.ajax
     url: '/update/slave/master'
     method: 'POST'
