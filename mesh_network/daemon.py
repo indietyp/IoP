@@ -773,7 +773,7 @@ class MeshNetwork(object):
           new.host = True
           new.save()
 
-        elif int(message[1]) == 6:
+        elif int(message[0]) == 6:
           from models.sensor import SensorSatisfactionLevel, SensorSatisfactionValue
           cau_gen = SensorSatisfactionLevel.get(SensorSatisfactionLevel.name_color == 'yellow')
           opt_gen = SensorSatisfactionLevel.get(SensorSatisfactionLevel.name_color == 'green')
@@ -798,7 +798,7 @@ class MeshNetwork(object):
           optimum.save()
           caution.save()
 
-        elif int(message[1]) == 7:
+        elif int(message[0]) == 7:
           from mesh.dedicated import MeshDedicatedDispatch
 
           slave = Plant.get(uuid=message[1])

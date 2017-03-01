@@ -297,7 +297,7 @@ class MeshNetwork(object):
           self.send(code, recipient=target)
 
           import machine
-          machine.reboot()
+          machine.reset()
     elif mode in [4]:
       if sub != 2:
         print('not supported sub mode')
@@ -376,7 +376,7 @@ class MeshNetwork(object):
           os.remove('config.json')
           os.remove('credentials.json')
           os.remove('transaction.json')
-          machine.reboot()
+          machine.reset()
 
           self.send(80208, recipient=target)
 
