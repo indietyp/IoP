@@ -11,7 +11,7 @@ general:
 test:
   [ ] new daemon verification system
     ✔ watch logs @done (17-02-27 21:21)
-    [ ] virtualbox discover
+    ✔ virtualbox discover @done (17-02-28 22:12)
     [ ] new plant c: (another pi please - also required for testing remove)
   [ ] extensions
     [ ] water_pump
@@ -19,7 +19,7 @@ test:
   [ ] js fix
   [ ] host change
   ✔ SLIP @done (17-02-27 21:21)
-  [ ] discover
+  ✔ discover @done (17-02-28 22:12)
 
 mesh network:
   [ ] local connection lost? @low

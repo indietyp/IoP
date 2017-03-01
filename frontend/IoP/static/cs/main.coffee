@@ -698,7 +698,7 @@ $ ->
 
     request.done (msg) ->
       $('section.mainContent').html(msg)
-      eval(msg)
+      initLineGraph(sensor)
       return
 
     request.fail (jqXHR, textStatus) ->

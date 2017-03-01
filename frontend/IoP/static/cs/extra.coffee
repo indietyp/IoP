@@ -314,6 +314,16 @@ modify_day_night = (that) ->
   return
 window.modify_day_night = modify_day_night
 
+change_slave_host = (target, host) ->
+  request = $.ajax
+    url: '/update/slave/master'
+    method: 'POST'
+    data: target: target
+          slave: host
+
+  return
+window.change_slave_host = change_slave_host
+
 init_manage = () ->
   request = $.ajax
     url: '/get/manage'
@@ -437,13 +447,3 @@ manage_purge = (uuid) ->
 
   return
 window.manage_purge = manage_purge
-
-change_slave_host = (target, host) ->
-  request = $.ajax
-    url: '/update/slave/master'
-    method: 'POST'
-    data: target: target
-          slave: host
-
-  return
-window.change_slave_host = change_slave_host

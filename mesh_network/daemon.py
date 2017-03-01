@@ -751,7 +751,7 @@ class MeshNetwork(object):
             setattr(person, key, person[key])
           person.save()
         elif int(message[0]) == 3:
-          # sensor satisfaction
+          # day night time
           pass
 
         elif int(message[0]) == 4:
@@ -799,6 +799,8 @@ class MeshNetwork(object):
           caution.save()
 
         elif int(message[1]) == 7:
+          from mesh.dedicated import MeshDedicatedDispatch
+
           slave = Plant.get(uuid=message[1])
           target = Plant.get(uuid=message[2])
 
