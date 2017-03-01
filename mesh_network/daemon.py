@@ -799,7 +799,7 @@ class MeshNetwork(object):
           caution.save()
 
         elif int(message[0]) == 7:
-          from mesh.dedicated import MeshDedicatedDispatch
+          from mesh_network.dedicated import MeshDedicatedDispatch
 
           slave = Plant.get(uuid=message[1])
           target = Plant.get(uuid=message[2])
