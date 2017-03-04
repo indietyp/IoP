@@ -42,11 +42,11 @@ class MoistureBar:
       for pin in pins:
         mcp.setup(pin, mcp.OUT)
 
-      for i in range(0, led):
+      for i in range(0, led - 1):
         mcp.output(i, 0)  # Pin Low
         time.sleep(round((1.35**i) / 10, 3))
 
-      for i in range(5, led, -1):
+      for i in range(5, led - 2, -1):
         mcp.output(i, 1)  # Pin High
         time.sleep(round((1.35**i) / 10, 3))
 
