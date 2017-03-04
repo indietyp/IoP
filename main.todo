@@ -5,7 +5,7 @@ general:
   ✔ discover change @done (17-02-24 23:30)
   ✔ ip change slave @done (17-02-24 23:40)
   ✔ mesh network: reassign slaves to origin of remove message @done (17-02-24 19:13)
-  [ ] day/night change
+  ✔ day/night change @done (17-03-03 17:50)
   [ ] device offline notification
 
 test:
@@ -16,8 +16,8 @@ test:
   [ ] extensions
     [ ] water_pump
   [ ] range update
-  [ ] js fix
-  [ ] host change
+  ✔ js fix @done (17-03-03 17:50)
+  ✔ host change @done (17-03-03 17:50)
   ✔ SLIP @done (17-02-27 21:21)
   ✔ discover @done (17-02-28 22:12)
 

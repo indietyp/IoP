@@ -247,6 +247,8 @@ def update_day_night():
     information = {'min': data['start'], 'max': data['stop']}
     MeshDedicatedDispatch().slave_update(0, information, slave)
 
+  MeshDedicatedDispatch().update('day night time', DayNightTime.select()[0].uuid)
+
   return json.dumps({'info': 'success'})
 
 

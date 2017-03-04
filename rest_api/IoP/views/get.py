@@ -618,4 +618,4 @@ def get_current_plant_host():
   host = Plant.get(Plant.host == True)
   del host['created_at']
 
-  return json_dumps(host)
+  return json.dumps(host)

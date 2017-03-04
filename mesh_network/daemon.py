@@ -750,9 +750,19 @@ class MeshNetwork(object):
           for key in data.keys():
             setattr(person, key, person[key])
           person.save()
+
         elif int(message[0]) == 3:
-          # day night time
-          pass
+          # day/night time
+          from models.context import DayNightTime
+          with urllib.request.urlopen('http://{}:2902/get/day/night/time'.format(recipient[1])) as response:
+            data = json.loads(response.read().decode('utf8'))
+
+          for dn in data:
+            daynight = DayNightTime.get_or_create(uuid=dn['uuid'])
+
+            for key in daynight.keys():
+              setattr(daynight, key, daynight[key])
+            daynight.save()
 
         elif int(message[0]) == 4:
           with urllib.request.urlopen('http://{}:2902/get/message/{}'.format(recipient[1], message[1])) as response:

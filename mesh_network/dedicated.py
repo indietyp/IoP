@@ -87,6 +87,8 @@ class MeshDedicatedDispatch(object):
             i[1].current = 0
             i[1].save()
 
+        # if offline.current >
+
   def register(self, plant):
     from models.mesh import MeshObject
     daemon = MeshNetwork()
@@ -160,7 +162,7 @@ class MeshDedicatedDispatch(object):
       counter = 1
     elif name.lower() == 'person':
       counter = 2
-    elif name.lower() == 'satisfaction':
+    elif name.lower() == 'day night time':
       counter = 3
     elif name.lower() == 'message':
       counter = 4
