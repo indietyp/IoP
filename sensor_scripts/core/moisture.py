@@ -17,13 +17,13 @@ class GenericMoisture(object):
   def run(samples=10):
     values = []
     for i in range(0, samples):
-      values.append(mcp3008().read_pct(0))
+      values.append(mcp3002().read_pct(1, 0))
       time.sleep(.2)
 
     average = sum(values) / float(len(values))
     if average != 0:
       tools = ToolChainSensor()
-      plant = Plant.get(Plant.localhost == True)
+      plant = Plant.get(localhost=True)
 
       moisture = {'sensor': Sensor.get(Sensor.name == 'moisture'),
                   'plant': plant,
