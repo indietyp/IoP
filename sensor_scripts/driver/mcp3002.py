@@ -21,16 +21,16 @@ class mcp3002:
     return value
 
   def read_pct(self, device=0, channel=0):
-    r = self.readadc(device, channel)
+    r = mcp3002.readadc(device, channel)
     return int(round((r / 1023.0) * 100))
 
   def read_3v3(self, device=0, channel=0):
-    r = self.readadc(device, channel)
+    r = mcp3002.readadc(device, channel)
     v = (r / 1023.0) * 3.3
     return v
 
   def readadc_avg(self, device=0, channel=0):
     r = []
     for i in range(0, 10):
-      r.append(self.readadc(device, channel))
+      r.append(mcp3002.readadc(device, channel))
     return sum(r) / 10.0

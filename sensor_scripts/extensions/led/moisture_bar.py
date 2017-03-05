@@ -3,10 +3,11 @@
 # from ...tools.main import Tools
 import time
 # import smbus
-from tools.main import VariousTools
-from sensor_scripts.driver.mcp23017 import MCP230XX_GPIO
-from models.sensor import Sensor, SensorStatus
+import RPi.GPIO as GPIO
 from models.plant import Plant
+from tools.main import VariousTools
+from models.sensor import Sensor, SensorStatus
+from sensor_scripts.driver.mcp23017 import MCP230XX_GPIO
 
 
 class MoistureBar:
@@ -46,7 +47,7 @@ class MoistureBar:
         mcp.output(i, 0)  # Pin Low
         time.sleep(round((1.35**i) / 10, 3))
 
-      for i in range(5, led - 2, -1):
+      for i in range(5, led - 1, -1):
         mcp.output(i, 1)  # Pin High
         time.sleep(round((1.35**i) / 10, 3))
 

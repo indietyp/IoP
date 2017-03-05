@@ -5925,9 +5925,9 @@ http://www.st.com&lt;p&gt;
 <part name="GND2" library="supply1" deviceset="GND" device=""/>
 <part name="JP1" library="adafruit" deviceset="PINHD-1X3" device=""/>
 <part name="GND4" library="supply1" deviceset="GND" device=""/>
-<part name="U1" library="mcp" deviceset="MCP3002-I/P" device=""/>
+<part name="U1" library="mcp" deviceset="MCP3002-I/P" device="" value="MCP3002"/>
 <part name="P+4" library="supply1" deviceset="VCC" device=""/>
-<part name="IC1" library="adafruit" deviceset="MCP23017" device="SP2"/>
+<part name="IC1" library="adafruit" deviceset="MCP23017" device="SP2" value="MCP23017"/>
 <part name="GND3" library="supply1" deviceset="GND" device=""/>
 <part name="GND5" library="supply1" deviceset="GND" device=""/>
 <part name="GND6" library="supply1" deviceset="GND" device=""/>

@@ -17,7 +17,7 @@ class GenericMoisture(object):
   def run(samples=10):
     values = []
     for i in range(0, samples):
-      values.append(mcp3002().read_pct(1, 0))
+      values.append(mcp3002.read_pct(0, 1))
       time.sleep(.2)
 
     average = sum(values) / float(len(values))
