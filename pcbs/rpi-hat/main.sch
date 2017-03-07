@@ -5935,8 +5935,6 @@ http://www.st.com&lt;p&gt;
 <part name="P+2" library="supply1" deviceset="VCC" device=""/>
 <part name="P+3" library="supply1" deviceset="VCC" device=""/>
 <part name="DISPLAY" library="con-lstb" deviceset="MA07-2" device=""/>
-<part name="R5" library="adafruit" deviceset="R-US_" device="0204/7" value="1k"/>
-<part name="P+5" library="supply1" deviceset="VCC" device=""/>
 <part name="GND11" library="supply1" deviceset="GND" device=""/>
 <part name="R6" library="adafruit" deviceset="R-US_" device="0204/7" value="270"/>
 <part name="R7" library="adafruit" deviceset="R-US_" device="0204/7" value="270"/>
@@ -5963,8 +5961,7 @@ http://www.st.com&lt;p&gt;
 <part name="GND8" library="supply1" deviceset="GND" device=""/>
 <part name="GND9" library="supply1" deviceset="GND" device=""/>
 <part name="GND10" library="supply1" deviceset="GND" device=""/>
-<part name="GND12" library="supply1" deviceset="GND" device=""/>
-<part name="GND15" library="supply1" deviceset="GND" device=""/>
+<part name="GND16" library="supply1" deviceset="GND" device=""/>
 </parts>
 <sheets>
 <sheet>
@@ -5987,8 +5984,6 @@ http://www.st.com&lt;p&gt;
 <instance part="P+2" gate="VCC" x="266.7" y="10.16" rot="R90"/>
 <instance part="P+3" gate="VCC" x="266.7" y="5.08" rot="R90"/>
 <instance part="DISPLAY" gate="G$1" x="347.98" y="-33.02" rot="R180"/>
-<instance part="R5" gate="G$1" x="330.2" y="-27.94" rot="R180"/>
-<instance part="P+5" gate="VCC" x="322.58" y="-27.94" rot="R90"/>
 <instance part="GND11" gate="1" x="104.14" y="137.16" rot="R180"/>
 <instance part="R6" gate="G$1" x="81.28" y="63.5" rot="R270"/>
 <instance part="R7" gate="G$1" x="88.9" y="63.5" rot="R270"/>
@@ -6015,8 +6010,7 @@ http://www.st.com&lt;p&gt;
 <instance part="GND8" gate="1" x="17.78" y="-35.56" rot="R270"/>
 <instance part="GND9" gate="1" x="78.74" y="-33.02" rot="R270"/>
 <instance part="GND10" gate="1" x="78.74" y="-38.1" rot="R270"/>
-<instance part="GND12" gate="1" x="337.82" y="-25.4" rot="R270"/>
-<instance part="GND15" gate="1" x="337.82" y="-30.48" rot="R270"/>
+<instance part="GND16" gate="1" x="335.28" y="-27.94" rot="R270"/>
 </instances>
 <busses>
 </busses>
@@ -6182,11 +6176,15 @@ http://www.st.com&lt;p&gt;
 </segment>
 <segment>
 <pinref part="DISPLAY" gate="G$1" pin="1"/>
-<pinref part="GND12" gate="1" pin="GND"/>
-</segment>
-<segment>
+<pinref part="GND16" gate="1" pin="GND"/>
+<wire x1="340.36" y1="-25.4" x2="337.82" y2="-25.4" width="0.1524" layer="91"/>
+<wire x1="337.82" y1="-25.4" x2="337.82" y2="-27.94" width="0.1524" layer="91"/>
+<pinref part="DISPLAY" gate="G$1" pin="3"/>
+<wire x1="340.36" y1="-27.94" x2="337.82" y2="-27.94" width="0.1524" layer="91"/>
+<junction x="337.82" y="-27.94"/>
 <pinref part="DISPLAY" gate="G$1" pin="5"/>
-<pinref part="GND15" gate="1" pin="GND"/>
+<wire x1="340.36" y1="-30.48" x2="337.82" y2="-30.48" width="0.1524" layer="91"/>
+<wire x1="337.82" y1="-30.48" x2="337.82" y2="-27.94" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="VCC" class="0">
@@ -6206,10 +6204,6 @@ http://www.st.com&lt;p&gt;
 <segment>
 <pinref part="IC1" gate="G$1" pin="!RESET"/>
 <pinref part="P+3" gate="VCC" pin="VCC"/>
-</segment>
-<segment>
-<pinref part="R5" gate="G$1" pin="2"/>
-<pinref part="P+5" gate="VCC" pin="VCC"/>
 </segment>
 <segment>
 <pinref part="DHT22" gate="G$1" pin="1"/>
@@ -6506,13 +6500,6 @@ http://www.st.com&lt;p&gt;
 <pinref part="IC1" gate="G$1" pin="GPB5"/>
 <wire x1="294.64" y1="-25.4" x2="297.18" y2="-25.4" width="0.1524" layer="91"/>
 <label x="297.18" y="-25.4" size="1.778" layer="95" xref="yes"/>
-</segment>
-</net>
-<net name="N$8" class="0">
-<segment>
-<pinref part="R5" gate="G$1" pin="1"/>
-<pinref part="DISPLAY" gate="G$1" pin="3"/>
-<wire x1="335.28" y1="-27.94" x2="340.36" y2="-27.94" width="0.1524" layer="91"/>
 </segment>
 </net>
 </nets>

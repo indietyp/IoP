@@ -1286,9 +1286,9 @@ Please ensure your boards meet these minimum design rule requirements.</descript
 <wire x1="21.0566" y1="48.9966" x2="19.685" y2="47.625" width="0.4064" layer="1"/>
 <wire x1="19.685" y1="47.625" x2="4.445" y2="47.625" width="0.4064" layer="1"/>
 <wire x1="4.445" y1="47.625" x2="3.175" y2="46.355" width="0.4064" layer="1"/>
-<wire x1="3.175" y1="46.355" x2="3.175" y2="32.385" width="0.4064" layer="1"/>
-<wire x1="3.175" y1="32.385" x2="3.81" y2="31.75" width="0.4064" layer="1"/>
-<wire x1="3.81" y1="31.75" x2="11.43" y2="31.75" width="0.4064" layer="1"/>
+<wire x1="3.175" y1="46.355" x2="3.175" y2="33.02" width="0.4064" layer="1"/>
+<wire x1="3.175" y1="33.02" x2="4.445" y2="31.75" width="0.4064" layer="1"/>
+<wire x1="4.445" y1="31.75" x2="11.43" y2="31.75" width="0.4064" layer="1"/>
 <wire x1="11.43" y1="31.75" x2="12.7" y2="30.48" width="0.4064" layer="1"/>
 <wire x1="12.7" y1="30.48" x2="12.7" y2="29.21" width="0.4064" layer="1"/>
 </signal>

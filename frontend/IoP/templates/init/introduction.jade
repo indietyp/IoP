@@ -3,6 +3,19 @@ if content['get']
 
 block content
   .dummy(style="display:flex;align-items:center;height:100vh")
-    .ui.segment(style="margin:auto")
-      .ui.header Internet of Plants
-      p Lorem ipsum Quis adipisicing tempor aliqua in tempor non labore voluptate nulla consectetur ex laborum do nostrud officia aliquip consectetur eu do.
+    .ui.segment(style="margin:auto;width:50%")
+      h1.ui.header Internet of Plants
+      p Internet of Plants (IoP) is dedicated to ensure that you don't need to worry to much about you plant. So we measure data from several sensors and notify you if something is going terribly wrong.
+      p To ensure a healty life for your plants we created complicated algorithm to predict data and communicate between plants in a dezentralized matter. That needs even if one ore more plants fail you still have your data and all plant controller can recover.
+      p P.S.: I hate myself.
+
+      if 'discover' in content and content['discover']
+        .proceed(style='display:flex;align-items:center')
+          .ui.checkbox
+            input(type="checkbox", id="expert", onclick="$('button.expert').toggleClass('disabled red yellow')")
+            label enable expert mode to proceed
+          .placeholder(style='flex-grow:1')
+          button.expert.ui.right.floated.yellow.disabled.button Proceed
+      else
+        .proceed
+          button.ui.right.floated.green.button Proceed

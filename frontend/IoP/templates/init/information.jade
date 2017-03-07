@@ -1,0 +1,106 @@
+if content['get']
+  extends 'init/main.jade'
+
+block content
+  .dummy(style="display:flex;align-items:center;height:100vh")
+    .ui.segment(style="margin:auto;width:50%;margin-top:5%")
+      h1.ui.header Now please enter the information neeeded to complete
+      .ui.divider
+      h2.ui.header Plant
+
+      .ui.grid.container
+        .eight.wide.column
+          .ui.left.icon.input(style='width:100%')
+            input(type='text', placeholder='name')
+            i.tag.icon
+
+        .eight.wide.column
+          .ui.left.icon.input(style='width:100%')
+            input(type='text', placeholder='species')
+            i.leaf.icon
+
+        .eight.wide.column
+          .ui.left.icon.input(style='width:100%')
+            input(type='text', placeholder='location')
+            i.home.icon
+
+        .eight.wide.column
+          .ui.left.icon.input(style='width:100%')
+            input(type='text', placeholder='notification interval')
+            i.mail.icon
+
+      .ui.divider
+      h2.ui.header Now I need some information about yourself!
+
+      .ui.grid.container
+        .eight.wide.column
+          .ui.left.icon.input(style='width:100%')
+            input(type='text', placeholder='name')
+            i.tag.icon
+
+        .eight.wide.column
+          .ui.left.icon.input(style='width:100%')
+            input(type='text', placeholder='email')
+            i.email.icon
+
+      .ui.divider
+      h2.ui.header Notification Account
+
+      .ui.grid.container
+        .eight.wide.column
+          .ui.left.icon.input(style='width:100%')
+            input(type='text', placeholder='account name')
+            i.at.icon
+
+        .eight.wide.column
+          .ui.left.icon.input(style='width:100%')
+            input(type='text', placeholder='smtp server')
+            i.cloud.icon
+
+        .sixteen.wide.column
+          .ui.left.icon.input(style='width:100%')
+            input(type='password', placeholder='password')
+            i.info.icon
+
+        //- .eight.wide.column
+        //-   .ui.left.icon.input(style='width:100%')
+        //-     input(type='text', placeholder='notification interval')
+        //-     i.mail.icon
+
+      .ui.divider
+      h2.ui.header Sensors
+      - each item in ['temperature', 'humidity', 'light', 'moisture']
+        h3.ui.header= item
+
+        .ui.grid.container
+          //- .eight.wide.column
+          //-   .ui.left.icon.input(style='width:100%')
+          //-     input(type='text', placeholder='name', class="sensor name #{item}")
+          //-     i.tag.icon
+
+          //- .eight.wide.column
+          //-   .ui.left.icon.disabled.input(style='width:100%')
+          //-     input(type='text', placeholder='model')
+          //-     i.archive.icon
+
+          .eight.wide.column
+            .ui.left.icon.input(style='width:100%')
+              input(type='text', placeholder='unit', class="sensor unit #{item}")
+              i.dashboard.icon
+
+          .eight.wide.column
+            .ui.left.icon.input(style='width:100%')
+              input(type='text', placeholder='persistant offset', class="sensor persistant #{item}")
+              i.exchange.icon
+
+          .eight.wide.column
+            .ui.left.icon.input(style='width:100%')
+              input(type='text', placeholder='minimum', class="sensor min #{item}")
+              i.angle.down.icon
+
+          .eight.wide.column
+            .ui.left.icon.input(style='width:100%')
+              input(type='text', placeholder='maximum', class="sensor max #{item}")
+              i.angle.up.icon
+
+
