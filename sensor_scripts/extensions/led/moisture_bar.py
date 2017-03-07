@@ -17,7 +17,7 @@ class MoistureBar:
   @staticmethod
   def run():
     result = VariousTools.offline_check('ledbar', hardware=True, pins=[0, 1, 2, 3, 4, 5], mcp=True)
-    if result is True:
+    if result:
       sensor = Sensor.get(Sensor.name == 'moisture')
       plant = Plant.get(localhost=True)
       status = SensorStatus.get(SensorStatus.sensor == sensor,
@@ -47,7 +47,7 @@ class MoistureBar:
         mcp.output(i, 0)  # Pin Low
         time.sleep(round((1.35**i) / 10, 3))
 
-      for i in range(5, led - 1, -1):
+      for i in range(5, led - 2, -1):
         mcp.output(i, 1)  # Pin High
         time.sleep(round((1.35**i) / 10, 3))
 

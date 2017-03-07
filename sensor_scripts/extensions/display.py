@@ -115,9 +115,9 @@ class Display:
 
         # Create MCP230xx GPIO adapter.
         mcp = MCP230XX_GPIO(bus, address, gpio_count)
-
+        print('creating text')
         # Create LCD, passing in MCP GPIO adapter.
-        lcd = Adafruit_CharLCD(pin_rs=11, pin_e=10, pins_db=[12, 13, 14, 15], GPIO=mcp)
+        lcd = Adafruit_CharLCD(pin_rs=8, pin_e=9, pins_db=[10, 11, 12, 13], GPIO=mcp)
 
         lcd.clear()
         lcd.message(self.data['display']['text'])
@@ -132,7 +132,7 @@ class Display:
       address = 32
 
       mcp = MCP230XX_GPIO(bus, address, gpio_count)
-      lcd = Adafruit_CharLCD(pin_rs=11, pin_e=10, pins_db=[12, 13, 14, 15], GPIO=mcp)
+      lcd = Adafruit_CharLCD(pin_rs=8, pin_e=9, pins_db=[10, 11, 12, 13], GPIO=mcp)
       lcd.clear()
 
 
