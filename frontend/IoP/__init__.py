@@ -1,18 +1,19 @@
-from flask import Flask, session, render_template, request
-from tools.main import VariousTools
-import urllib.request
-import sys
 import json
 import datetime
+import platform
+import urllib.request
 from bson import json_util
+from tools.main import VariousTools
+from flask import Flask, session, request
 
 app = Flask(__name__)
 app.jinja_env.add_extension('pyjade.ext.jinja.PyJadeExtension')
 app.jinja_env.auto_reload = True
 app.secret_key = 'uyfo2346tr3r3urey8f138r9pfr1vy3ofydv'
 database = VariousTools.verify_database()
-database = False
 
+if platform.system() in ['Windows', 'Darwin']:
+  database = False
 
 if database:
   # not rest api compliant? - speed?
@@ -22,9 +23,9 @@ if database:
       from mesh_network.dedicated import MeshDedicatedDispatch
       from models.plant import Plant
 
-      local = Plant.get(Plant.localhost == True)
+      local = Plant.get(localhost=True)
       if not local.host:
-        host = Plant.get(Plant.host == True)
+        host = Plant.get(host=True)
         host.host = False
         host.save()
         local.host = True
@@ -33,7 +34,6 @@ if database:
         MeshDedicatedDispatch().update('host', local.uuid)
       response.set_cookie('host', 'easteregg', max_age=5 * 60)
     return response
-
 
   def init():
     # get smiles! YOYOYOYOYOYOYOYOYO! :D
@@ -71,12 +71,10 @@ if database:
             'int': int,
             'str': str}
 
-
   def set_uuid():
     for u_plant in init()['plants']:
       if session['plant'] in u_plant:
         session['p_uuid'] = u_plant[0]
-
 
   def init_overview():
     # get created at date
@@ -107,7 +105,6 @@ if database:
             'responsible': responsible,
             'average_percent': average_percent,
             'average_online': average_online}
-
 
   def init_sensor():
     # if recent data is far back, then time is getting really slow -> ~ 2 months == 4 seconds, ~ 3 days == 0.5 seconds
@@ -166,11 +163,11 @@ if database:
                 'date': recent_date}
             }
 
-
   import IoP.views.general
   import IoP.views.plants
   import IoP.views.get.plants
   import IoP.views.get.plants_ext
   import IoP.views.get.general
 else:
+
   import IoP.init.views.main

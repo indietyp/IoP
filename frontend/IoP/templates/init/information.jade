@@ -2,8 +2,8 @@ if content['get']
   extends 'init/main.jade'
 
 block content
-  .dummy(style="display:flex;align-items:center;height:100vh")
-    .ui.segment(style="margin:auto;width:50%;margin-top:5%")
+  .dummy(style="display:flex;align-items:center")
+    .ui.segment(style="margin:auto;width:50%;margin-top:5%;margin-bottom:5%")
       h1.ui.header Now please enter the information neeeded to complete
       .ui.divider
       h2.ui.header Plant
@@ -41,7 +41,7 @@ block content
         .eight.wide.column
           .ui.left.icon.input(style='width:100%')
             input(type='text', placeholder='email')
-            i.email.icon
+            i.mail.icon
 
       .ui.divider
       h2.ui.header Notification Account
@@ -82,25 +82,207 @@ block content
           //-   .ui.left.icon.disabled.input(style='width:100%')
           //-     input(type='text', placeholder='model')
           //-     i.archive.icon
+          - var min = 0
+          - var max = 100
+          - var unit = ''
+
+          if item == 'temperature'
+            - var max = 30
+            - var unit = '°C'
+          if item in ['humidity', 'moisture']
+            - var unit = '%'
+          if item == 'light'
+            - var unit = 'lux'
+
 
           .eight.wide.column
             .ui.left.icon.input(style='width:100%')
-              input(type='text', placeholder='unit', class="sensor unit #{item}")
+              input(type='text', placeholder='unit', class="sensor unit #{item}", value="#{unit}")
               i.dashboard.icon
 
           .eight.wide.column
             .ui.left.icon.input(style='width:100%')
-              input(type='text', placeholder='persistant offset', class="sensor persistant #{item}")
+              input(type='text', placeholder='persistant offset', class="sensor persistant #{item}", value="1")
               i.exchange.icon
 
           .eight.wide.column
             .ui.left.icon.input(style='width:100%')
-              input(type='text', placeholder='minimum', class="sensor min #{item}")
+              input(type='text', placeholder='minimum', class="sensor min #{item}", value="#{min}")
               i.angle.down.icon
-
           .eight.wide.column
             .ui.left.icon.input(style='width:100%')
-              input(type='text', placeholder='maximum', class="sensor max #{item}")
+              input(type='text', placeholder='maximum', class="sensor max #{item}", value="#{max}")
               i.angle.up.icon
+
+      .ui.divider
+      h2.ui.header Interval settings
+      .wrapper(style='display: flex;align-items:baseline;flex-direction:row;margin-top:2.5%')
+        .spacer(style='flex-grow:0.2')
+        .ui.card.range.temperature(style='box-shadow:none')
+          .content
+            .header Temperature
+            .meta interval settings
+            .wrapper(style='display:flex;align-items:center;flex-direction:column;margin-top:5%')
+              .spacer(style='flex-grow:0.5')
+              #flat-slider-vertical-temperature(style='margin-top: 24px;margin-bottom:24px')
+                .spacer(style='flex-grow:0.5')
+
+          script.
+            $("#flat-slider-vertical-temperature")
+              .slider({
+                max: 30,
+                min: 0,
+                values: [20, 24, 26, 28],
+                orientation: "vertical"
+              })
+              .slider("pips", {
+                first: "pip",
+                last: "pip"
+              })
+              .slider("float")
+
+            $(".sensor.max.temperature").change(function() {
+              var val = parseInt($(".sensor.max.temperature").val())
+              $("#flat-slider-vertical-temperature")
+                  .slider("option", "max", val)
+                  .slider("float", "refresh")
+                  .slider("pips", "refresh");
+            });
+
+            $(".sensor.min.temperature").change(function() {
+              var val = parseInt($(".sensor.min.temperature").val())
+              $("#flat-slider-vertical-temperature")
+                  .slider("option", "min", val)
+                  .slider("float", "refresh")
+                  .slider("pips", "refresh");
+            });
+
+
+        .spacer(style='flex-grow:0.2')
+        .ui.card.range.humidity(style='box-shadow:none')
+          .content
+            .header Humidity
+            .meta interval settings
+            .wrapper(style='display: flex;align-items:center;flex-direction:column;margin-top:5%')
+              .spacer(style='flex-grow:0.5')
+              #flat-slider-vertical-humidity(style='margin-top: 24px;margin-bottom:24px')
+                .spacer(style='flex-grow:0.5')
+
+          script.
+            $("#flat-slider-vertical-humidity")
+              .slider({
+                max: 100,
+                min: 0,
+                values: [45, 50, 60, 70],
+                orientation: "vertical"
+              })
+              .slider("pips", {
+                first: "pip",
+                last: "pip"
+              })
+              .slider("float")
+
+            $(".sensor.max.humidity").change(function() {
+              var val = parseInt($(".sensor.max.humidity").val())
+              $("#flat-slider-vertical-humidity")
+                  .slider("option", "max", val)
+                  .slider("float", "refresh")
+                  .slider("pips", "refresh");
+            });
+
+            $(".sensor.min.humidity").change(function() {
+              var val = parseInt($(".sensor.min.humidity").val())
+              $("#flat-slider-vertical-humidity")
+                  .slider("option", "min", val)
+                  .slider("float", "refresh")
+                  .slider("pips", "refresh");
+            });
+
+        .spacer(style='flex-grow:0.2')
+        .ui.card.range.moisture(style='box-shadow:none')
+          .content
+            .header Moisture
+            .meta interval settings
+            .wrapper(style='display: flex;align-items:center;flex-direction:column;margin-top:5%')
+              .spacer(style='flex-grow:0.5')
+              #flat-slider-vertical-moisture(style='margin-top: 24px;margin-bottom:24px')
+                .spacer(style='flex-grow:0.5')
+
+          script.
+            $("#flat-slider-vertical-moisture")
+              .slider({
+                max: 100,
+                min: 0,
+                values: [65, 70, 75, 80],
+                orientation: "vertical"
+              })
+              .slider("pips", {
+                first: "pip",
+                last: "pip"
+              })
+              .slider("float")
+
+            $(".sensor.max.moisture").change(function() {
+              var val = parseInt($(".sensor.max.moisture").val())
+              $("#flat-slider-vertical-moisture")
+                  .slider("option", "max", val)
+                  .slider("float", "refresh")
+                  .slider("pips", "refresh");
+            });
+
+            $(".sensor.min.moisture").change(function() {
+              var val = parseInt($(".sensor.min.moisture").val())
+              $("#flat-slider-vertical-moisture")
+                  .slider("option", "min", val)
+                  .slider("float", "refresh")
+                  .slider("pips", "refresh");
+            });
+
+
+        .spacer(style='flex-grow:0.2')
+        .ui.card.range.light(style='box-shadow:none')
+          .content
+            .header Light
+            .meta interval settings
+            .wrapper(style='display: flex;align-items:center;flex-direction:column;margin-top:5%')
+              .spacer(style='flex-grow:0.5')
+              #flat-slider-vertical-light(style='margin-top: 24px;margin-bottom:24px')
+                .spacer(style='flex-grow:0.5')
+
+          script.
+            $("#flat-slider-vertical-light")
+              .slider({
+                max: 100,
+                min: 0,
+                values: [1, 5, 25, 50],
+                orientation: "vertical"
+              })
+              .slider("pips", {
+                first: "pip",
+                last: "pip"
+              })
+              .slider("float")
+
+            $(".sensor.max.light").change(function() {
+              var val = parseInt($(".sensor.max.light").val())
+              $("#flat-slider-vertical-light")
+                  .slider("option", "max", val)
+                  .slider("float", "refresh")
+                  .slider("pips", "refresh");
+            });
+
+            $(".sensor.min.light").change(function() {
+              var val = parseInt($(".sensor.min.light").val())
+              $("#flat-slider-vertical-light")
+                  .slider("option", "min", val)
+                  .slider("float", "refresh")
+                  .slider("pips", "refresh");
+            });
+      .ui.divider
+      .proceed(style='display:flex;align-items:center')
+        .content We now create the database and insert stuff!
+        .placeholder(style='flex-grow:1')
+        button.expert.ui.right.floated.green.button Proceed
+
 
 
