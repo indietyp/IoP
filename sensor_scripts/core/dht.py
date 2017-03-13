@@ -32,7 +32,7 @@ class DHT22:
 
     if temperature['sensor'].model == humidity['sensor'].model:
       sensor = Adafruit_DHT.DHT22 if temperature['sensor'].model == 'DHT22' else Adafruit_DHT.DHT11
-    pin = 18
+    pin = 26
 
     # FETCH DATA FROM SENSOR
     humidity['value'], temperature['value'] = Adafruit_DHT.read_retry(sensor, pin)

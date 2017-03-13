@@ -26,16 +26,19 @@ import peewee as pw
 def migrate(migrator, database, fake=False, **kwargs):
     """Write your migrations here."""
 
-    # migrator.add_not_null('meshmessage', 'created_at')
+    migrator.add_fields(
+        'daynighttime',
+
+        pump=pw.BooleanField(default=False))
 
 
 def rollback(migrator, database, fake=False, **kwargs):
     """Write your rollback migrations here."""
 
-    migrator.drop_not_null('meshmessage', 'created_at')
+    migrator.remove_fields('daynighttime', 'pump')
 
     migrator.add_fields(
         'person',
 
-        preset=pw.ForeignKeyField(db_column='preset_id', null=True, rel_model=migrator.orm['messagepreset'], to_field='id'),
-        uuid=pw.UUIDField(unique=True))
+        uuid=pw.UUIDField(unique=True),
+        preset=pw.ForeignKeyField(db_column='preset_id', null=True, rel_model=migrator.orm['messagepreset'], to_field='id'))
