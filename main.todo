@@ -1,31 +1,20 @@
 general:
-  ✔ up files if existing @done (17-02-28 21:00)
-  ✔ mesh remove add removal of /local/back02-24 19:20)
-  ✔ master foreign influence protection (with tailored only master <-> master or master --> slave communication) MLIP+(R) @done (17-02-24 20:04)
-  ✔ discover change @done (17-02-24 23:30)
-  ✔ ip change slave @done (17-02-24 23:40)
-  ✔ mesh network: reassign slaves to origin of remove message @done (17-02-24 19:13)
-  ✔ day/night change @done (17-03-03 17:50)
-  [ ] device offline notification
+  [ ] discover integration init
+  [ ] implement water_pump
+  [ ] init insert logrotate
+  [ ] init PYTHONPATH
 
 test:
   [ ] new daemon verification system
-    ✔ watch logs @done (17-02-27 21:21)
-    ✔ virtualbox discover @done (17-02-28 22:12)
     [ ] new plant c: (another pi please - also required for testing remove)
   [ ] extensions
     [ ] water_pump
   [ ] range update
-  ✔ js fix @done (17-03-03 17:50)
-  ✔ host change @done (17-03-03 17:50)
-  ✔ SLIP @done (17-02-27 21:21)
-  ✔ discover @done (17-02-28 22:12)
+  [ ] create additional plant network (vm)
 
 mesh network:
   [ ] local connection lost? @low
     [ ] potential too few data simulated recover?
-  update:
-    [ ] daynighttime update
 
 frontend:
   no database configuration:
@@ -42,21 +31,30 @@ frontend:
         [ ] mail account
       [ ] create sensors
 
- rest:
-   settings:
-     [ ] get Day/Night @critical
-
  sensor_scripts:
    extensions:
      [ ] integrate water pump
 
-slave:
-  mesh:
-    ✔ host change @done (17-02-23 11:12)
 
 
 ＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿
 Archive:
+ ✔ get Day/Night @critical @done (17-03-07 19:32) @project(frontend / rest / settings)
+ ✔ daynighttime update @done (17-03-07 19:32) @project(mesh network / update)
+ ✔ device offline notification @done (17-03-07 19:29) @project(general)
+ ✔ js fix @done (17-03-03 17:50) @project(test)
+ ✔ host change @done (17-03-03 17:50) @project(test)
+ ✔ day/night change @done (17-03-03 17:50) @project(general)
+ ✔ virtualbox discover @done (17-02-28 22:12) @project(test)
+ ✔ discover @done (17-02-28 22:12) @project(test)
+ ✔ up files if existing @done (17-02-28 21:00) @project(general)
+ ✔ watch logs @done (17-02-27 21:21) @project(test)
+ ✔ SLIP @done (17-02-27 21:21) @project(test)
+ ✔ ip change slave @done (17-02-24 23:40) @project(general)
+ ✔ discover change @done (17-02-24 23:30) @project(general)
+ ✔ master foreign influence protection (with tailored only master <-> master or master --> slave communication) MLIP+(R) @done (17-02-24 20:04) @project(general)
+ ✔ mesh network: reassign slaves to origin of remove message @done (17-02-24 19:13) @project(general)
+ ✔ host change @done (17-02-23 11:12) @project(slave / mesh)
  ✔ slave foreign influence protection SLIP(R) @done (17-02-23 11:11) @project(general)
  ✔ frontend integration @done (17-02-22 20:52) @project(general)
  ✔ update masters on slave host change @done (17-02-22 20:43) @project(general)
@@ -285,4 +283,5 @@ Archive:
  ✔ discovered into database @done (16-09-06 19:21) @project(mesh network / build register)
  ✔ add MeshObject @done (16-09-06 19:20) @project(mesh network / build register)
  ✔ discover @done (16-09-05 20:14) @project(test)
+ ✔ mesh remove add removal of /local/back02-24 19:20) @project(general)
  ✔ preselect current message @project(frontend / plant settings)

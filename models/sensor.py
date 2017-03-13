@@ -28,6 +28,7 @@ class SensorData(Base):
   persistant  = BooleanField(default=False)
   created_at  = DateTimeField(default=datetime.datetime.now)
 
+
 class SensorSatisfactionLevel(Base):
   label        = CharField()
   name_color   = CharField()

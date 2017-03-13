@@ -2,6 +2,9 @@ import spidev
 
 
 class mcp3002:
+  def __init__(self):
+    pass
+
   def readadc(self, device=0, channel=0):
     if device not in [1, 0] or channel not in [1, 0]:
       return -1

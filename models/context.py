@@ -13,7 +13,8 @@ class DayNightTime(Base):
   start = IntegerField(default=900)  # 900
   stop = IntegerField(default=2400)  # 2400
 
-  display = BooleanField(default=False)
+  pump = BooleanField(default=False)
   ledbar = BooleanField(default=False)
+  display = BooleanField(default=False)
   generalleds = BooleanField(default=False)
   notification = BooleanField(default=False)

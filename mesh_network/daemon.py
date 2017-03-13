@@ -1,3 +1,4 @@
+import os
 import uuid
 import time
 import socket
@@ -20,6 +21,7 @@ class MeshNetwork(object):
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     s.connect(("gmail.com", 80))
     self.IP = s.getsockname()[0]
+    self.basedir = os.path.dirname(os.path.realpath(__file__))
     s.close()
 
   @staticmethod
@@ -134,12 +136,29 @@ class MeshNetwork(object):
         elif int(code[1:3]) in [2, 3, 4, 5]:
           registered = False if int(code[1:3]) % 2 == 0 else True
           master = False if int(code[1:3]) > 3 else True
-          status, result = MeshObject.get_or_create(
-              ip=received[1][0],
-              defaults={'registered': registered, 'master': master})
-          status.registered = registered
-          status.master = master
-          status.save()
+
+          if VariousTools.verify_database():
+            status, result = MeshObject.get_or_create(
+                ip=received[1][0],
+                defaults={'registered': registered, 'master': master})
+            status.registered = registered
+            status.master = master
+            status.save()
+          else:
+            from tools.mesh import MeshTools
+            MeshTools().create_dir_if_not_exists(self.basedir + '/discover')
+
+            if os.path.isfile(self.basedir + '/discover/main.json'):
+              with open(basedir + '/discover/main.json', 'r') as out:
+                data = json.loads(out.read())
+            else:
+              data = []
+
+            data.append({'registered': registered, 'master': master, 'ip': received[1][0]})
+
+            with open(basedir + '/discover/main.json', 'w') as out:
+              out.write(json.dumps(data))
+
 
       elif code[0] == '5':
         target = [message[1][0], received[1][0]]
@@ -318,9 +337,14 @@ class MeshNetwork(object):
         if mode is 2 - target == list [UUID, IP]
     """
     if mode == 1:
-      plant = Plant.get(localhost=True)
+      if VariousTools.verify_database():
+        no_database = False
+        plant = Plant.get(localhost=True)
+      else:
+        no_database = True
+        plant = None
       code = 40100
-      self.send(code, plant=plant, recipient=None, multicast=True)
+      self.send(code, plant=plant, recipient=None, multicast=True, no_database=no_database)
     elif mode == 2:
       if VariousTools.verify_database():
         logger.debug('discovered - database exists')
@@ -430,7 +454,7 @@ class MeshNetwork(object):
       random_generator = Random.new().read
       key = RSA.generate(1024, random_generator)
 
-      directory = './keys/'
+      directory = self.basedir + '/keys/'
       tools.create_dir_if_not_exists(directory)
 
       public = key.publickey().exportKey('DER')
@@ -457,7 +481,7 @@ class MeshNetwork(object):
 
       plant = Plant.get(Plant.localhost == True)
       tools = MeshTools()
-      directory = './keys/'
+      directory = self.basedir + '/keys/'
 
       public_key = ''.join(messages)
       public_key = tools.hex2bin(public_key)
@@ -496,7 +520,7 @@ class MeshNetwork(object):
       private_key = tools.hex2bin(private_key.encode())
       crypter = RSA.importKey(private_key)
 
-      directory = './keys/'
+      directory = self.basedir + '/keys/'
       for i in [['.key', messages[0]], ['.iv', messages[1]]]:
         filename = directory + recipient[1] + i[0]
         i[1] = tools.hex2bin(i[1].encode())
@@ -519,7 +543,7 @@ class MeshNetwork(object):
       plant = Plant.get(Plant.localhost == True)
       logger.debug('local plant uuid: {}'.format(plant.uuid))
 
-      directory = './database_serve/'
+      directory = self.basedir + '/database_serve/'
       tools.reinit_dir(directory)
 
       filename = directory + 'index.html'
@@ -581,7 +605,7 @@ class MeshNetwork(object):
       tools = MeshTools()
       time.sleep(2)
 
-      directory = './keys/'
+      directory = self.basedir + '/keys/'
       with open(directory + 'localhost.priv') as out:
         private_key = out.read()
 

@@ -1,15 +1,20 @@
+import os
 import json
+import time
 import socket
 import inspect
-from peewee import BaseModel
+from IoP import app
+from copy import deepcopy
 from models.main import db
 from models.plant import *
 from models.sensor import *
-from models.security import KeyChain
-from tools.security import KeyChain as keychain
+from peewee import BaseModel
 from inspect import isfunction
-from IoP import app
-from copy import deepcopy
+from tools.mesh import MeshTools
+from models.security import KeyChain
+from settings.database import DATABASE_NAME
+from mesh_network.daemon import MeshNetwork
+from tools.security import KeyChain as keychain
 from flask import redirect, url_for, render_template, session, request
 
 
@@ -25,7 +30,33 @@ def introduction():
 
   if session['step'] >= 1:
     session['step'] = 2
-    return render_template('init/introduction.jade', content={'get': True, 'discover': True})
+    toolchain = MeshTools()
+    toolchain.create_dir_if_not_exists('/local/backup')
+    toolchain.create_dir_if_not_exists('/var/log/iop')
+
+    if 'mnt' in DATABASE_NAME.split('/'):
+      with open('/etc/fstab', 'r') as out:
+        cont = True if "# auto inserted by the iop interface" not in out.read() else False
+
+      if cont:
+        with open('/etc/fstab', 'a') as out:
+          out.write("\n\n# auto inserted by the iop interface\ntmpfs           /mnt/ramdisk    tmpfs   nodev,nosuid,noexec,nodiratime,size=50M   0 0\n")
+    else:
+      toolchain.create_dir_if_not_exists('/'.join(DATABASE_NAME.split('/')[:-1]))
+
+    MeshNetwork().discover(1)
+    time.sleep(3)
+
+    file = os.path.dirname(os.path.realpath(__file__)) + '../../../../mesh_network/discover/main.json'
+    if not os.path.isfile(file):
+      discover = False
+    else:
+      with open(file, 'r') as out:
+        data = json.loads(out.read())
+
+      discover = False if len([x for x in data if x['registered']]) == 0 else True
+
+    return render_template('init/introduction.jade', content={'get': True, 'discover': discover})
   return 'failed request, I\'m so sorry!'
 
 

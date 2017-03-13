@@ -1,5 +1,6 @@
 import time
 import tools.logger
+import RPi.GPIO as GPIO
 from models.plant import Plant
 from models.sensor import Sensor
 
@@ -15,11 +16,16 @@ class GenericMoisture(object):
 
   @staticmethod
   def run(samples=10):
+    GPIO.setmode(GPIO.BCM)
+    GPIO.setup(4, GPIO.OUT)
+    GPIO.output(4, True)
+
     values = []
     for i in range(0, samples):
       values.append(mcp3002().read_pct(0, 1))
       time.sleep(.2)
     print(values)
+    GPIO.output(4, False)
 
     average = sum(values) / float(len(values))
     if average != 0:

@@ -15,7 +15,7 @@ block content
             input(type="checkbox", id="expert", onclick="$('button.expert').toggleClass('disabled red yellow')")
             label enable expert mode to proceed
           .placeholder(style='flex-grow:1')
-          button.expert.ui.right.floated.yellow.disabled.button Proceed
+          button.expert.ui.right.floated.yellow.disabled.button(onclick="window.location.href='/information'") Proceed
       else
         .proceed
-          button.ui.right.floated.green.button Proceed
+          button.ui.right.floated.green.button(onclick="window.location.href='/information'") Proceed

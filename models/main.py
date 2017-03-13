@@ -11,6 +11,7 @@ db = RetrySqliteDatabase(DATABASE_NAME, pragmas=(
     ('journal_mode', 'WAL'),
     ('synchronous', 'NORMAL')))
 
+
 class Base(Model):
   class Meta:
     database = db
