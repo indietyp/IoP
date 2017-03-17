@@ -52,7 +52,7 @@ class WaterPump:
       return True
 
   def run(self):
-    result = VariousTools.offline_check('waterpump', hardware=False)
+    result = VariousTools.offline_check('pump', hardware=False)
     if result:
       status = SensorStatus.get(SensorStatus.sensor == self.sensor,
                                 SensorStatus.plant == self.plant)

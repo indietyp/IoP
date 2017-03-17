@@ -3,6 +3,7 @@ general:
   [ ] slave main http
   [ ] slave responder
   [ ] slave revamp
+  [ ] neopixel rainbow fix
 
 test:
   [ ] new daemon verification system
@@ -10,7 +11,7 @@ test:
   [ ] extensions
     [ ] water pump in action
   [ ] range update
-  [ ] neopixel
+  ✔ neopixel @done (17-03-17 20:35)
 
 mesh network:
   [ ] local connection lost? @low
