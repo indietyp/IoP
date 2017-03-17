@@ -6895,6 +6895,11 @@ http://www.st.com&lt;p&gt;
 <wire x1="81.28" y1="-17.78" x2="73.66" y2="-17.78" width="0.1524" layer="91"/>
 <label x="73.66" y="-17.78" size="1.778" layer="95" rot="R180" xref="yes"/>
 </segment>
+<segment>
+<pinref part="JP2" gate="A" pin="GPIO17"/>
+<wire x1="190.5" y1="68.58" x2="175.26" y2="68.58" width="0.1524" layer="91"/>
+<label x="175.26" y="68.58" size="1.778" layer="95" rot="R180" xref="yes"/>
+</segment>
 </net>
 <net name="GPIO27" class="0">
 <segment>
@@ -6907,6 +6912,12 @@ http://www.st.com&lt;p&gt;
 <wire x1="81.28" y1="-22.86" x2="73.66" y2="-22.86" width="0.1524" layer="91"/>
 <label x="73.66" y="-22.86" size="1.778" layer="95" rot="R180" xref="yes"/>
 </segment>
+<segment>
+<pinref part="JP2" gate="A" pin="GPIO27"/>
+<wire x1="190.5" y1="66.04" x2="187.96" y2="66.04" width="0.1524" layer="91"/>
+<label x="187.96" y="66.04" size="1.778" layer="95" rot="R180" xref="yes"/>
+<label x="187.96" y="66.04" size="1.778" layer="95" rot="R180" xref="yes"/>
+</segment>
 </net>
 <net name="GPIO22" class="0">
 <segment>
@@ -6918,6 +6929,11 @@ http://www.st.com&lt;p&gt;
 <pinref part="IC2" gate="G$1" pin="2A"/>
 <wire x1="81.28" y1="-48.26" x2="73.66" y2="-48.26" width="0.1524" layer="91"/>
 <label x="73.66" y="-48.26" size="1.778" layer="95" rot="R180" xref="yes"/>
+</segment>
+<segment>
+<pinref part="JP2" gate="A" pin="GPIO22"/>
+<wire x1="190.5" y1="63.5" x2="175.26" y2="63.5" width="0.1524" layer="91"/>
+<label x="175.26" y="63.5" size="1.778" layer="95" rot="R180" xref="yes"/>
 </segment>
 </net>
 <net name="MGPB5" class="0">

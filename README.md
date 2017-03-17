@@ -6,7 +6,7 @@
 - [x] change registration to active in frontend
 - [x] add global settings layout
 - [x] extend mesh_network + rest_api
-- [ ] add water pump
+- [x] add water pump
 - [ ] rewrite setup with frontend, instead of CLI
 - [ ] installation guide
 - [ ] documentation

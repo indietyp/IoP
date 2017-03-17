@@ -1,0 +1,21 @@
+pname
+plocation
+pspecies
+pinterval
+
+wname
+wemail
+
+daccount
+dsmtp
+dpassword
+
+for t,l,h,m
+  tunit
+  tmin
+  tmax
+  tpersistant
+
+  for ca, op
+    tcamax
+    tcamin

@@ -1,0 +1,8 @@
+/var/log/iop/*.log {
+        daily
+        copytruncate
+        rotate 7
+        compress
+        dateext
+        missingok
+}

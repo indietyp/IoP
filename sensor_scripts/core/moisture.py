@@ -17,8 +17,10 @@ class GenericMoisture(object):
   @staticmethod
   def run(samples=10):
     GPIO.setmode(GPIO.BCM)
+    GPIO.setwarnings(False)
     GPIO.setup(4, GPIO.OUT)
     GPIO.output(4, True)
+    time.sleep(0.5)
 
     values = []
     for i in range(0, samples):
@@ -29,15 +31,15 @@ class GenericMoisture(object):
 
     average = sum(values) / float(len(values))
     if average != 0:
-      tools = ToolChainSensor()
+      toolchain = ToolChainSensor()
       plant = Plant.get(localhost=True)
 
       moisture = {'sensor': Sensor.get(Sensor.name == 'moisture'),
                   'plant': plant,
                   'value': average}
 
-      if tools.insert_data(moisture):
-        tools.set_hardware(moisture)
+      if toolchain.insert_data(moisture):
+        toolchain.set_hardware(moisture)
 
 if __name__ == '__main__':
   GenericMoisture.run()

@@ -1,16 +1,9 @@
-import sys
-import random
 import tools.logger
 import Adafruit_DHT
 
-# from pymongo import MongoClient
 from models.plant import Plant
 from models.sensor import Sensor
 from tools.sensor import ToolChainSensor
-# from tools.mail import ToolChainMailing
-# from ...tools.main import Tools
-# from ...tools.mailer import Mailer
-# from ..extensions.led.general import generalStatus
 
 
 class DHT22:
@@ -21,8 +14,7 @@ class DHT22:
 
   @staticmethod
   def run():
-    # == needs to be there 'is' is not valid!
-    plant = Plant.select().where(Plant.localhost == True)[0]
+    plant = Plant.get(localhost=True)
 
     # PARSE PARAMETERS
     temperature = {'sensor': Sensor.select().where(Sensor.name == 'temperature')[0],
@@ -37,16 +29,13 @@ class DHT22:
     # FETCH DATA FROM SENSOR
     humidity['value'], temperature['value'] = Adafruit_DHT.read_retry(sensor, pin)
     if humidity is not None and temperature is not None:
-      tools = ToolChainSensor()
+      toolchain = ToolChainSensor()
 
-      if tools.insert_data(temperature):
-        tools.set_hardware(temperature)
+      if toolchain.insert_data(temperature):
+        toolchain.set_hardware(temperature)
 
-      if tools.insert_data(humidity):
-        tools.set_hardware(humidity)
-
-    # else:
-    #   return -1
+      if toolchain.insert_data(humidity):
+        toolchain.set_hardware(humidity)
 
 if __name__ == '__main__':
   DHT22.run()

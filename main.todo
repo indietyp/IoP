@@ -1,16 +1,16 @@
 general:
-  [ ] discover integration init
-  [ ] implement water_pump
-  [ ] init insert logrotate
-  [ ] init PYTHONPATH
+  [ ] slave dns server
+  [ ] slave main http
+  [ ] slave responder
+  [ ] slave revamp
 
 test:
   [ ] new daemon verification system
     [ ] new plant c: (another pi please - also required for testing remove)
   [ ] extensions
-    [ ] water_pump
+    [ ] water pump in action
   [ ] range update
-  [ ] create additional plant network (vm)
+  [ ] neopixel
 
 mesh network:
   [ ] local connection lost? @low
@@ -18,27 +18,33 @@ mesh network:
 
 frontend:
   no database configuration:
-    [ ] activate init branch if no database existent @high
-      [ ] check if network already exists - warning (only for advanced - proceed)
-      [ ] create database - name
-        [ ] create folders
-          [ ] /local/backup
-          [ ] /var/log/iop
-        [ ] setup additonal drives
-          [ ] ramdisk
-      [ ] create plant
-        [ ] responsible
-        [ ] mail account
-      [ ] create sensors
+    ✔ activate init branch if no database existent @high @done (17-03-16 22:15)
 
- sensor_scripts:
-   extensions:
-     [ ] integrate water pump
 
 
 
 ＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿
 Archive:
+ ✔ water_pump @done (17-03-15 20:27) @project(test)
+ ✔ create additional plant network (vm) @done (17-03-15 20:27) @project(test)
+ ✔ init nginx @done (17-03-14 20:32) @project(general)
+ ✔ init insert logrotate @done (17-03-14 20:32) @project(general)
+ ✔ init crontab @done (17-03-14 20:32) @project(general)
+ ✔ init PYTHONPATH @done (17-03-14 20:32) @project(general)
+ ✔ discover integration init @done (17-03-14 20:32) @project(general)
+ ✔ setup additonal drives @done (17-03-13 21:59) @project(frontend / no database configuration)
+ ✔ responsible @done (17-03-13 21:59) @project(frontend / no database configuration)
+ ✔ ramdisk @done (17-03-13 21:59) @project(frontend / no database configuration)
+ ✔ mail account @done (17-03-13 21:59) @project(frontend / no database configuration)
+ ✔ integrate water pump @done (17-03-13 21:59) @project(frontend / sensor_scripts / extensions)
+ ✔ implement water_pump @done (17-03-13 21:59) @project(general)
+ ✔ create sensors @done (17-03-13 21:59) @project(frontend / no database configuration)
+ ✔ create plant @done (17-03-13 21:59) @project(frontend / no database configuration)
+ ✔ create folders @done (17-03-13 21:59) @project(frontend / no database configuration)
+ ✔ create database - name @done (17-03-13 21:59) @project(frontend / no database configuration)
+ ✔ check if network already exists - warning (only for advanced - proceed) @done (17-03-13 21:59) @project(frontend / no database configuration)
+ ✔ /var/log/iop @done (17-03-13 21:59) @project(frontend / no database configuration)
+ ✔ /local/backup @done (17-03-13 21:59) @project(frontend / no database configuration)
  ✔ get Day/Night @critical @done (17-03-07 19:32) @project(frontend / rest / settings)
  ✔ daynighttime update @done (17-03-07 19:32) @project(mesh network / update)
  ✔ device offline notification @done (17-03-07 19:29) @project(general)

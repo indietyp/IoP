@@ -68,6 +68,7 @@ class WaterPump:
 
       if status.level.label == 'threat' and latest.value < satisfaction.min_value:
         GPIO.setmode(GPIO.BCM)
+        GPIO.setwarnings(False)
         GPIO.setup(17, GPIO.OUT)
         GPIO.setup(27, GPIO.OUT)
         GPIO.setup(22, GPIO.OUT)

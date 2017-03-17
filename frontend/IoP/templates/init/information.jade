@@ -11,22 +11,22 @@ block content
       .ui.grid.container
         .eight.wide.column
           .ui.left.icon.input(style='width:100%')
-            input(type='text', placeholder='name')
+            input#pname(type='text', placeholder='name')
             i.tag.icon
 
         .eight.wide.column
           .ui.left.icon.input(style='width:100%')
-            input(type='text', placeholder='species')
+            input#pspecies(type='text', placeholder='species')
             i.leaf.icon
 
         .eight.wide.column
           .ui.left.icon.input(style='width:100%')
-            input(type='text', placeholder='location')
+            input#plocation(type='text', placeholder='location')
             i.home.icon
 
         .eight.wide.column
           .ui.left.icon.input(style='width:100%')
-            input(type='text', placeholder='notification interval')
+            input#pinterval(type='text', placeholder='notification interval')
             i.mail.icon
 
       .ui.divider
@@ -35,12 +35,12 @@ block content
       .ui.grid.container
         .eight.wide.column
           .ui.left.icon.input(style='width:100%')
-            input(type='text', placeholder='name')
+            input#wname(type='text', placeholder='name')
             i.tag.icon
 
         .eight.wide.column
           .ui.left.icon.input(style='width:100%')
-            input(type='text', placeholder='email')
+            input#wemail(type='text', placeholder='email')
             i.mail.icon
 
       .ui.divider
@@ -49,23 +49,18 @@ block content
       .ui.grid.container
         .eight.wide.column
           .ui.left.icon.input(style='width:100%')
-            input(type='text', placeholder='account name')
+            input#daccount(type='text', placeholder='account name')
             i.at.icon
 
         .eight.wide.column
           .ui.left.icon.input(style='width:100%')
-            input(type='text', placeholder='smtp server')
+            input#dsmtp(type='text', placeholder='smtp server')
             i.cloud.icon
 
         .sixteen.wide.column
           .ui.left.icon.input(style='width:100%')
-            input(type='password', placeholder='password')
+            input#dpassword(type='password', placeholder='password')
             i.info.icon
-
-        //- .eight.wide.column
-        //-   .ui.left.icon.input(style='width:100%')
-        //-     input(type='text', placeholder='notification interval')
-        //-     i.mail.icon
 
       .ui.divider
       h2.ui.header Sensors
@@ -73,15 +68,6 @@ block content
         h3.ui.header= item
 
         .ui.grid.container
-          //- .eight.wide.column
-          //-   .ui.left.icon.input(style='width:100%')
-          //-     input(type='text', placeholder='name', class="sensor name #{item}")
-          //-     i.tag.icon
-
-          //- .eight.wide.column
-          //-   .ui.left.icon.disabled.input(style='width:100%')
-          //-     input(type='text', placeholder='model')
-          //-     i.archive.icon
           - var min = 0
           - var max = 100
           - var unit = ''
@@ -97,21 +83,21 @@ block content
 
           .eight.wide.column
             .ui.left.icon.input(style='width:100%')
-              input(type='text', placeholder='unit', class="sensor unit #{item}", value="#{unit}")
+              input(type='text', placeholder='unit', class="sensor unit #{item}", value="#{unit}", id="#{item[0]}unit")
               i.dashboard.icon
 
           .eight.wide.column
             .ui.left.icon.input(style='width:100%')
-              input(type='text', placeholder='persistant offset', class="sensor persistant #{item}", value="1")
+              input(type='text', placeholder='persistant offset', class="sensor persistant #{item}", value="1", id="#{item[0]}persistant")
               i.exchange.icon
 
           .eight.wide.column
             .ui.left.icon.input(style='width:100%')
-              input(type='text', placeholder='minimum', class="sensor min #{item}", value="#{min}")
+              input(type='text', placeholder='minimum', class="sensor min #{item}", value="#{min}", id="#{item[0]}min")
               i.angle.down.icon
           .eight.wide.column
             .ui.left.icon.input(style='width:100%')
-              input(type='text', placeholder='maximum', class="sensor max #{item}", value="#{max}")
+              input(type='text', placeholder='maximum', class="sensor max #{item}", value="#{max}", id="#{item[0]}max")
               i.angle.up.icon
 
       .ui.divider
@@ -282,7 +268,60 @@ block content
       .proceed(style='display:flex;align-items:center')
         .content We now create the database and insert stuff!
         .placeholder(style='flex-grow:1')
-        button.expert.ui.right.floated.green.button Proceed
+        button.expert.ui.right.floated.green.button(onclick="create()") Proceed
+
+      script.
+        function compareNumbers(a, b) {
+          return a - b;
+        }
+
+        function create() {
+          var output = {}
+          output.pname = $("#pname").val()
+          output.plocation = $("#plocation").val()
+          output.pspecies = $("#pspecies").val()
+          output.pinterval = $("#pinterval").val()
+
+          output.wname = $("#wname").val()
+          output.wemail = $("#wemail").val()
+
+          output.daccount = $("#daccount").val()
+          output.dsmtp = $("#dsmtp").val()
+          output.dpassword = $("#dpassword").val()
+
+          output.tunit = $("#tunit").val()
+          output.tmin = $("#tmin").val()
+          output.tmax = $("#tmax").val()
+          output.tpersistant = $("#tpersistant").val();
+          [output.tcamin, output.topmin, output.topmax, output.tcamax] = $("#flat-slider-vertical-humidity").slider("values").sort(compareNumbers)
+
+          output.lunit = $("#lunit").val()
+          output.lmin = $("#lmin").val()
+          output.lmax = $("#lmax").val()
+          output.lpersistant = $("#lpersistant").val();
+          [output.lcamin, output.lopmin, output.lopmax, output.lcamax] = $("#flat-slider-vertical-light").slider("values").sort(compareNumbers)
+
+          output.hunit = $("#hunit").val()
+          output.hmin = $("#hmin").val()
+          output.hmax = $("#hmax").val()
+          output.hpersistant = $("#hpersistant").val();
+          [output.hcamin, output.hopmin, output.hopmax, output.hcamax] = $("#flat-slider-vertical-humidity").slider("values").sort(compareNumbers)
+
+          output.munit = $("#munit").val()
+          output.mmin = $("#mmin").val()
+          output.mmax = $("#mmax").val()
+          output.mpersistant = $("#mpersistant").val();
+          [output.mcamin, output.mopmin, output.mopmax, output.mcamax] = $("#flat-slider-vertical-moisture").slider("values").sort(compareNumbers)
+
+          request = $.ajax({
+            url: '/create',
+            method: 'POST',
+            data: output
+          });
+          request.done(function(msg) {
+            $("img.ui.medium.circular.image").attr('src', msg);
+          });
+        }
 
 
 

@@ -145,20 +145,20 @@ class MeshNetwork(object):
             status.master = master
             status.save()
           else:
+            import json
             from tools.mesh import MeshTools
             MeshTools().create_dir_if_not_exists(self.basedir + '/discover')
 
             if os.path.isfile(self.basedir + '/discover/main.json'):
-              with open(basedir + '/discover/main.json', 'r') as out:
+              with open(self.basedir + '/discover/main.json', 'r') as out:
                 data = json.loads(out.read())
             else:
               data = []
 
             data.append({'registered': registered, 'master': master, 'ip': received[1][0]})
 
-            with open(basedir + '/discover/main.json', 'w') as out:
+            with open(self.basedir + '/discover/main.json', 'w') as out:
               out.write(json.dumps(data))
-
 
       elif code[0] == '5':
         target = [message[1][0], received[1][0]]
@@ -323,14 +323,15 @@ class MeshNetwork(object):
     if mode > 2:
       raise ValueError('invalid mode')
 
-    plant = Plant.get(Plant.localhost == True)
+    if VariousTools.verify_database():
+      plant = Plant.get(localhost=True)
 
-    if mode == 1:
-      code = 10100
-    elif mode == 2:
-      code = 10200
+      if mode == 1:
+        code = 10100
+      elif mode == 2:
+        code = 10200
 
-    self.send(code, plant=plant, recipient=target, messages=[additional_information])
+      self.send(code, plant=plant, recipient=target, messages=[additional_information])
 
   def discover(self, target=None, mode=1):
     """ if mode is 1 - target == peewee plant object

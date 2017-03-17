@@ -1,6 +1,7 @@
 import logging
 import tools.logger
 from sensor_scripts.extensions.display import Display
+from sensor_scripts.extensions.water_pump import WaterPump
 from sensor_scripts.extensions.mailer import PlantMailer
 from sensor_scripts.extensions.led.general import TrafficLight
 from sensor_scripts.extensions.led.moisture_bar import MoistureBar
@@ -27,6 +28,7 @@ class ToolChainHardware(object):
 
   def execute_water_pump(self, data):
     logger.info('executing water pump')
+    WaterPump().run()
 
   def execute_mailer(self, data):
     logger.info('executing mailer')

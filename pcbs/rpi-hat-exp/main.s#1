@@ -4707,7 +4707,6 @@ http://www.st.com&lt;p&gt;
 <part name="P+2" library="supply1" deviceset="VCC" device=""/>
 <part name="P+3" library="supply1" deviceset="VCC" device=""/>
 <part name="DISPLAY" library="con-lstb" deviceset="MA07-2" device=""/>
-<part name="GND11" library="supply1" deviceset="GND" device=""/>
 <part name="DHT22" library="SparkFun-Connectors" deviceset="M04" device="1X04_NO_SILK"/>
 <part name="P+6" library="supply1" deviceset="VCC" device=""/>
 <part name="R9" library="adafruit" deviceset="R-US_" device="0204/7" value="10k"/>
@@ -4762,7 +4761,6 @@ http://www.st.com&lt;p&gt;
 <instance part="P+2" gate="VCC" x="266.7" y="10.16" rot="R90"/>
 <instance part="P+3" gate="VCC" x="266.7" y="5.08" rot="R90"/>
 <instance part="DISPLAY" gate="G$1" x="347.98" y="-33.02" rot="R180"/>
-<instance part="GND11" gate="1" x="104.14" y="137.16" rot="R180"/>
 <instance part="DHT22" gate="G$1" x="58.42" y="137.16" rot="R90"/>
 <instance part="P+6" gate="VCC" x="60.96" y="144.78"/>
 <instance part="R9" gate="G$1" x="58.42" y="154.94" rot="R90"/>

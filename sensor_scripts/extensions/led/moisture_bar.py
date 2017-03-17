@@ -1,9 +1,4 @@
-# from ...driver.mcp23017 import MCP230XX_GPIO
-# from pymongo import MongoClient
-# from ...tools.main import Tools
 import time
-# import smbus
-import RPi.GPIO as GPIO
 from models.plant import Plant
 from tools.main import VariousTools
 from models.sensor import Sensor, SensorStatus
@@ -23,17 +18,15 @@ class MoistureBar:
       status = SensorStatus.get(SensorStatus.sensor == sensor,
                                 SensorStatus.plant == plant)
 
-      # init MCP230xx GPIO adapter.
       bus = 1
       gpio_count = 16
       address = 0x20
 
-      # Create MCP230xx GPIO adapter.
       mcp = MCP230XX_GPIO(bus, address, gpio_count)
 
-      # GREEN 2/1
-      # YELLOW 4/3
-      # RED 6/5
+      # green color port: 2, 1
+      # yellow color port: 4, 3
+      # red color port: 6, 5
       led = 0
       for i in [['threat', 6, 5], ['cautioning', 4, 3], ['optimum', 2, 1]]:
         if status.level.label == i[0]:

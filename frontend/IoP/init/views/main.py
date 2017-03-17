@@ -1,8 +1,10 @@
 import os
 import json
 import time
+import shutil
 import socket
 import inspect
+import subprocess
 from IoP import app
 from copy import deepcopy
 from models.main import db
@@ -10,11 +12,10 @@ from models.plant import *
 from models.sensor import *
 from peewee import BaseModel
 from inspect import isfunction
-from tools.mesh import MeshTools
-from models.security import KeyChain
-from settings.database import DATABASE_NAME
 from mesh_network.daemon import MeshNetwork
+from settings.database import DATABASE_NAME
 from tools.security import KeyChain as keychain
+from models.security import KeyChain, MailAccount
 from flask import redirect, url_for, render_template, session, request
 
 
@@ -30,20 +31,6 @@ def introduction():
 
   if session['step'] >= 1:
     session['step'] = 2
-    toolchain = MeshTools()
-    toolchain.create_dir_if_not_exists('/local/backup')
-    toolchain.create_dir_if_not_exists('/var/log/iop')
-
-    if 'mnt' in DATABASE_NAME.split('/'):
-      with open('/etc/fstab', 'r') as out:
-        cont = True if "# auto inserted by the iop interface" not in out.read() else False
-
-      if cont:
-        with open('/etc/fstab', 'a') as out:
-          out.write("\n\n# auto inserted by the iop interface\ntmpfs           /mnt/ramdisk    tmpfs   nodev,nosuid,noexec,nodiratime,size=50M   0 0\n")
-    else:
-      toolchain.create_dir_if_not_exists('/'.join(DATABASE_NAME.split('/')[:-1]))
-
     MeshNetwork().discover(1)
     time.sleep(3)
 
@@ -70,29 +57,36 @@ def information():
 
 @app.route('/create', methods=['POST'])
 def create():
+  session['step'] = 3
   if session['step'] >= 3:
     session['step'] = 4
     required = ['pname', 'plocation', 'pspecies', 'pinterval', 'wname', 'wemail', 'daccount', 'dsmtp', 'dpassword']
 
     for item in ['t', 'l', 'h', 'm']:
       required.extend([item + 'unit', item + 'min', item + 'max', item + 'persistant'])
-    for item in ['th', 'ca', 'op']:
-      required.extend([item + 'max', item + 'min'])
+      for i in [item + 'ca', item + 'op']:
+        print(i)
+        required.extend([i + 'max', i + 'min'])
 
     data = deepcopy(request.form)
+    print(list(set(required) - set(data.keys())))
 
     if len(list(set(required) - set(data.keys()))) != 0:
       return 'not valid data, hihihihi'
     print(data)
 
     models = []
-    for module in ['plant', 'sensor', 'people', 'security', 'mesh', 'context']:
-      exec('import models.' + module)
+    for module in ['plant', 'sensor', 'security', 'mesh', 'context']:
+      exec('from models import ' + module + ' as n' + module)
       models.extend([
           obj for name, obj in inspect.getmembers(
-              eval(module), lambda obj: not isfunction(obj) and isinstance(obj, BaseModel) and obj.__name__ != 'Model' and obj.__name__ != 'Base'
+              eval('n' + module), lambda obj: not isfunction(obj) and isinstance(obj, BaseModel) and obj.__name__ != 'Model' and obj.__name__ != 'Base'
           )
       ])
+
+    print(models)
+    # print(len(models))
+    # return 'dingdong'
     # peewee create database
     db.create_tables(models)
 
@@ -193,14 +187,16 @@ def create():
           sensor_satisfaction_value.min_value = None
           sensor_satisfaction_value.max_value = None
         else:
-          sensor_satisfaction_value.min_value = data[level[0:2] + 'min']
-          sensor_satisfaction_value.max_value = data[level[0] + 'max']
+          sensor_satisfaction_value.min_value = data[obj_sensor.name[0] + level[0:2] + 'min']
+          sensor_satisfaction_value.max_value = data[obj_sensor.name[0] + level[0:2] + 'max']
 
         sensor_satisfaction_value.save()
 
+    if 'mnt' in DATABASE_NAME.split('/'):
+      shutil.copytree('/'.join(DATABASE_NAME.split('/')[:-1]), '/local/backup')
+
     # reboot
-    from subprocess import call
-    call(["reboot"])
+    subprocess.call(["reboot"])
 
   return 'failed request, I\'m so sorry!'
 
