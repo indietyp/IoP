@@ -7,7 +7,7 @@ def exc():
   from neopixel import Adafruit_NeoPixel
   basedir = os.path.dirname(os.path.realpath(__file__))
 
-  steps = 50
+  steps = 60
   neopixel = Adafruit_NeoPixel(1, 18)
   neopixel.begin()
 
@@ -49,6 +49,7 @@ def exc():
     if bchange[pointer]:
       pointers.append(pointer)
 
+  print(pointers)
   old = deepcopy(current)
   for pointer in pointers:
     for i in range(0, int(steps / len(pointers) + 1)):
@@ -56,23 +57,23 @@ def exc():
       for external in range(len(bchange)):
         if pointer == external:
           if not bcurrent[pointer]:
-            x = steps - i
+            x = int(steps / len(pointers)) - i
             offset = current[pointer]
           else:
             x = i
             offset = changelog[pointer]
-          color.append(offset + int(math.cos((1 / steps) * math.pi * x) * (abs(current[pointer] - changelog[pointer]) / 2) + (abs(current[pointer] - changelog[pointer]) / 2)))
+          color.append(offset + int(math.cos((1 / int(steps / len(pointers))) * math.pi * x) * (abs(current[external] - changelog[external]) / 2) + (abs(current[external] - changelog[external]) / 2)))
         else:
-          color.append(old[pointer])
+          color.append(old[external])
       print(color)
       neopixel.setPixelColorRGB(0, color[0], color[1], color[2])
       neopixel.show()
       old = deepcopy(color)
-      time.sleep(1 / 15)
+      time.sleep(1)
       print(color)
 
   with open(basedir + '/ledstate.json', 'w') as out:
-    out.write(json.dumps(color))
+    out.write(json.dumps(old))
 
 if __name__ == '__main__':
   exc()
