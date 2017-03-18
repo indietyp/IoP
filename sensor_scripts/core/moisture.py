@@ -20,7 +20,7 @@ class GenericMoisture(object):
     GPIO.setwarnings(False)
     GPIO.setup(4, GPIO.OUT)
     GPIO.output(4, True)
-    time.sleep(0.5)
+    time.sleep(1)
 
     values = []
     for i in range(0, samples):
