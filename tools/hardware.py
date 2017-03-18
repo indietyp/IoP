@@ -28,7 +28,7 @@ class ToolChainHardware(object):
 
   def execute_water_pump(self, data):
     logger.info('executing water pump')
-    WaterPump().run()
+    # WaterPump().run()
 
   def execute_mailer(self, data):
     logger.info('executing mailer')
