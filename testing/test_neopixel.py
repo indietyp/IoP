@@ -62,7 +62,7 @@ def exc():
           else:
             x = i
             offset = changelog[pointer]
-          color.append(offset + int(steps / len(pointers) * x))
+          color.append(offset + (abs(current[external] - changelog[external]) / int(steps / len(pointers)) * x))
           # color.append(offset + int(math.cos((1 / int(steps / len(pointers))) * math.pi * x) * (abs(current[external] - changelog[external]) / 2) + (abs(current[external] - changelog[external]) / 2)))
         else:
           color.append(old[external])
