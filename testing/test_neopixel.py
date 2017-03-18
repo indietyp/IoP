@@ -7,11 +7,11 @@ def exc():
   from neopixel import Adafruit_NeoPixel
   basedir = os.path.dirname(os.path.realpath(__file__))
 
-  steps = 60
+  steps = 120
   neopixel = Adafruit_NeoPixel(1, 18)
   neopixel.begin()
 
-  setting = {'threat': 0, 'cautioning': 1, 'optimum': 0}
+  setting = {'threat': 0, 'cautioning': 0, 'optimum': 1}
   changelog = [0, 0, 0]
 
   if setting['threat'] > 0:
@@ -68,7 +68,7 @@ def exc():
     neopixel.setPixelColorRGB(0, color[0], color[1], color[2])
     neopixel.show()
     old = deepcopy(color)
-    time.sleep(0.1)
+    time.sleep(0 / 30)
     print(color)
 
   with open(basedir + '/ledstate.json', 'w') as out:
