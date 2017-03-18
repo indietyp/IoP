@@ -43,12 +43,6 @@ def exc():
     bcurrent.append(True if current[pointer] > changelog[pointer] else False)
     bchange.append(True if current[pointer] != changelog[pointer] else False)
 
-  # pointers = []
-  # for pointer in range(len(bchange)):
-  #   if bchange[pointer]:
-  #     pointers.append(pointer)
-
-  # print(pointers)
   old = deepcopy(current)
   for i in range(0, steps + 1):
     color = []
@@ -68,7 +62,7 @@ def exc():
     neopixel.setPixelColorRGB(0, color[0], color[1], color[2])
     neopixel.show()
     old = deepcopy(color)
-    time.sleep(0 / 30)
+    # time.sleep(1 / 30)
     print(color)
 
   with open(basedir + '/ledstate.json', 'w') as out:
