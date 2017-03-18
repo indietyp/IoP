@@ -3,6 +3,7 @@ def exc():
   import json
   import math
   import time
+  from copy import deepcopy
   from neopixel import Adafruit_NeoPixel
   basedir = os.path.dirname(os.path.realpath(__file__))
 
@@ -48,8 +49,9 @@ def exc():
     if bchange[pointer]:
       pointers.append(pointer)
 
+  old = deepcopy(current)
   for pointer in pointers:
-    for i in range(0, steps / len(pointers) + 1):
+    for i in range(0, int(steps / len(pointers) + 1)):
       color = []
       for external in range(len(bchange)):
         if pointer == external:
@@ -61,10 +63,11 @@ def exc():
             offset = changelog[pointer]
           color.append(offset + int(math.cos((1 / steps) * math.pi * x) * (abs(current[pointer] - changelog[pointer]) / 2) + (abs(current[pointer] - changelog[pointer]) / 2)))
         else:
-          color.append(current[pointer])
+          color.append(old[pointer])
       print(color)
       neopixel.setPixelColorRGB(0, color[0], color[1], color[2])
       neopixel.show()
+      old = deepcopy(color)
       time.sleep(1 / 15)
       print(color)
 
