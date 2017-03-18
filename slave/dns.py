@@ -2,15 +2,15 @@ import network
 
 
 class DNSHandler:
-  def __init__(self, socket, request):
+  def __init__(self, socket, data, addr):
     self.socket = socket
-    self.request = request
-    self.client_address = request[1]
+    self.data = data
+    self.client_address = addr
     self.DNS_HEADER_LENGTH = 12
 
   def handle(self):
     socket = self.socket
-    data = self.request[0].strip()
+    data = self.data.strip()
 
     if len(data) < self.DNS_HEADER_LENGTH:
       return

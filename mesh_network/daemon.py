@@ -40,7 +40,6 @@ class MeshNetwork(object):
       httpd.handle_request()
 
   def verification(self, message, origin, raw):
-    # TODO verification of the integrete of the package
     verification = False
     if (raw[0] != '<' or
         raw[-1] != '>' or

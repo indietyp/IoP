@@ -52,13 +52,27 @@ class MeshNetwork(object):
     sta_if = network.WLAN(network.STA_IF)
     self.IP = sta_if.ifconfig()[0]
 
-  def daemon_process(self, received):
-    message = received[0].decode('utf-8')
-    print('received following package: \n' + message)
-    message = message.replace('<', '[').replace('>', ']')
-    message = eval(message)
-
+  def verification(self, message, received):
     passthrough = False
+    raw = received[0]
+
+    if (raw[0] != '<' or
+        raw[-1] != '>' or
+        len(message) != 6 or
+        len(message[1]) != 2 or
+        len(message[2]) != 2 or
+        len(message[3]) != 1 or
+        len(message[4]) != 4 or
+        len(str(message[3][0])) != 5 or
+        not str(message[3][0]).isdigit() or
+        message[0] not in [0, 1] or
+        message[0] != message[5] or
+        not str(message[2][0]).isdigit() or
+        message[2][0] > 255):
+
+      print('potential spoofing attack - no valid package')
+      return False
+
     if 'config.json' in os.listdir():
       with open('config.json', 'r') as out:
         config = json.loads(out.read())
@@ -68,6 +82,15 @@ class MeshNetwork(object):
       elif str(message[3][0])[0] in ['4', '6']:
         passthrough = True
 
+    return passthrough
+
+  def daemon_process(self, received):
+    message = received[0].decode('utf-8')
+    print('received following package: \n' + message)
+    message = message.replace('<', '[').replace('>', ']')
+    message = eval(message)
+
+    passthrough = self.verification(message, received)
     if self.IP != received[1][0] and passthrough:
       code = str(message[3][0])
       if code[0] == '1':

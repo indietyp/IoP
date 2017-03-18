@@ -1,51 +1,47 @@
-def server():
-  import socket
-  import network
-  sta_if = network.WLAN(network.STA_IF)
-  active = sta_if.active()
+import os
+import socket
+import network
 
-  if not active:
-    sta_if.active(True)
-  networks = sta_if.scan()
-  if not active:
-    sta_if.active(False)
-  networks = [x[0].decode() for x in networks]
-  html_networks = """"""
 
-  for nw in networks:
-   html_networks += """<option value="{}">{}</option>""".format(nw, nw)
+class HTTPServer():
+  def __init__(self):
+    sta_if = network.WLAN(network.STA_IF)
+    active = sta_if.active()
 
-  html = """<!DOCTYPE html>
-  <html>
-     <head>
-       <title>Network Configuration</title>
-     </head>
-     <body>
-       {}
-     </body>
-  </html>"""
+    if not active:
+      sta_if.active(True)
+    networks = sta_if.scan()
+    if not active:
+      sta_if.active(False)
+    self.networks = [x[0].decode() for x in networks]
 
-  main = """<h1>please select the network you desire and enter the password</h1>
-         <form action="/update" method="post">
-           Network Name:<br>
-           <select name="ssid">{}</select><br />
-           Last name:<br />
-           <input type="password" name="password"><br /><br />
-           <input type="submit" value="Submit">
-         </form>""".format(html_networks)
+    for nw in self.networks:
+      self.html_networks += """<option value="{}">{}</option>""".format(nw, nw)
 
-  blocked = """sry! That's not what I want"""
+    self.html = """<!DOCTYPE html>
+    <html>
+       <head>
+         <title>Network Configuration</title>
+       </head>
+       <body>
+         {}
+       </body>
+    </html>"""
 
-  addr = socket.getaddrinfo('0.0.0.0', 80)[0][-1]
+    self.main = """<h1>please select the network you desire and enter the password</h1>
+           <form action="/update" method="post">
+             Network Name:<br>
+             <select name="ssid">{}</select><br />
+             Last name:<br />
+             <input type="password" name="password"><br /><br />
+             <input type="submit" value="Submit">
+           </form>""".format(self.html_networks)
 
-  s = socket.socket()
-  s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-  s.bind(addr)
-  s.listen(1)
+    self.blocked = """sry! That's not what I want"""
 
-  print('listening on', addr)
+    self.wifi = True if 'credentials.json' in os.listdir() else False
 
-  def unescape(string):
+  def unescape(self, string):
     index = string.find("%")
     if index == -1:
       string = string.replace('[PERCENT]', '%')
@@ -56,9 +52,9 @@ def server():
       if replacement == '%':
         replacement = '[PERCENT]'
       string = string.replace(string[index:index + 3], replacement)
-      return unescape(string)
+      return self.unescape(string)
 
-  def whitelist(request):
+  def whitelist(self, request):
     if len(list(request.keys())) > 0:
       whitelist = ['/', '/update']
       if request['path'] in whitelist:
@@ -73,16 +69,7 @@ def server():
 
     return code, whitelisted
 
-  while True:
-    cl, addr = s.accept()
-    print('client connected from', addr)
-    data = b''
-
-    while True:
-      data += cl.recv(1024)
-      if data.find(b'\r\n\r\n') != -1:
-        break
-
+  def process(self, cl, data):
     data = data.split(b'\r\n')
     data = [x.decode() for x in data if x != b'']
     request = {}
@@ -103,7 +90,7 @@ def server():
       request[line[0].lower()] = line[1]
     print(request)
 
-    code, whitelisted = whitelist(request)
+    code, whitelisted = self.whitelist(request)
 
     if request['path'] == '/update' and request['mode'] == 'post':
       print('processing update')
@@ -112,7 +99,7 @@ def server():
       print(raw)
       for information in raw:
         info = information.split('=')
-        info = [unescape(x.replace('+', ' ')) for x in info]
+        info = [self.unescape(x.replace('+', ' ')) for x in info]
         credentials[info[0]] = info[1]
 
       if len(list(credentials.keys())) == 2:
@@ -131,21 +118,19 @@ def server():
         whitelisted = False
         code = '400 Bad Request'
 
-    body = html
-    if whitelisted:
-      body = body.format(main)
+    body = self.html
+    if whitelisted and not self.wifi:
+      body = body.format(self.main)
     else:
-      body = body.format(blocked)
+      body = body.format(self.blocked)
 
     headers = [
         'HTTP/1.1 {}'.format(code),
         'Content-Type: text/html; encoding=utf8',
-        # 'Content-Length: {}'.format(len(body)),
         'Connection: close']
     headers = '\n'.join(headers)
 
     print(code)
     body = headers + '\n\n' + body
     cl.sendall(body.encode())
-
     cl.close()

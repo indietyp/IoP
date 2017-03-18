@@ -3,7 +3,7 @@ general:
   [ ] slave main http
   [ ] slave responder
   [ ] slave revamp
-  [ ] neopixel rainbow fix
+  [ ] neopixel rainbow fix?
 
 test:
   [ ] new daemon verification system
