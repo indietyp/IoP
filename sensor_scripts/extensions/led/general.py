@@ -88,6 +88,10 @@ class TrafficLight(object):
     with open(basedir + '/ledstate.json', 'w') as out:
       out.write(json.dumps(color))
 
+    time.sleep(1)
+    neopixel.setPixelColorRGB(0, changelog[0], changelog[1], changelog[2])
+    neopixel.show()
+
     return True
 
 if __name__ == "__main__":

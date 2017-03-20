@@ -1,19 +1,12 @@
 import network
+from communication import CommunicationMainFrame
 sta_if = network.WLAN(network.STA_IF)
 ap_if = network.WLAN(network.AP_IF)
 
 
-def establish():
-  import http
-  try:
-    http.server()
-  except:
-    import machine
-    machine.reset()
-
-if sta_if.active():
-  from mesh import MeshNetwork
-  MeshNetwork().daemon()
-
-elif ap_if.active():
-  establish()
+communication = CommunicationMainFrame()
+communication.daemon()
+# if sta_if.active():
+#   communication.daemon(http=False, dns=False)
+# elif ap_if.active():
+#   communication.daemon(iop=False, multicast=False)

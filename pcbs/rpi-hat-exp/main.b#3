@@ -6,7 +6,7 @@
 <setting alwaysvectorfont="yes"/>
 <setting verticaltext="up"/>
 </settings>
-<grid distance="0.05" unitdist="inch" unit="inch" style="lines" multiple="1" display="no" altdistance="0.025" altunitdist="inch" altunit="inch"/>
+<grid distance="0.05" unitdist="inch" unit="inch" style="lines" multiple="1" display="no" altdistance="0.0125" altunitdist="inch" altunit="inch"/>
 <layers>
 <layer number="1" name="Top" color="4" fill="1" visible="yes" active="yes"/>
 <layer number="16" name="Bottom" color="1" fill="1" visible="yes" active="yes"/>
@@ -1311,12 +1311,12 @@ Please ensure your boards meet these minimum design rule requirements.</descript
 <signal name="GPIO18">
 <contactref element="JP2" pad="12"/>
 <contactref element="LED2" pad="1"/>
-<wire x1="60.6584" y1="46.609" x2="57.531" y2="46.609" width="0.4064" layer="1"/>
-<wire x1="57.531" y1="46.609" x2="55.626" y2="48.26" width="0.4064" layer="1"/>
-<wire x1="55.626" y1="48.26" x2="55.626" y2="54.737" width="0.4064" layer="1"/>
-<wire x1="55.626" y1="54.737" x2="53.848" y2="55.372" width="0.4064" layer="1"/>
-<wire x1="53.848" y1="55.372" x2="23.0124" y2="55.372" width="0.4064" layer="1"/>
-<wire x1="23.0124" y1="55.372" x2="21.336" y2="53.7464" width="0.4064" layer="1"/>
+<wire x1="60.6584" y1="46.609" x2="59.1185" y2="46.609" width="0.4064" layer="1"/>
+<wire x1="59.1185" y1="46.609" x2="58.1025" y2="47.625" width="0.4064" layer="1"/>
+<wire x1="58.1025" y1="47.625" x2="58.1025" y2="54.2925" width="0.4064" layer="1"/>
+<wire x1="58.1025" y1="54.2925" x2="57.15" y2="55.245" width="0.4064" layer="1"/>
+<wire x1="57.15" y1="55.245" x2="22.8346" y2="55.245" width="0.4064" layer="1"/>
+<wire x1="22.8346" y1="55.245" x2="21.336" y2="53.7464" width="0.4064" layer="1"/>
 </signal>
 </signals>
 </board>

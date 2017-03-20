@@ -15,6 +15,7 @@ class HTTPServer():
       sta_if.active(False)
     self.networks = [x[0].decode() for x in networks]
 
+    self.html_networks = ''
     for nw in self.networks:
       self.html_networks += """<option value="{}">{}</option>""".format(nw, nw)
 

@@ -2,8 +2,8 @@
 import esp
 esp.osdebug(None)
 import gc
-import webrepl
-webrepl.start()
+# import webrepl
+# webrepl.start()
 gc.collect()
 
 
@@ -39,6 +39,7 @@ def do_connect():
   else:
     print('starting ad-hoc interface')
     sta_if.active(False)
+    ap_if.ifconfig(('192.168.4.1', '255.255.255.0', '192.168.4.1', '192.168.4.1'))
     ap_if.active(True)
     import ubinascii
     mac = ubinascii.hexlify(ap_if.config('mac')).decode()
