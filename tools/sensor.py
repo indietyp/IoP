@@ -211,6 +211,7 @@ class ToolChainSensor(object):
         MeshDedicatedDispatch().new_data(data['sensor'], plant=data['plant'])
 
         if data['plant'].localhost:
+          print('slave data')
           slaves = Plant.select().where(Plant.role == str(data['plant'].uuid))
           slaves = list(slaves)
 
