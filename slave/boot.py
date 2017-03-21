@@ -45,3 +45,4 @@ def do_connect():
     mac = ubinascii.hexlify(ap_if.config('mac')).decode()
     ap_if.config(essid='IoP slave: {}'.format(mac[:5]), channel=11, password='IoPslave')
 do_connect()
+gc.collect()

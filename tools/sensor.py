@@ -215,6 +215,7 @@ class ToolChainSensor(object):
           slaves = list(slaves)
 
           for slave in slaves:
+            print('slaved')
             MeshDedicatedDispatch().slave_data(slave, data['sensor'])
 
     logger.debug('time elapsed: {}'.format(datetime.datetime.now() - start))
