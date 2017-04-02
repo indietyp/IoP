@@ -5,7 +5,7 @@ ap_if = network.WLAN(network.AP_IF)
 
 
 communication = CommunicationMainFrame()
-communication.daemon(biop=False, bmulticast=False, bhttp=False)
+communication.daemon(wifi=False)
 # if sta_if.active():
 #   communication.daemon(http=False, dns=False)
 # elif ap_if.active():

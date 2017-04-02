@@ -19,3 +19,9 @@ import IoP.views.update
 import IoP.views.insert
 import IoP.views.execute
 import IoP.views.delete
+
+import IoP.misc
+import IoP.plant
+import IoP.sensor
+import IoP.person
+import IoP.message

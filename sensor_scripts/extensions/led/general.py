@@ -83,7 +83,7 @@ class TrafficLight(object):
       neopixel.setPixelColorRGB(0, color[0], color[1], color[2])
       neopixel.show()
       old = deepcopy(color)
-      time.sleep(1 / 30)
+      time.sleep(1 / 15)
 
     with open(basedir + '/ledstate.json', 'w') as out:
       out.write(json.dumps(color))

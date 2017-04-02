@@ -14,6 +14,7 @@ database = VariousTools.verify_database()
 
 if platform.system() in ['Windows', 'Darwin']:
   database = False
+database = False
 
 if database:
   # not rest api compliant? - speed?

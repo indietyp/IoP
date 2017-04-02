@@ -3,7 +3,12 @@ general:
   [ ] slave main http
   [ ] slave responder
   [ ] slave revamp
-  [ ] neopixel rainbow fix?
+  [ ] new ideas brainstorming
+  [ ] plant dead mail
+  [ ] host change if plant dead! (You need to update the offline host somehow?)
+    [ ] priority
+  [ ] Restv4 make REST -> RESTful again
+    [ ] extreme min
 
 test:
   [ ] new daemon verification system
@@ -11,21 +16,24 @@ test:
   [ ] extensions
     [ ] water pump in action
   [ ] range update
-  ✔ neopixel @done (17-03-17 20:35)
 
 mesh network:
   [ ] local connection lost? @low
     [ ] potential too few data simulated recover?
 
-frontend:
-  no database configuration:
-    ✔ activate init branch if no database existent @high @done (17-03-16 22:15)
-
-
-
 
 ＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿
 Archive:
+ ✔ hackday text @done (17-03-28 18:02) @project(general)
+ ✔ WHAT DOES IT ACTUALLY DO FOR THE USER? @done (17-03-28 18:02) @project(general)
+ ✔ WATER PUMP @done (17-03-28 18:02) @project(general)
+ ✔ SOFTWARE SIGNAL @done (17-03-28 18:02) @project(general)
+ ✔ RICH SETTINGS @done (17-03-28 18:02) @project(general)
+ ✔ HARDWARE SIGNAL @done (17-03-28 18:02) @project(general)
+ ✔ ARE YOU AWAY? @done (17-03-28 18:02) @project(general)
+ ✔ = LESS & BETTER CARE @done (17-03-28 18:02) @project(general)
+ ✔ neopixel @done (17-03-17 20:35) @project(test)
+ ✔ activate init branch if no database existent @high @done (17-03-16 22:15) @project(frontend / no database configuration)
  ✔ water_pump @done (17-03-15 20:27) @project(test)
  ✔ create additional plant network (vm) @done (17-03-15 20:27) @project(test)
  ✔ init nginx @done (17-03-14 20:32) @project(general)

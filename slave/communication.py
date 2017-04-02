@@ -19,7 +19,7 @@ class CommunicationMainFrame:
     sock = socket.socket()
     sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     sock.bind(connect)
-    sock.settimeout(0.3)
+    # sock.settimeout(0.3)
     sock.listen(1)
 
     http_process = HTTPServer()
