@@ -1,11 +1,12 @@
 from IoP import app
 
+import datetime
 from uuid import UUID
 from flask import request
-from copy import deepcopy
 from models.plant import Plant
 from models.mesh import MeshObject
-from IoP.tooling import data_formatting
+from IoP.tooling import data_formatting, get_data
+from IoP.config import DISCOVER_GET, DISCOVER_POST, DAYNIGHT_GET, DAYNIGHT_POST, HOST_GET
 from models.context import DayNightTime
 from mesh_network.daemon import MeshNetwork
 from playhouse.shortcuts import model_to_dict
@@ -16,74 +17,96 @@ from mesh_network.dedicated import MeshDedicatedDispatch
 def discover():
   # GET: select:
   # GET: dict: Boolean
-  # GET: registered: Boolean
   if request.method == 'GET':
-    mode = request.args.get('dict', '').lower()
-    selected = request.args.get('select', '').lower()
-    registered = request.args.get('registered', '').lower()
-
-    if selected in ['', 'default']:
-      selected = 'normal'
-    selectable = ['minimal', 'normal', 'detailed', 'extensive']
-    mode = True if mode == 'true' else False
-    registered = True if registered == 'true' else False
-
-    meshobjects = MeshObject.filter(registered=registered)
-
-    if selected not in selectable:
+    data, code = get_data(required=DISCOVER_GET, restrictive=True, hardmode=True)
+    if code == 400:
       return data_formatting(400)
 
-    output = []
-    for meshobject in list(meshobjects):
-      used = []
-      if selected in selectable:
-        used.append('ip')
+    mode = data['mode']
+    selector = data['select']
+    registered = data['registered']
+    selectable = ['minimal', 'normal', 'detailed', 'extensive']
+    collection = {}
+    meshobjects = MeshObject.filter(registered=registered).dicts()
 
-      if selected in selectable[1:]:
-        used.append('master')
+    for selected in selector:
+      output = []
+      for meshobject in list(meshobjects):
+        used = []
+        if selected in selectable:
+          used.append('ip')
 
-      if selected in selectable[2:]:
-        used.append('registered')
+        if selected in selectable[1:]:
+          used.append('master')
 
-      if selected in selectable[3:]:
-        used.append('created_at')
+        if selected in selectable[2:]:
+          used.append('registered')
 
-      data = [] if not mode else {}
-      for use in used:
-        if isinstance(meshobject[use], UUID):
-          meshobject[use] = str(meshobject[use])
+        if selected in selectable[3:]:
+          used.append('created_at')
 
-        if not mode:
-          data.append(meshobject[use])
-        else:
-          data[use] = meshobject[use]
-      output.append(data)
+        data = [] if not mode else {}
+        for use in used:
+          if isinstance(meshobject[use], UUID):
+            meshobject[use] = str(meshobject[use])
 
+          if isinstance(meshobject[use], datetime.datetime):
+            meshobject[use] = meshobject[use].timestamp()
+
+          if not mode:
+            data.append(meshobject[use])
+          else:
+            data[use] = meshobject[use]
+        output.append(data)
+
+      if len(selector) > 1:
+        collection[selected] = output
+
+    if len(collection.keys()) != 0:
+      output = collection
     return data_formatting(data=output)
 
   else:
-    MeshNetwork().discover(1)
+    data, code = get_data(required=DISCOVER_POST, restrictive=True)
+    if code == 400:
+      return data_formatting(400)
+
+    if data['execute']:
+      MeshNetwork().discover(1)
+
     return data_formatting()
 
 
 @app.route('/day/night', methods=['GET', 'POST'])
 def day_night():
-  # GET: select:
-  # GET: dict: Boolean
-  # GET: registered: Boolean
-
   if request.method == 'GET':
-    output = []
+    data, code = get_data(required=DAYNIGHT_GET, restrictive=True, hardmode=True)
+    if code == 400:
+      return data_formatting(400)
+    selector = data['select']
+    collection = {}
 
-    for daynight in DayNightTime.select():
-      dn = model_to_dict(daynight)
-      dn['uuid'] = str(dn['uuid'])
-      output.append(dn)
+    for selected in selector:
+      output = []
 
+      if selected == 'full':
+        for daynight in DayNightTime.select():
+          dn = model_to_dict(daynight)
+          dn['uuid'] = str(dn['uuid'])
+          output.append(dn)
+
+      if len(selector) > 1:
+        collection[selected] = output
+
+    if len(collection.keys()) != 0:
+      output = collection
     return data_formatting(data=output)
 
   else:
-    data = deepcopy(request.form)
+    data, code = get_data(required=DAYNIGHT_POST, restrictive=True)
+    if code == 400:
+      return data_formatting(400)
+
     for day_night in DayNightTime.select():
       day_night.stop = data['stop']
       day_night.start = data['start']
@@ -106,11 +129,29 @@ def day_night():
 def host():
   if request.method == 'GET':
     plant = Plant.get(host=True)
+    data, code = get_data(required=HOST_GET, restrictive=True, hardmode=True)
+    if code == 400:
+      return data_formatting(400)
+    selector = data['select']
+    collection = {}
 
-    output = model_to_dict(plant)
-    del output['created_at']
+    for selected in selector:
+      if selected == 'full':
+        output = model_to_dict(plant)
+        output['timestamp'] = output['created_at'].timestamp()
+        output['uuid'] = str(output['uuid'])
 
+        del output['id']
+        del output['person']
+        del output['created_at']
+
+      if len(selector) > 1:
+        collection[selected] = output
+
+    if len(collection.keys()) != 0:
+      output = collection
     return data_formatting(data=output)
+
   else:
     local = Plant.get(localhost=True)
 

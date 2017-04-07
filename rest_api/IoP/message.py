@@ -3,7 +3,8 @@ from IoP import app
 from uuid import UUID
 from copy import deepcopy
 from flask import request
-from IoP.tooling import data_formatting
+from IoP.tooling import data_formatting, get_data
+from IoP.config import MESSAGES_GET, MESSAGES_PUT, MESSAGE_GET, MESSAGE_POST
 from playhouse.shortcuts import model_to_dict
 from models.plant import Plant, MessagePreset
 from mesh_network.dedicated import MeshDedicatedDispatch
@@ -15,52 +16,60 @@ def messages():
   if request.method == 'GET':
     # GET: select: minimal, normal, detailed, extensive, default (normal)
     # GET: dict: Boolean
-    mode = request.args.get('dict', '').lower()
-    selected = request.args.get('select', '').lower()
-    if selected in ['', 'default']:
-      selected = 'normal'
-    selectable = ['minimal', 'normal', 'detailed', 'extensive']
-
-    messages = MessagePreset.select()
-    mode = True if mode == 'true' else False
-    output = []
-
-    if selected not in selectable:
+    data, code = get_data(required=MESSAGES_GET, restrictive=True, hardmode=True)
+    if code == 400:
       return data_formatting(400)
 
-    for message in list(messages):
-      used = []
-      if selected in selectable:
-        used.append('uuid')
+    mode = data['dict']
+    selector = data['select']
+    selectable = ['minimal', 'normal', 'detailed', 'extensive']
 
-      if selected in selectable[1:]:
-        used.append('name')
+    messages = MessagePreset.select().dicts()
+    collection = {}
 
-      if selected in selectable[2:]:
-        used.append('created_at')
+    for selected in selector:
+      output = []
 
-      if selected in selectable[3:]:
-        used.append('message')
+      for message in list(messages):
+        used = []
+        if selected in selectable:
+          used.append('uuid')
 
-      data = [] if not mode else {}
-      for use in used:
-        if isinstance(message[use], UUID):
-          message[use] = str(message[use])
+        if selected in selectable[1:]:
+          used.append('name')
 
-        if not mode:
-          data.append(message[use])
-        else:
-          data[use] = message[use]
-      output.append(data)
+        if selected in selectable[2:]:
+          used.append('created_at')
+
+        if selected in selectable[3:]:
+          used.append('message')
+
+        data = [] if not mode else {}
+        for use in used:
+          if isinstance(message[use], UUID):
+            message[use] = str(message[use])
+
+          if not mode:
+            data.append(message[use])
+          else:
+            data[use] = message[use]
+        output.append(data)
+
+      if len(selector) > 1:
+        collection[selected] = output
+
+    if len(collection.keys()) != 0:
+      output = collection
 
     return data_formatting(data=output)
   else:
-    data = deepcopy(request.form)
-    data['heading'] = data['heading'].lower()
+    data, code = get_data(required=MESSAGES_PUT, restrictive=True)
+    if code == 400:
+      return data_formatting(400)
 
     for message in MessagePreset.select():
       if message.name == data['heading']:
-        return {'info': 'failed, not unique'}
+        return data_formatting(304)
 
     msg = MessagePreset()
     msg.name = data['heading']
@@ -75,32 +84,39 @@ def message(m_uuid):
   # GET: select: message, full, default (full)
   if request.method == 'GET':
     message = MessagePreset.get(uuid=m_uuid)
-    selected = request.args.get('select', '').lower()
-    if selected in ['', 'default']:
-      selected = 'full'
-    selectable = ['message', 'full']
-
-    if selected not in selectable:
+    data, code = get_data(required=MESSAGE_GET, restrictive=True, hardmode=True)
+    if code == 400:
       return data_formatting(400)
+    selector = data['select']
+    collection = {}
 
-    if selected == 'full':
-      output = model_to_dict(message)
-      del output['id']
-      del output['created_at']
-      output['uuid'] = str(output['uuid'])
-    else:
-      output = {'message': message.message}
+    for selected in selector:
+      if selected == 'full':
+        output = model_to_dict(message)
+        del output['id']
+        del output['created_at']
+        output['uuid'] = str(output['uuid'])
+      else:
+        output = {'message': message.message}
 
+      if len(selector) > 1:
+        collection[selected] = output
+
+    if len(collection.keys()) != 0:
+      output = collection
     return data_formatting(data=output)
 
   else:
-    data = deepcopy(request.form)
+    data, code = get_data(required=MESSAGE_POST, restrictive=True)
+    if code == 400:
+      return data_formatting(400)
+
     preset, _ = MessagePreset.get_or_create(name=data['heading'],
                                             defaults={'message': data['message']})
     preset.message = data['message']
     preset.save()
 
-    if data['responsible'] is True:
+    if data['person']:
       plant = Plant.get(uuid=data['plant'])
       plant.person.preset = preset
       plant.person.save()

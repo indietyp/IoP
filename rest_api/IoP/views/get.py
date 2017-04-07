@@ -1,6 +1,5 @@
 from IoP import app
 
-import sys
 import datetime
 import json
 from uuid import UUID

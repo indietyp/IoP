@@ -37,15 +37,18 @@ if database:
     return response
 
   def init():
-    # get smiles! YOYOYOYOYOYOYOYOYO! :D
-    with urllib.request.urlopen('http://127.0.0.1:2902/get/plants/name') as response:
-      plants = json.loads(response.read().decode('utf8'))
+    with urllib.request.urlopen('http://127.0.0.1:2902/plants?select=satisfaction,sensorsatisfaction,') as response:
+      information = json.loads(response.read().decode('utf8'))['content']
 
-    with urllib.request.urlopen('http://127.0.0.1:2902/get/plants/satisfaction') as response:
-      satisfaction = json.loads(response.read().decode('utf8'))
+    plants = information['normal']
+    satisfaction = information['satisfaction']
+    detailed = information['sensorsatisfaction']
 
-    with urllib.request.urlopen('http://127.0.0.1:2902/get/plants/sensors/satisfaction') as response:
-      detailed = json.loads(response.read().decode('utf8'))
+    # with urllib.request.urlopen('http://127.0.0.1:2902/plants?select=satisfaction') as response:
+    #   satisfaction = json.loads(response.read().decode('utf8'))['content']
+
+    # with urllib.request.urlopen('http://127.0.0.1:2902/plants?select=sensorsatisfaction') as response:
+    #   detailed = json.loads(response.read().decode('utf8'))
 
     # dirty hotfix (don't like it at all)
     head = "<div class='header'>Overview!</div><div class='content'>"
