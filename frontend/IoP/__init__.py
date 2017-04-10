@@ -14,7 +14,7 @@ database = VariousTools.verify_database()
 
 if platform.system() in ['Windows', 'Darwin']:
   database = False
-database = False
+# database = False
 
 if database:
   # not rest api compliant? - speed?
@@ -58,7 +58,7 @@ if database:
                               <circle cx='10' cy='10' r='8' fill='""" + level[1] + """'></circle>
                             </svg>"""
           for sensor in levels[level[0]]:
-            overview += sensor + ", "
+            overview += sensor['name'] + ", "
           overview = overview[:-2] + "<div style='flex-grow:1' /></div>"
       overview += tail
       detailed[plant[0]] = overview
