@@ -89,7 +89,7 @@ if database:
       responsible = json.loads(response.read().decode('utf8'))['content']
 
     query = urllib.parse.urlencode({'select': 'average,online'})
-    with urllib.request.urlopen('http://127.0.0.1:2902/plants/{}/status?{}'.format(session['p_uuid', query])) as response:
+    with urllib.request.urlopen('http://127.0.0.1:2902/plants/{}/status?{}'.format(session['p_uuid'], query)) as response:
       data = json.loads(response.read().decode('utf8'))['content']
 
     average_percent = data['average']
