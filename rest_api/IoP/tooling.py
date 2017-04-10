@@ -113,7 +113,7 @@ def get_data(*args, **kwargs):
         req['fallback'] = []
 
     if req['name'] not in data:
-      data[req['name']] = req['fallback']
+      data[req['name']] = req['fallback'].replace(' ', '').split(',') if 'list' in req and req['list'] else req['fallback']
     else:
       # format data - CHECK
       # list string YO! - CHECK
@@ -175,8 +175,7 @@ def get_data(*args, **kwargs):
       elif 'restricted' in req:
         if data[key] in flatrestrictive:
           if data[key] in dictrestrictive.keys():
-            data[key] = dictrestrictive[data[key]]
-            # ['fallback']
+            data[key] = dictrestrictive[data[key]].replace(' ', '').split(',') if 'list' in req and req['list'] else dictrestrictive[data[key]]
         else:
           data[key] = req['fallback']
           if hardmode:
@@ -189,6 +188,7 @@ def get_data(*args, **kwargs):
     for key, value in data.items():
       if key in required:
         output[key] = value
+    print(output)
     return output, code
   else:
     return data, code

@@ -68,10 +68,10 @@ def persons():
 
     person = Person()
 
-    person.name = request.form['name'].lower()
-    person.email = request.form['email'].lower()
+    person.name = data['name']
+    person.email = data['email']
 
-    person.wizard = True if request.form['wizard'].lower() == 'true' else False
+    person.wizard = data['wizard']
 
     if data['wizard']:
       wizards = Person.filter(wizard=True)
@@ -125,7 +125,7 @@ def person(r_uuid):
     if data['email'] != '':
       person.email = data['email']
 
-    if data['wizard'] != '':
+    if data['wizard'] is not None:
 
       if data['wizard']:
         wizards = Person.filter(wizard=True)

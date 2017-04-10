@@ -15,7 +15,7 @@ def index():
 
 @app.errorhandler(404)
 def page_not_found(e):
-  message = 'not valid url'
+  message = 'not a valid url'
   if random.random() > 0.9:
     if random.random() > 0.5:
       message = 'PRAISE THE ALL MIGHTY UNICORN (' + message + ')'

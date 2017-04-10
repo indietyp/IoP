@@ -54,7 +54,8 @@ PLANT_POST = [{'name': 'mode', 'type': str, 'restricted': ['online', 'offline', 
               {'name': 'seconds', 'type': int},
               {'name': 'minutes', 'type': int},
               {'name': 'hours', 'type': int},
-              {'name': 'days', 'type': int}]
+              {'name': 'days', 'type': int},
+              {'name': 'sensor', 'type': str}]
 
 PLANT_SENSORS_GET = [{'name': 'select',
                       'type': str,
@@ -90,6 +91,10 @@ PLANT_RESPONSIBLE_GET = [{'name': 'select',
                                          {'name': 'default', 'fallback': 'full'}],
                           'list': True,
                           'fallback': 'full'}]
+
+PLANT_RESPONSIBLE_POST = [{'name': 'email', 'type': str},
+                          {'name': 'name', 'type': str},
+                          {'name': 'uuid', 'type': str}]
 
 PLANT_STATUS_GET = [{'name': 'select',
                      'type': str,
@@ -144,13 +149,13 @@ PERSONS_PUT = [{'name': 'name', 'type': str},
 PERSON_GET = [{'name': 'select',
                'type': str,
                'restricted': ['full',
-                              {'name': 'default', 'fallback': 'ful'}],
+                              {'name': 'default', 'fallback': 'full'}],
                'list': True,
                'fallback': 'full'}]
 
 PERSON_POST = [{'name': 'name', 'type': str},
                {'name': 'email', 'type': str},
-               {'name': 'wizard', 'type': bool}]
+               {'name': 'wizard', 'type': bool, 'fallback': None}]
 
 MESSAGES_GET = [{'name': 'select',
                  'type': str,
@@ -190,7 +195,7 @@ DISCOVER_GET = [{'name': 'select',
                  'list': True,
                  'fallback': 'normal'},
                 {'name': 'dict', 'type': bool, 'fallback': True},
-                {'name': 'registered', 'type': bool, 'fallback': False}]
+                {'name': 'registered', 'type': bool, 'fallback': None}]
 
 DISCOVER_POST = [{'name': 'execute', 'type': bool}]
 

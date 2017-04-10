@@ -1,16 +1,17 @@
-from IoP import app, init_overview, init_sensor, set_uuid, init
-from flask import render_template, session, request
-import sys
-import urllib.request
-import urllib.parse
 import json
+from IoP import app
+import urllib.parse
+import urllib.request
+from flask import session, request
 
 
 @app.route('/get/notification/message/names', methods=['POST'])
 def get_message_name():
-  with urllib.request.urlopen('http://localhost:2902/get/messages/names') as response:
-    output = response.read().decode('utf8')
-  return output
+  query = urllib.parse.urlencode({'select': 'extensive'})
+  with urllib.request.urlopen('http://localhost:2902/messages?{}'.format(query)) as response:
+    data = json.loads(response.read().decode('utf8'))['content']
+
+  return json.dumps(data)
 
 
 @app.route('/get/notification/message/content', methods=['POST'])
@@ -19,72 +20,74 @@ def get_message_content():
   if message_uuid == '':
     return ''
 
-  with urllib.request.urlopen('http://localhost:2902/get/message/' + message_uuid + '/content') as response:
-    return response.read().decode('utf8')
+  query = urllib.parse.urlencode({'select': 'message'})
+  with urllib.request.urlopen('http://localhost:2902/messages/{}?{}'.format(message_uuid, query)) as response:
+    data = json.loads(response.read().decode('utf8'))['content']
+
+  return json.dumps(data)
 
 
 @app.route('/submit/notification/message', methods=['POST'])
 def insert_message():
   data = urllib.parse.urlencode({
-      'name': request.form['name'],
+      'heading': request.form['name'],
       'text': request.form['message'],
       'plant': session['p_uuid'],
-      'responsible': request.form['responsible']}).encode('ascii')
-  req = urllib.request.Request('http://localhost:2902/update/notification/message', data)
-  with urllib.request.urlopen(req) as response:
-    return response.read().decode('utf8')
+      'person': request.form['responsible']}).encode('ascii')
 
-  # with urllib.request.urlopen('http://localhost:2902/update/notification/message') as response:
-    # return response.read().decode('utf8')
+  if 'uuid' in request.form.keys():
+    req = urllib.request.Request('http://localhost:2902/messages/{}'.format(request.form['uuid']), data, 'POST')
+  else:
+    req = urllib.request.Request('http://localhost:2902/messages'.format(request.form['uuid']), data, 'PUT')
+  urllib.request.urlopen(req)
+
+  return {'code': 'ok'}
 
 
 @app.route('/remove/responsible', methods=['POST'])
 def delete_responsible():
-  with urllib.request.urlopen('http://localhost:2902/delete/responsible/' + request.form['uuid']) as response:
-    data = response.read().decode('utf8')
+  data = urllib.parse.urlencode({})
+  req = urllib.request.Request('http://localhost:2902/persons/{}'.format(request.form['uuid']), data, 'DELETE')
+  urllib.request.urlopen(req)
 
-  return data
+  return {'code': 'ok'}
 
 
 @app.route('/change/responsible', methods=['POST'])
 def update_responsible():
   data = urllib.parse.urlencode({
-      'uuid': request.form['uuid'],
       'name': request.form['name'],
       'email': request.form['email']}).encode('ascii')
-  req = urllib.request.Request('http://localhost:2902/update/responsible', data)
-  with urllib.request.urlopen(req) as response:
-    data = response.read().decode('utf8')
 
-  return data
+  req = urllib.request.Request('http://localhost:2902/persons/{}'.format(request.form['uuid']), data, 'POST')
+  urllib.request.urlopen(req)
+
+  return {'code': 'ok'}
 
 
 @app.route('/change/responsible/wizard', methods=['POST'])
 def change_responsible_wizard():
-  data = urllib.parse.urlencode({'replacement': request.form['uuid']}).encode('ascii')
-  req = urllib.request.Request('http://localhost:2902/update/responsible/wizard', data)
-  with urllib.request.urlopen(req) as response:
-    data = response.read().decode('utf8')
+  data = urllib.parse.urlencode({'wizard': True}).encode('ascii')
 
-  return data
+  req = urllib.request.Request('http://localhost:2902/persons/{}'.format(request.form['uuid']), data, 'POST')
+  urllib.request.urlopen(req)
+
+  return {'code': 'ok'}
 
 
 @app.route('/change/plant/intervals', methods=['POST'])
 def change_plant_intervals():
-  data = urllib.parse.urlencode({'minutes': request.form['connection']}).encode('ascii')
-  req = urllib.request.Request('http://localhost:2902/update/plant/' + session['p_uuid'] + '/connection-lost/duration', data)
-  with urllib.request.urlopen(req) as response:
-    data = response.read().decode('utf8')
+  data = urllib.parse.urlencode({'minutes': request.form['connection'], 'connection-lost': True}).encode('ascii')
+  req = urllib.request.Request('http://localhost:2902/plants/{}'.format(session['p_uuid']), data)
+  urllib.request.urlopen(req)
 
-  data = urllib.parse.urlencode({'hours': request.form['notification']}).encode('ascii')
-  req = urllib.request.Request('http://localhost:2902/update/plant/' + session['p_uuid'] + '/notification/duration', data)
-  with urllib.request.urlopen(req) as response:
-    data = response.read().decode('utf8')
+  data = urllib.parse.urlencode({'hours': request.form['notification'], 'notification': True}).encode('ascii')
+  req = urllib.request.Request('http://localhost:2902/plants/{}'.format(session['p_uuid']), data)
+  urllib.request.urlopen(req)
 
-  data = urllib.parse.urlencode({'days': request.form['non_persistant']}).encode('ascii')
-  req = urllib.request.Request('http://localhost:2902/update/plant/' + session['p_uuid'] + '/non-persistant/duration', data)
-  with urllib.request.urlopen(req) as response:
-    data = response.read().decode('utf8')
+  data = urllib.parse.urlencode({'days': request.form['non_persistant'], 'non-persistant': True}).encode('ascii')
+  req = urllib.request.Request('http://localhost:2902/plants/{}'.format(session['p_uuid']), data)
+  urllib.request.urlopen(req)
 
   return json.dumps({'info': 'success'})
 
@@ -93,14 +96,16 @@ def change_plant_intervals():
 def createResponsible():
   wizard = True if request.form['wizard'] == 'yes' else False
   data = urllib.parse.urlencode({'email': request.form['email'], 'name': request.form['name'], 'wizard': wizard}).encode('ascii')
-  req = urllib.request.Request('http://localhost:2902/create/responsible', data)
-  with urllib.request.urlopen(req) as response:
-    data = response.read().decode('utf8')
+  req = urllib.request.Request('http://localhost:2902/persons', data, 'PUT')
+  urllib.request.urlopen(req)
 
   return json.dumps({'info': 'success'})
 
 
 @app.route('/get/plant/notification/message', methods=['POST'])
 def get_plant_notification_message():
-  with urllib.request.urlopen('http://localhost:2902/get/plant/' + session['p_uuid'] + '/message') as response:
-    return response.read().decode('utf8')
+  query = urllib.parse.urlencode({'select': 'full'})
+  with urllib.request.urlopen('http://localhost:2902/plants/{}/message?{}'.format(session['p_uuid'], query)) as response:
+    data = json.loads(response.read().decode('utf8'))['content']
+
+  return json.dumps(data)

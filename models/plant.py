@@ -9,7 +9,7 @@ db = SqliteDatabase(DATABASE_NAME)
 
 class MessagePreset(Base):
   name        = CharField(unique=True)
-  uuid        = UUIDField(default=uuid.uuid4)
+  uuid        = UUIDField(default=uuid.uuid4, unique=True)
 
   message     = TextField()
   created_at  = DateTimeField(default=datetime.datetime.now)

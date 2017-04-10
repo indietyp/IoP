@@ -22,12 +22,16 @@ def discover():
     if code == 400:
       return data_formatting(400)
 
-    mode = data['mode']
+    mode = data['dict']
     selector = data['select']
     registered = data['registered']
     selectable = ['minimal', 'normal', 'detailed', 'extensive']
     collection = {}
-    meshobjects = MeshObject.filter(registered=registered).dicts()
+
+    if registered is not None:
+      meshobjects = MeshObject.filter(registered=registered).dicts()
+    else:
+      meshobjects = MeshObject.select().dicts()
 
     for selected in selector:
       output = []
@@ -64,6 +68,7 @@ def discover():
 
     if len(collection.keys()) != 0:
       output = collection
+
     return data_formatting(data=output)
 
   else:
@@ -77,7 +82,7 @@ def discover():
     return data_formatting()
 
 
-@app.route('/day/night', methods=['GET', 'POST'])
+@app.route('/daynight', methods=['GET', 'POST'])
 def day_night():
   if request.method == 'GET':
     data, code = get_data(required=DAYNIGHT_GET, restrictive=True, hardmode=True)
@@ -133,9 +138,12 @@ def host():
     if code == 400:
       return data_formatting(400)
     selector = data['select']
+    print('Host: {}'.format(str(selector)))
     collection = {}
 
+    # output = {}
     for selected in selector:
+      output = []
       if selected == 'full':
         output = model_to_dict(plant)
         output['timestamp'] = output['created_at'].timestamp()

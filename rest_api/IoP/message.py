@@ -111,9 +111,9 @@ def message(m_uuid):
     if code == 400:
       return data_formatting(400)
 
-    preset, _ = MessagePreset.get_or_create(name=data['heading'],
-                                            defaults={'message': data['message']})
+    preset = MessagePreset.get(uuid=m_uuid)
     preset.message = data['message']
+    preset.name = data['heading']
     preset.save()
 
     if data['person']:

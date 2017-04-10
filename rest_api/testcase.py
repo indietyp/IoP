@@ -56,7 +56,7 @@ class RESTfulTestReadOnly(unittest.TestCase):
 
     for setting in ['average', 'online']:
       query = urllib.parse.urlencode({'select': setting})
-      check = self.app.get('/plants/{}/responsible?{}'.format(selected['uuid'], query), follow_redirects=True)
+      check = self.app.get('/plants/{}/status?{}'.format(selected['uuid'], query), follow_redirects=True)
 
     print('\nfinished plants')
 
@@ -113,10 +113,11 @@ class RESTfulTestReadOnly(unittest.TestCase):
           check = self.app.get('/discover?{}'.format(query), follow_redirects=True)
           logger.info(check.data)
 
-    check = self.app.get('/day/night', follow_redirects=True)
+    check = self.app.get('/daynight', follow_redirects=True)
     check = self.app.get('/host', follow_redirects=True)
 
     print('\nfinished discover')
+
 
 if __name__ == '__main__':
   unittest.main()

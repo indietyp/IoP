@@ -2,7 +2,7 @@ import json
 import datetime
 import platform
 import urllib.request
-from bson import json_util
+import urllib.parse
 from tools.main import VariousTools
 from flask import Flask, session, request
 
@@ -37,18 +37,12 @@ if database:
     return response
 
   def init():
-    with urllib.request.urlopen('http://127.0.0.1:2902/plants?select=satisfaction,sensorsatisfaction,') as response:
+    with urllib.request.urlopen('http://127.0.0.1:2902/plants?select=satisfaction,sensorsatisfaction,normal&dict=false') as response:
       information = json.loads(response.read().decode('utf8'))['content']
 
     plants = information['normal']
     satisfaction = information['satisfaction']
     detailed = information['sensorsatisfaction']
-
-    # with urllib.request.urlopen('http://127.0.0.1:2902/plants?select=satisfaction') as response:
-    #   satisfaction = json.loads(response.read().decode('utf8'))['content']
-
-    # with urllib.request.urlopen('http://127.0.0.1:2902/plants?select=sensorsatisfaction') as response:
-    #   detailed = json.loads(response.read().decode('utf8'))
 
     # dirty hotfix (don't like it at all)
     head = "<div class='header'>Overview!</div><div class='content'>"
@@ -81,27 +75,26 @@ if database:
         session['p_uuid'] = u_plant[0]
 
   def init_overview():
-    # get created at date
-    with urllib.request.urlopen('http://127.0.0.1:2902/get/plant/' + session['p_uuid'] + '/created_at') as response:
-      created_at = json.loads(response.read().decode('utf8'), object_hook=json_util.object_hook)
+    # get plant specific stuff
+    query = urllib.parse.urlencode({'select': 'created_at,survived,location'})
+    with urllib.request.urlopen('http://127.0.0.1:2902/plants/{}?{}'.format(session['p_uuid'], query)) as response:
+      data = json.loads(response.read().decode('utf8'))['content']
 
-    # get time survived
-    with urllib.request.urlopen('http://127.0.0.1:2902/get/plant/' + session['p_uuid'] + '/survived') as response:
-      survived = json.loads(response.read().decode('utf8'), object_hook=json_util.object_hook)['data']
-
-    # get location
-    with urllib.request.urlopen('http://127.0.0.1:2902/get/plant/' + session['p_uuid'] + '/location') as response:
-      location = json.loads(response.read().decode('utf8'))
+    created_at = data['created_at']
+    survived = data['survived']
+    location = data['location']
 
     # get responsible stuff!
-    with urllib.request.urlopen('http://127.0.0.1:2902/get/plant/' + session['p_uuid'] + '/responsible') as response:
-      responsible = json.loads(response.read().decode('utf8'))
+    query = urllib.parse.urlencode({'select': 'full'})
+    with urllib.request.urlopen('http://127.0.0.1:2902/plants/{}/responsible?{}'.format(session['p_uuid'], query)) as response:
+      responsible = json.loads(response.read().decode('utf8'))['content']
 
-    with urllib.request.urlopen('http://127.0.0.1:2902/get/plant/' + session['p_uuid'] + '/status/average') as response:
-      average_percent = json.loads(response.read().decode('utf8'))
+    query = urllib.parse.urlencode({'select': 'average,online'})
+    with urllib.request.urlopen('http://127.0.0.1:2902/plants/{}/status?{}'.format(session['p_uuid', query])) as response:
+      data = json.loads(response.read().decode('utf8'))['content']
 
-    with urllib.request.urlopen('http://127.0.0.1:2902/get/plant/' + session['p_uuid'] + '/status/online') as response:
-      average_online = json.loads(response.read().decode('utf8'))
+    average_percent = data['average']
+    average_online = data['online']
 
     return {'created_at': created_at,
             'location': location,
@@ -114,43 +107,47 @@ if database:
     # if recent data is far back, then time is getting really slow -> ~ 2 months == 4 seconds, ~ 3 days == 0.5 seconds
     # ms = datetime.datetime.now().timestamp()
     # get current_data
-    with urllib.request.urlopen('http://127.0.0.1:2902/get/plant/' + session['p_uuid'] + '/sensor/' + session['sensor'] + '/data/current') as response:
-      current_data = json.loads(response.read().decode('utf8'), object_hook=json_util.object_hook)
+    query = urllib.parse.urlencode({'select': 'current,range'})
+    with urllib.request.urlopen('http://127.0.0.1:2902/plants/{}/sensor/{}?{}'.format(session['p_uuid'], session['sensor'], query)) as response:
+      data = json.loads(response.read().decode())['content']
 
-    with urllib.request.urlopen('http://127.0.0.1:2902/get/sensor/' + session['sensor'] + '/range') as response:
-      sensor_range = json.loads(response.read().decode('utf8'))
+    current_data = data['current']
+    sensor_color_ranges = data['range']
 
-    # get recent data (don't need to be today -> if not signal?)
-    with urllib.request.urlopen('http://127.0.0.1:2902/get/plant/' + session['p_uuid'] + '/sensor/' + session['sensor'] + '/high/today/yes') as response:
-      today_high_data = json.loads(response.read().decode('utf8'))
-      if datetime.date.fromtimestamp(today_high_data['t']) == datetime.date.today():
-        recent_date = 'Today'
-      else:
-        recent_date = datetime.date.fromtimestamp(today_high_data['t']).strftime('%d. %b %Y')
-      today_high_data['t'] = datetime.datetime.fromtimestamp(today_high_data['t']).strftime('%H:%M')
+    query = urllib.parse.urlencode({'select': 'range,unit'})
+    with urllib.request.urlopen('http://127.0.0.1:2902/sensor/{}?{}'.format(session['sensor'], query)) as response:
+      data = json.loads(response.read().decode())['content']
 
-    with urllib.request.urlopen('http://127.0.0.1:2902/get/plant/' + session['p_uuid'] + '/sensor/' + session['sensor'] + '/low/today/yes') as response:
-      today_low_data = json.loads(response.read().decode('utf8'))
-      today_low_data['t'] = datetime.datetime.fromtimestamp(today_low_data['t']).strftime('%H:%M')
+    sensor_range = data['range']
+    unit = data['unit']
 
-    today_difference = round(today_high_data['v'] - today_low_data['v'], 1)
+    # retrieve recent data
+    query = urllib.parse.urlencode({'select': 'extreme', 'max': 'true', 'backlog': 'true'})
+    with urllib.request.urlopen('http://127.0.0.1:2902/plants/{}/sensor/{}?{}'.format(session['p_uuid'], session['sensor'], query)) as response:
+      today_high_data = json.loads(response.read().decode())['content']
+    if datetime.date.fromtimestamp(today_high_data['t']) == datetime.date.today():
+      recent_date = 'Today'
+    else:
+      recent_date = datetime.date.fromtimestamp(today_high_data['t']).strftime('%d. %b %Y')
+    today_high_data['t'] = datetime.datetime.fromtimestamp(today_high_data['t']).strftime('%H:%M')
 
-    # get ever data
-    with urllib.request.urlopen('http://127.0.0.1:2902/get/plant/' + session['p_uuid'] + '/sensor/' + session['sensor'] + '/high/ever') as response:
-      ever_high_data = json.loads(response.read().decode('utf8'))
-      ever_high_data['t'] = datetime.datetime.fromtimestamp(ever_high_data['t']).strftime('%d. %b %Y')
+    query = urllib.parse.urlencode({'select': 'extreme', 'max': 'false', 'backlog': 'true'})
+    with urllib.request.urlopen('http://127.0.0.1:2902/plants/{}/sensor/{}?{}'.format(session['p_uuid'], session['sensor'], query)) as response:
+      today_low_data = json.loads(response.read().decode())['content']
+    today_low_data['t'] = datetime.datetime.fromtimestamp(today_low_data['t']).strftime('%H:%M')
+    today_difference = abs(round(today_high_data['v'] - today_low_data['v'], 1))
 
-    with urllib.request.urlopen('http://127.0.0.1:2902/get/plant/' + session['p_uuid'] + '/sensor/' + session['sensor'] + '/low/ever') as response:
-      ever_low_data = json.loads(response.read().decode('utf8'))
-      ever_low_data['t'] = datetime.datetime.fromtimestamp(ever_low_data['t']).strftime('%d. %b %Y')
+    # retrieve extremes ever! YAY!
+    query = urllib.parse.urlencode({'select': 'extreme', 'max': 'true', 'ever': 'true'})
+    with urllib.request.urlopen('http://127.0.0.1:2902/plants/{}/sensor/{}?{}'.format(session['p_uuid'], session['sensor'], query)) as response:
+      ever_high_data = json.loads(response.read().decode())['content']
+    ever_high_data['t'] = datetime.datetime.fromtimestamp(ever_high_data['t']).strftime('%d. %b %Y')
 
-    ever_difference = round(ever_high_data['v'] - ever_low_data['v'], 1)
-
-    with urllib.request.urlopen('http://127.0.0.1:2902/get/sensor/' + session['sensor'] + '/unit') as response:
-      unit = json.loads(response.read().decode('utf8'))['unit']
-
-    with urllib.request.urlopen('http://127.0.0.1:2902/get/plant/' + session['p_uuid'] + '/sensor/' + session['sensor'] + '/range') as response:
-      sensor_color_ranges = json.loads(response.read().decode('utf8'))
+    query = urllib.parse.urlencode({'select': 'extreme', 'max': 'false', 'ever': 'true'})
+    with urllib.request.urlopen('http://127.0.0.1:2902/plants/{}/sensor/{}?{}'.format(session['p_uuid'], session['sensor'], query)) as response:
+      ever_low_data = json.loads(response.read().decode())['content']
+    ever_low_data['t'] = datetime.datetime.fromtimestamp(ever_low_data['t']).strftime('%d. %b %Y')
+    ever_difference = abs(round(ever_high_data['v'] - ever_low_data['v'], 1))
 
     return {'sensor_unit': str(unit),
             'sensor_color_ranges': sensor_color_ranges,
@@ -173,5 +170,4 @@ if database:
   import IoP.views.get.plants_ext
   import IoP.views.get.general
 else:
-
   import IoP.init.views.main

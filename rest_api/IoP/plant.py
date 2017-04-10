@@ -1,9 +1,7 @@
 from IoP import app
 
-import sys
 import datetime
 from uuid import UUID
-from copy import deepcopy
 from flask import request
 from models.mesh import MeshObject
 from peewee import Clause, fn, SQL
@@ -11,7 +9,7 @@ from playhouse.shortcuts import model_to_dict
 from mesh_network.dedicated import MeshDedicatedDispatch
 from models.plant import Person, Plant, PlantNetworkUptime, PlantNetworkStatus
 from IoP.tooling import get_sensor_data_high_low, copy_model_instance_from_localhost, data_formatting, time_request_from_converter, get_data
-from IoP.config import PLANTS_GET, PLANTS_PUT, PLANT_GET, PLANT_POST, PLANT_SENSORS_GET, PLANT_SENSOR_GET, PLANT_RESPONSIBLE_GET, PLANT_MESSAGE_GET
+from IoP.config import PLANTS_GET, PLANTS_PUT, PLANT_GET, PLANT_POST, PLANT_SENSORS_GET, PLANT_SENSOR_GET, PLANT_RESPONSIBLE_GET, PLANT_RESPONSIBLE_POST, PLANT_MESSAGE_GET, PLANT_STATUS_GET
 from models.sensor import Sensor, SensorData, SensorDataPrediction, SensorSatisfactionValue, SensorSatisfactionLevel, SensorCount, SensorStatus
 slave_supported = ['moisture']
 
@@ -27,13 +25,12 @@ def plants():
 
     selector = data['select']
     mode = data['dict']
-    plants = Plant.select().dicts()
-    plants = list(plants)
+    root_plants = Plant.select().dicts()
     collection = {}
 
     for selected in selector:
-      if selected == 'master':
-        plants = plants.where(Plant.role == 'master')
+      plants = root_plants.where(Plant.role == 'master') if selected == 'master' else root_plants
+      plants = list(plants)
 
       output = []
       if selected not in ['satisfaction', 'sensorsatisfaction']:
@@ -108,10 +105,8 @@ def plants():
       if len(selector) > 1:
         collection[selected] = output
 
-    print(collection)
     if len(collection.keys()) != 0:
       output = collection
-      print(output)
 
     return data_formatting(data=output)
   else:
@@ -243,7 +238,13 @@ def plant(p_uuid):
 
     if data['ranges']:
       plant = Plant.get(Plant.uuid == p_uuid)
-      sensor = Sensor.get(Sensor.name == request.form['sensor'].lower())
+      try:
+        sensor = Sensor.get(name=data['sensor'])
+      except Exception:
+        try:
+          sensor = Sensor.get(uuid=data['sensor'])
+        except Exception:
+          return data_formatting(400)
 
       level_yellow = SensorSatisfactionLevel.get(SensorSatisfactionLevel.name_color == 'yellow')
       level_green = SensorSatisfactionLevel.get(SensorSatisfactionLevel.name_color == 'green')
@@ -454,34 +455,48 @@ def plant_sensor(p_uuid, s_uuid):
 def plant_responsible(p_uuid):
   # GET: select: email, wizard, username, full, default (full)
   responsible = Plant.get(uuid=p_uuid).person
-  responsible = model_to_dict(responsible)
-  responsible['uuid'] = str(responsible['uuid'])
+  if request.method == 'GET':
+    responsible = model_to_dict(responsible)
+    responsible['uuid'] = str(responsible['uuid'])
 
-  data, code = get_data(required=PLANT_RESPONSIBLE_GET, restrictive=True)
-  if code == 400:
-    return data_formatting(400)
-  selector = data['select']
-  collection = {}
+    data, code = get_data(required=PLANT_RESPONSIBLE_GET, restrictive=True)
+    if code == 400:
+      return data_formatting(400)
+    selector = data['select']
+    collection = {}
 
-  for selected in selector:
-    if selected != 'full':
-      used = [selected, 'uuid']
-    else:
-      used = list(responsible.keys())
+    for selected in selector:
+      if selected != 'full':
+        used = [selected, 'uuid']
+      else:
+        used = list(responsible.keys())
 
-    output = {}
+      output = {}
 
-    for key in used:
-      if key not in ['id', 'preset']:
-        output[key] = responsible[key]
+      for key in used:
+        if key not in ['id', 'preset']:
+          output[key] = responsible[key]
 
-    if len(selector) > 1:
-      collection[selected] = output
+      if len(selector) > 1:
+        collection[selected] = output
 
-  if len(collection.keys()) != 0:
-    output = collection
+    if len(collection.keys()) != 0:
+      output = collection
 
-  return data_formatting(data=output)
+    return data_formatting(data=output)
+  else:
+    data, code = get_data(required=PLANT_RESPONSIBLE_POST, restrictive=True)
+    if code == 400:
+      return data_formatting(400)
+
+    if data['email'] != '' and data['name'] != '':
+      responsible = Person.get(email=data['email'], name=data['name'])
+    elif data['uuid'] != '':
+      responsible = Person.get(uuid=data['uuid'])
+
+    plant = Plant.get(uuid=p_uuid)
+    plant.person = responsible
+    plant.save()
 
 
 @app.route('/plants/<p_uuid>/status', methods=['GET'])

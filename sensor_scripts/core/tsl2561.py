@@ -14,8 +14,6 @@ class TSL2561(object):
 
   @staticmethod
   def run(busnumber=1, tsl_adress=0x39):
-    start = 0x51
-
     ambiance_lowbyte = 0
     ambiance_highbyte = 0
     ambiance = 0
@@ -29,21 +27,35 @@ class TSL2561(object):
 
     i2c_bus = smbus.SMBus(busnumber)
     i2c_bus.write_byte_data(tsl_adress, 0x80, 0x03)
+    i2c_bus.write_byte_data(tsl_adress, 0x81, 0x12)  # 16X gain
 
-    ambiance_lowbyte = i2c_bus.read_byte_data(tsl_adress, 0x8c)
-    ambiance_highbyte = i2c_bus.read_byte_data(tsl_adress, 0x8d)
-    ambiance = (ambiance_highbyte * 256) + ambiance_lowbyte
+    proceeding = False
+    pointer = 0
+    while not proceeding:
+      ambiance_lowbyte = i2c_bus.read_byte_data(tsl_adress, 0x8c)
+      ambiance_highbyte = i2c_bus.read_byte_data(tsl_adress, 0x8d)
+      ambiance = (ambiance_highbyte * 256) + ambiance_lowbyte
 
-    ir_lowbyte = i2c_bus.read_byte_data(tsl_adress, 0x8e)
-    ir_highbyte = i2c_bus.read_byte_data(tsl_adress, 0x8f)
-    ir = (ir_highbyte * 256) + ir_lowbyte
+      ir_lowbyte = i2c_bus.read_byte_data(tsl_adress, 0x8e)
+      ir_highbyte = i2c_bus.read_byte_data(tsl_adress, 0x8f)
+      ir = (ir_highbyte * 256) + ir_lowbyte
+
+      if (ambiance >= 65535 or ir >= 65535) and pointer == 0:
+        i2c_bus.write_byte_data(tsl_adress, 0x81, 0x02)  # 1X gain
+      else:
+        proceeding = True
+      pointer += 1
+
+    if pointer > 1:
+      ambiance *= 16    # scaling 1X to 16X
+      ir *= 16          # scaling 1X to 16X
 
     if ambiance == 0:
       ratio = 0
     else:
       ratio = ir / float(ambiance)
 
-    # (calulation according to the datasheet)
+    # calculations according to the datasheet
     if 0 < ratio <= 0.50:
       lux = 0.0304 * ambiance - 0.062 * ambiance * (ratio**1.4)
     elif 0.50 < ratio <= 0.61:
@@ -55,15 +67,15 @@ class TSL2561(object):
     else:
       lux = 0
 
-    plant = Plant.get(Plant.localhost == True)
+    plant = Plant.get(localhost=True)
 
-    tools = ToolChainSensor()
-    light = {'sensor': Sensor.get(Sensor.name == 'light'),
+    toolchain = ToolChainSensor()
+    light = {'sensor': Sensor.get(name='light'),
              'plant': plant,
              'value': lux}
 
-    if tools.insert_data(light):
-      tools.set_hardware(light)
+    if toolchain.insert_data(light):
+      toolchain.set_hardware(light)
 
 if __name__ == '__main__':
     TSL2561.run()

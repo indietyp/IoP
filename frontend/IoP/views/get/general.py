@@ -1,9 +1,7 @@
 import json
 import time
 from IoP import app
-from models.mesh import MeshObject
-from models.plant import Plant, Person
-from mesh_network.daemon import MeshNetwork
+from models.plant import Plant
 # from mesh_network.dedicated import MeshDedicatedDispatch
 from flask import render_template, request
 import urllib.request
@@ -22,28 +20,34 @@ def get_manage_template():
 
 @app.route('/get/discover', methods=['POST'])
 def get_device_discover():
-  with urllib.request.urlopen('http://localhost:2902/execute/discover') as response:
-    execute = response.read().decode('utf8')
+  data = urllib.parse.urlencode({'execute': True}).encode('ascii')
+  req = urllib.request.Request('http://localhost:2902/discover', data)
+  urllib.request.urlopen(req)
 
-  # MeshNetwork().discover(1)
-  time.sleep(3)
+  time.sleep(1)
 
-  with urllib.request.urlopen('http://localhost:2902/get/discovered/0/names/extended') as response:
-    output = response.read().decode('utf8')
+  query = urllib.parse.urlencode({'select': 'extensive'})
+  with urllib.request.urlopen('http://127.0.0.1:2902/discover?{}'.format(query)) as response:
+    output = json.loads(response.read().decode('utf8'))['content']
 
-  return output
+  return json.dumps(output)
 
 
 @app.route('/get/master', methods=['POST'])
 def get_master_yoda():
-  with urllib.request.urlopen('http://localhost:2902/get/plants/master') as response:
-    return response.read().decode('utf8')
+  query = urllib.parse.urlencode({'select': 'master'})
+  with urllib.request.urlopen('http://localhost:2902/plants?{}'.format(query)) as response:
+    output = json.loads(response.read().decode('utf8'))['content']
+
+  return json.dumps(output)
 
 
 @app.route('/create/plant', methods=['POST'])
 def create_new_plant():
-  data = urllib.parse.urlencode(request.form).encode('ascii')
-  req = urllib.request.Request('http://localhost:2902/create/plant/register', data)
+  data = dict(request.form)
+  data['register'] = True
+  data = urllib.parse.urlencode(data).encode('ascii')
+  req = urllib.request.Request('http://localhost:2902/plants', data, 'PUT')
   with urllib.request.urlopen(req) as response:
     data = response.read().decode('utf8')
 
@@ -52,28 +56,29 @@ def create_new_plant():
 
 @app.route('/get/day_night', methods=['POST'])
 def get_day_night():
-  with urllib.request.urlopen('http://localhost:2902/get/day/night/time') as response:
-    output = json.loads(response.read().decode('utf8'))
+  query = urllib.parse.urlencode({'select': 'full'})
+  with urllib.request.urlopen('http://localhost:2902/daynight?{}'.format(query)) as response:
+    output = json.loads(response.read().decode('utf8'))['content'][0]
 
-  return json.dumps(output[0])
+  return json.dumps(output)
 
 
 @app.route('/change/day_night', methods=['POST'])
 def change_day_night():
   data = urllib.parse.urlencode(request.form).encode('ascii')
-  req = urllib.request.Request('http://localhost:2902/update/day/night/time', data)
-  with urllib.request.urlopen(req) as response:
-    data = response.read().decode('utf8')
+  req = urllib.request.Request('http://localhost:2902/daynight', data)
+  urllib.request.urlopen(req)
 
-  return data
+  return json.dumps(True)
 
 
 @app.route('/get/manage', methods=['POST'])
 def get_manage():
-  with urllib.request.urlopen('http://localhost:2902/get/plants/name/extended') as response:
-    output = response.read().decode('utf8')
+  query = urllib.parse.urlencode({'select': 'extensive'})
+  with urllib.request.urlopen('http://localhost:2902/plants?{}'.format(query)) as response:
+    output = json.loads(response.read().decode('utf8'))['content']
 
-  return output
+  return json.dumps(output)
 
 
 @app.route('/update/plant/toggle', methods=['POST'])
