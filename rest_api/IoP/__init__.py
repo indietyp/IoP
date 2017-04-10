@@ -8,10 +8,10 @@ app = Flask(__name__)
 #   session['now'] = datetime.datetime.now()
 
 
-# @app.after_request
-# def time_stop(response_class):
-#   print(datetime.datetime.now() - session['now'])
-#   return response_class
+@app.after_request
+def time_stop(response_class):
+  print(response_class.data.decode())
+  return response_class
 
 
 import IoP.views.get
