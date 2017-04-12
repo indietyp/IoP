@@ -93,12 +93,14 @@ block content
         message = $("textarea.notification_message_content").val()
         if ($(".create_message_two > .ui.form > .field > .ui.fluid.input > input").val() == '') {
           name = $(".create_message_one .selected").html()
+          uuid = $(".create_message_one .selected").attr('data-value')
         } else {
           name = $(".create_message_two > .ui.form > .field > .ui.fluid.input > input").val()
+          uuid = null
         }
 
         if (name != undefined && message != undefined && message != '') {
-          return submit_notification_message(that, message, name, undefined, false)
+          return submit_notification_message(that, message, name, uuid, false)
         }
       }
     //- .ui.one.buttons(style='margin-top:5%')
@@ -135,6 +137,10 @@ block content
           .ui.checkbox
             input(type='checkbox', name='cycle')
             label email notification
+        .field.pump
+          .ui.checkbox
+            input(type='checkbox', name='cycle')
+            label water pump
     .ui.two.buttons
       .ui.basic.button.fluid.green(onclick='modify_day_night(this)') Apply
       .ui.basic.button.fluid.red(onclick='get_day_night()') Reset

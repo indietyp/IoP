@@ -79,9 +79,9 @@ if database:
     with urllib.request.urlopen('http://127.0.0.1:2902/plants/{}?{}'.format(session['p_uuid'], query)) as response:
       data = json.loads(response.read().decode('utf8'))['content']
 
-    created_at = data['created_at']
+    created_at = datetime.datetime.fromtimestamp(data['created_at']['created_at'])
     survived = data['survived']
-    location = data['location']
+    location = data['location']['location']
 
     # get responsible stuff!
     query = urllib.parse.urlencode({'select': 'full'})
@@ -114,11 +114,11 @@ if database:
     sensor_color_ranges = data['range']
 
     query = urllib.parse.urlencode({'select': 'range,unit'})
-    with urllib.request.urlopen('http://127.0.0.1:2902/sensor/{}?{}'.format(session['sensor'], query)) as response:
+    with urllib.request.urlopen('http://127.0.0.1:2902/sensors/{}?{}'.format(session['sensor'], query)) as response:
       data = json.loads(response.read().decode())['content']
 
     sensor_range = data['range']
-    unit = data['unit']
+    unit = data['unit']['unit']
 
     # retrieve recent data
     query = urllib.parse.urlencode({'select': 'extreme', 'max': 'true', 'backlog': 'true'})

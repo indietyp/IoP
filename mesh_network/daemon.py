@@ -649,8 +649,11 @@ class MeshNetwork(object):
       import json
       logger.info('source: ' + recipient[1])
       try:
-        with urllib.request.urlopen('http://' + recipient[1] + ':2902/get/plant/' + recipient[0]) as response:
-          output = json.loads(response.read().decode('utf8'))
+        query = urllib.parse.urlencode({'select': 'full'})
+        with urllib.request.urlopen('http://{}:2902/plants/{}?{}'.format(recipient[1], recipient[0], query)) as response:
+          output = json.loads(response.read().decode('utf8'))['content']
+        # with urllib.request.urlopen('http://' + recipient[1] + ':2902/get/plant/' + recipient[0]) as response:
+        #   output = json.loads(response.read().decode('utf8'))
 
         if output['localhost'] is not True:
           logger.warning('local change not happend - reboot device')
@@ -693,11 +696,14 @@ class MeshNetwork(object):
         from models.sensor import Sensor
 
         plant = Plant.get(localhost=True)
-        with urllib.request.urlopen('http://{0}:2902/get/plant/{1}/sensor/{2}/latest'.format(recipient[1], recipient[0], message[0])) as response:
-          dataset = json.loads(response.read().decode('utf8'))
+        query = urllib.parse.urlencode({'select': 'latest'})
+        with urllib.request.urlopen('http://{}:2902/plants/{}/sensor/{}?{}'.format(recipient[1], recipient[0], message[0], query)) as response:
+          dataset = json.loads(response.read().decode('utf8'))['content']
+        # with urllib.request.urlopen('http://{0}:2902/get/plant/{1}/sensor/{2}/latest'.format(recipient[1], recipient[0], message[0])) as response:
+        #   dataset = json.loads(response.read().decode('utf8'))
 
-        rec_obj = Plant.get(Plant.uuid == recipient[0])
-        sensor = Sensor.get(Sensor.name == message[0])
+        rec_obj = Plant.get(uuid=recipient[0])
+        sensor = Sensor.get(name=message[0])
 
         data = {'plant': rec_obj,
                 'sensor': sensor,
@@ -735,13 +741,15 @@ class MeshNetwork(object):
       if sub == 2:
         import json
         import urllib.request
-        from bson import json_util
         from models.plant import Plant, Person
         from models.plant import MessagePreset
 
         if int(message[0]) == 0:
-          with urllib.request.urlopen('http://{}:2902/get/plant/{}'.format(recipient[1], message[1])) as response:
-            data = json.loads(response.read().decode('utf8'), object_hook=json_util.object_hook)
+          query = urllib.parse.urlencode({'select': 'latest'})
+          with urllib.request.urlopen('http://{}:2902/plants/{}'.format(recipient[1], recipient[0], query)) as response:
+            data = json.loads(response.read().decode('utf8'))['content']
+          # with urllib.request.urlopen('http://{}:2902/get/plant/{}'.format(recipient[1], message[1])) as response:
+            # data = json.loads(response.read().decode('utf8'), object_hook=json_util.object_hook)
 
           del data['uuid']
           del data['person']
@@ -755,7 +763,8 @@ class MeshNetwork(object):
           plant.save()
 
         elif int(message[0]) == 1:
-          with urllib.request.urlopen('http://{}:2902/get/sensor/{}'.format(recipient[1], message[1])) as response:
+          query = urllib.parse.urlencode({'select': 'full'})
+          with urllib.request.urlopen('http://{}:2902/sensors/{}?{}'.format(recipient[1], message[1], query)) as response:
             data = json.loads(response.read().decode('utf8'))
           del data['uuid']
 
@@ -766,7 +775,8 @@ class MeshNetwork(object):
 
         elif int(message[0]) == 2:
           # person
-          with urllib.request.urlopen('http://{}:2902/get/responsible/{}'.format(recipient[1], message[1])) as response:
+          query = urllib.parse.urlencode({'select': 'full'})
+          with urllib.request.urlopen('http://{}:2902/persons/{}?{}'.format(recipient[1], message[1], query)) as response:
             data = json.loads(response.read().decode('utf8'))
           del data['uuid']
 
@@ -778,7 +788,8 @@ class MeshNetwork(object):
         elif int(message[0]) == 3:
           # day/night time
           from models.context import DayNightTime
-          with urllib.request.urlopen('http://{}:2902/get/day/night/time'.format(recipient[1])) as response:
+          query = urllib.parse.urlencode({'select': 'full'})
+          with urllib.request.urlopen('http://{}:2902/daynight?{}'.format(recipient[1], query)) as response:
             data = json.loads(response.read().decode('utf8'))
 
           for dn in data:
@@ -789,7 +800,8 @@ class MeshNetwork(object):
             daynight.save()
 
         elif int(message[0]) == 4:
-          with urllib.request.urlopen('http://{}:2902/get/message/{}'.format(recipient[1], message[1])) as response:
+          query = urllib.parse.urlencode({'select': 'full'})
+          with urllib.request.urlopen('http://{}:2902/messages/{}?{}'.format(recipient[1], message[1], query)) as response:
             data = json.loads(response.read().decode('utf8'))
           del data['uuid']
 
@@ -820,7 +832,8 @@ class MeshNetwork(object):
                                                 SensorSatisfactionValue.sensor == sensor,
                                                 SensorSatisfactionValue.level == opt_gen)
 
-          url = 'http://{}:2902/get/plant/{}/sensor/{}/range'.format(recipient[1], message[1], message[2])
+          query = urllib.parse.urlencode({'select': 'range'})
+          url = 'http://{}:2902/plants/{}/sensor/{}?{}'.format(recipient[1], message[1], message[2], query)
           with urllib.request.urlopen(url) as response:
             data = json.loads(response.read().decode('utf8'))
 

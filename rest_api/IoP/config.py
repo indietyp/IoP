@@ -39,7 +39,7 @@ PLANT_GET = [{'name': 'select',
 
 PLANT_POST = [{'name': 'mode', 'type': str, 'restricted': ['online', 'offline', 'reset', 'add']},
               {'name': 'name', 'type': str},
-              {'name': 'species', 'type': int},
+              {'name': 'species', 'type': str},
               {'name': 'location', 'type': str},
               {'name': 'ranges', 'type': bool, 'fallback': False},
               {'name': 'range', 'type': int, 'fallback': 0},
@@ -173,7 +173,7 @@ MESSAGES_PUT = [{'name': 'heading', 'type': str},
 
 MESSAGE_GET = [{'name': 'select',
                 'type': str,
-                'restricted': ['nessage',
+                'restricted': ['message',
                                'full',
                                {'name': 'default', 'fallback': 'full'}],
                 'list': True,
@@ -211,7 +211,8 @@ DAYNIGHT_POST = [{'name': 'stop', 'type': int},
                  {'name': 'ledbar', 'type': bool},
                  {'name': 'display', 'type': bool},
                  {'name': 'generalleds', 'type': bool},
-                 {'name': 'notitification', 'type': bool}]
+                 {'name': 'notification', 'type': bool},
+                 {'name': 'pump', 'type': bool}]
 
 HOST_GET = [{'name': 'select',
              'type': str,

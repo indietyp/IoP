@@ -1,7 +1,6 @@
 from IoP import app
 
 from uuid import UUID
-from copy import deepcopy
 from flask import request
 from IoP.tooling import data_formatting, get_data
 from IoP.config import MESSAGES_GET, MESSAGES_PUT, MESSAGE_GET, MESSAGE_POST
@@ -76,6 +75,12 @@ def messages():
     msg.message = data['message']
     msg.save()
 
+    if data['person']:
+      plant = Plant.get(uuid=data['plant'])
+      plant.person.preset = msg
+      plant.person.save()
+
+    MeshDedicatedDispatch().update('message', msg.uuid)
     return data_formatting()
 
 

@@ -44,7 +44,7 @@ def getCustomSensorDataset():
   query = urllib.parse.urlencode({'select': 'timespan', 'start': int(request.form['latest_timestamp'])})
   with urllib.request.urlopen('http://localhost:2902/plants/{}/sensor/{}?{}'.format(uuid, sensor, query)) as response:
     data = json.loads(response.read().decode('utf8'))['content']
-    output['real'] = data['timespan']
+    output['real'] = data
 
   if len(output['real']) == 0:
     output['predicted'] = []
@@ -87,8 +87,8 @@ def getPlantSettingsDataNonSpecific():
   query = urllib.parse.urlencode({'select': 'species,location'})
   with urllib.request.urlopen('http://localhost:2902/plants/{}?{}'.format(uuid, query)) as response:
     data = json.loads(response.read().decode('utf8'))['content']
-    plant_type = data['species']
-    plant_location = data['location']
+    plant_type = data['species']['species']
+    plant_location = data['location']['location']
 
   return json.dumps({'type': plant_type, 'name': session['plant'], 'location': plant_location})
 
@@ -98,6 +98,7 @@ def getSensorRange():
   query = urllib.parse.urlencode({'select': 'range'})
   with urllib.request.urlopen('http://localhost:2902/sensors/{}?{}'.format(request.form['sensor'], query)) as response:
     sensor_range = json.loads(response.read().decode('utf8'))['content']
+  sensor_range = {'max': sensor_range['max_value'], 'min': sensor_range['min_value']}
 
   return json.dumps({'range': sensor_range, 'sensor': request.form['sensor']})
 
@@ -200,7 +201,7 @@ def updatePlantResponsible():
 def createPlantResponsible():
   wizard = True if request.form['wizard'] == 'yes' else False
   data = urllib.parse.urlencode({'email': request.form['email'], 'name': request.form['name'], 'wizard': wizard}).encode('ascii')
-  req = urllib.request.Request('http://localhost:2902/persons', data, 'PUT')
+  req = urllib.request.Request('http://localhost:2902/persons', data, method='PUT')
   urllib.request.urlopen(req)
 
   updatePlantResponsible()
@@ -237,7 +238,7 @@ def get_plant_data_count():
   with urllib.request.urlopen('http://localhost:2902/plants/{}/sensor/{}?{}'.format(uuid, sensor, query)) as response:
     data = json.loads(response.read().decode('utf8'))['content']
 
-  return json.dumps(data)
+  return json.dumps({'count': data})
 
 
 @app.route('/get/plant/sensor/prediction', methods=['POST'])

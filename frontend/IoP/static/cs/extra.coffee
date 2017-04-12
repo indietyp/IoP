@@ -57,7 +57,7 @@ submit_notification_message = (that, message, name, uuid, responsible=true) ->
 
   data = {'message': message, 'name': name}
   data.responsible = responsible
-  if uuid is not null
+  if uuid isnt null
     data.uuid = uuid
 
   request = $.ajax
@@ -262,6 +262,8 @@ get_day_night = () ->
       $('.field.generalleds > .ui.checkbox > input').prop 'checked', true
     if msg.notification
       $('.field.notification > .ui.checkbox > input').prop 'checked', true
+    if msg.pump
+      $('.field.pump > .ui.checkbox > input').prop 'checked', true
 
     start = msg.start.toString()
 
@@ -306,6 +308,7 @@ modify_day_night = (that) ->
       display: $('.field.display > .ui.checkbox > input').prop 'checked'
       generalleds: $('.field.generalleds > .ui.checkbox > input').prop 'checked'
       notification: $('.field.notification > .ui.checkbox > input').prop 'checked'
+      pump: $('.field.pump > .ui.checkbox > input').prop 'checked'
 
   request.done (msg) ->
     msg = JSON.parse msg

@@ -26,7 +26,7 @@ def get_device_discover():
 
   time.sleep(1)
 
-  query = urllib.parse.urlencode({'select': 'extensive'})
+  query = urllib.parse.urlencode({'select': 'extensive', 'registered': False})
   with urllib.request.urlopen('http://127.0.0.1:2902/discover?{}'.format(query)) as response:
     output = json.loads(response.read().decode('utf8'))['content']
 
@@ -65,6 +65,7 @@ def get_day_night():
 
 @app.route('/change/day_night', methods=['POST'])
 def change_day_night():
+  print(request.form)
   data = urllib.parse.urlencode(request.form).encode('ascii')
   req = urllib.request.Request('http://localhost:2902/daynight', data)
   urllib.request.urlopen(req)

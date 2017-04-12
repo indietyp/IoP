@@ -19,8 +19,8 @@
       pie_color_segment = '#db2828'
     }
     if (value < 0) {
-      limiter = Math.abs(max_min_range['min']) - Math.abs(value);
-      if (Math.abs(value) >= Math.abs(max_min_range['min'])) {
+      limiter = Math.abs(max_min_range['min_value']) - Math.abs(value);
+      if (Math.abs(value) >= Math.abs(max_min_range['min_value'])) {
         limiter = 0.1;
       }
       data = [
@@ -35,8 +35,8 @@
         }
       ];
     } else {
-      limiter = max_min_range['max'] - value;
-      if (value >= max_min_range['max']) {
+      limiter = max_min_range['max_value'] - value;
+      if (value >= max_min_range['max_value']) {
         limiter = 0.1;
       }
       data = [

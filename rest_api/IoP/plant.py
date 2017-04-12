@@ -177,7 +177,8 @@ def plant(p_uuid):
     selector = data['select']
 
     for selected in selector:
-      plant = list(Plant.select(Plant, fn.CAST(Clause(fn.strftime('%s', Plant.created_at), SQL('AS INT'))).alias('created_at')).dicts())[0]
+      plant = list(Plant.select(Plant, fn.CAST(Clause(fn.strftime('%s', Plant.created_at), SQL('AS INT'))).alias('created_at'))
+                        .where(Plant.uuid == p_uuid).dicts())[0]
       plant['uuid'] = str(plant['uuid'])
 
       if selected not in ['full', 'intervals', 'survived']:
@@ -208,22 +209,11 @@ def plant(p_uuid):
       return data_formatting(400)
 
     keys = list(data.keys())
-    # replaceable = ['name', 'species', 'location', 'ranges', 'responsible', 'satisfaction', 'alive', 'notification', 'connection-lost', 'non-persistant']
-    # replace = data['replace'].lower()
-
-    # if 'type' in keys:
-    #   data['species'] = data['type']
-    #   keys.remove('type')
-    #   keys.append('species')
-    #   del data['type']
 
     if data['mode'] == '':
       mode = 'add' if 'satisfaction' in keys else 'offline'
     else:
       mode = data['mode'].lower()
-
-    # if len(set(keys) - set(replaceable)):
-      # return data_formatting(400)
 
     plant = Plant.get(uuid=p_uuid)
 
@@ -237,7 +227,6 @@ def plant(p_uuid):
       plant.location = data['location']
 
     if data['ranges']:
-      plant = Plant.get(Plant.uuid == p_uuid)
       try:
         sensor = Sensor.get(name=data['sensor'])
       except Exception:
@@ -271,7 +260,7 @@ def plant(p_uuid):
         information = {'min': value_yellow.min_value, 'max': value_yellow.max_value}
         MeshDedicatedDispatch().slave_update(2, information, plant)
 
-    if data['responsible'] != '':
+    if data['responsible']:
       person = Person.get(email=data['email'], name=data['firstname'])
       plant.person = person
       plant.save()
@@ -281,8 +270,6 @@ def plant(p_uuid):
         plant.sat_streak += 1
       else:
         plant.sat_streak = 1
-
-      plant.save()
 
     if data['alive']:
       counterpart = 'online' if mode == 'offline' else 'offline'
@@ -315,6 +302,7 @@ def plant(p_uuid):
       _, minutes, _ = time_request_from_converter(data)
       plant.persistant_hold = int(round(minutes / 5))
 
+    plant.save()
     MeshDedicatedDispatch().update('plant', plant.uuid)
     return data_formatting()
 
@@ -436,7 +424,7 @@ def plant_sensor(p_uuid, s_uuid):
     elif selected == 'count':
       output = data.count()
     elif selected == 'timespan':
-      data = data.where(SensorData.created_at >= start, SensorData.created_at <= stop)
+      data = data.where(SensorData.created_at > start, SensorData.created_at < stop)
       output = list(data)
     else:
       data = data.order_by(SensorData.created_at.desc()).offset(start).limit(stop - start)
@@ -451,7 +439,7 @@ def plant_sensor(p_uuid, s_uuid):
   return data_formatting(data=output)
 
 
-@app.route('/plants/<p_uuid>/responsible', methods=['GET'])
+@app.route('/plants/<p_uuid>/responsible', methods=['GET', 'POST'])
 def plant_responsible(p_uuid):
   # GET: select: email, wizard, username, full, default (full)
   responsible = Plant.get(uuid=p_uuid).person
@@ -490,13 +478,15 @@ def plant_responsible(p_uuid):
       return data_formatting(400)
 
     if data['email'] != '' and data['name'] != '':
-      responsible = Person.get(email=data['email'], name=data['name'])
+      responsible = Person.get(Person.email ** data['email'], Person.name ** data['name'])
     elif data['uuid'] != '':
       responsible = Person.get(uuid=data['uuid'])
 
     plant = Plant.get(uuid=p_uuid)
     plant.person = responsible
     plant.save()
+
+    return data_formatting()
 
 
 @app.route('/plants/<p_uuid>/status', methods=['GET'])

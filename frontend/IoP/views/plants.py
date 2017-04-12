@@ -24,7 +24,7 @@ def plantSettings(plant):
   set_uuid()
 
   query = urllib.parse.urlencode({'select': 'intervals'})
-  with urllib.request.urlopen('http://localhost:2902/plants?{}'.format(query)) as response:
+  with urllib.request.urlopen('http://localhost:2902/plants/{}?{}'.format(session['p_uuid'], query)) as response:
     intervals = json.loads(response.read().decode('utf8'))['content']
 
   content = init()

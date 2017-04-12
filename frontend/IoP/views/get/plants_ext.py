@@ -7,7 +7,7 @@ from flask import session, request
 
 @app.route('/get/notification/message/names', methods=['POST'])
 def get_message_name():
-  query = urllib.parse.urlencode({'select': 'extensive'})
+  query = urllib.parse.urlencode({'select': 'normal'})
   with urllib.request.urlopen('http://localhost:2902/messages?{}'.format(query)) as response:
     data = json.loads(response.read().decode('utf8'))['content']
 
@@ -22,7 +22,7 @@ def get_message_content():
 
   query = urllib.parse.urlencode({'select': 'message'})
   with urllib.request.urlopen('http://localhost:2902/messages/{}?{}'.format(message_uuid, query)) as response:
-    data = json.loads(response.read().decode('utf8'))['content']
+    data = json.loads(response.read().decode('utf8'))['content']['message']
 
   return json.dumps(data)
 
@@ -31,26 +31,26 @@ def get_message_content():
 def insert_message():
   data = urllib.parse.urlencode({
       'heading': request.form['name'],
-      'text': request.form['message'],
+      'message': request.form['message'],
       'plant': session['p_uuid'],
       'person': request.form['responsible']}).encode('ascii')
 
   if 'uuid' in request.form.keys():
-    req = urllib.request.Request('http://localhost:2902/messages/{}'.format(request.form['uuid']), data, 'POST')
+    req = urllib.request.Request('http://localhost:2902/messages/{}'.format(request.form['uuid']), data, method='POST')
   else:
-    req = urllib.request.Request('http://localhost:2902/messages'.format(request.form['uuid']), data, 'PUT')
+    req = urllib.request.Request('http://localhost:2902/messages', data, method='PUT')
   urllib.request.urlopen(req)
 
-  return {'code': 'ok'}
+  return json.dumps({'code': 'ok'})
 
 
 @app.route('/remove/responsible', methods=['POST'])
 def delete_responsible():
-  data = urllib.parse.urlencode({})
-  req = urllib.request.Request('http://localhost:2902/persons/{}'.format(request.form['uuid']), data, 'DELETE')
+  data = urllib.parse.urlencode({}).encode('ascii')
+  req = urllib.request.Request('http://localhost:2902/persons/{}'.format(request.form['uuid']), data, method='DELETE')
   urllib.request.urlopen(req)
 
-  return {'code': 'ok'}
+  return json.dumps({'code': 'ok'})
 
 
 @app.route('/change/responsible', methods=['POST'])
@@ -59,20 +59,20 @@ def update_responsible():
       'name': request.form['name'],
       'email': request.form['email']}).encode('ascii')
 
-  req = urllib.request.Request('http://localhost:2902/persons/{}'.format(request.form['uuid']), data, 'POST')
+  req = urllib.request.Request('http://localhost:2902/persons/{}'.format(request.form['uuid']), data, method='POST')
   urllib.request.urlopen(req)
 
-  return {'code': 'ok'}
+  return json.dumps({'code': 'ok'})
 
 
 @app.route('/change/responsible/wizard', methods=['POST'])
 def change_responsible_wizard():
   data = urllib.parse.urlencode({'wizard': True}).encode('ascii')
 
-  req = urllib.request.Request('http://localhost:2902/persons/{}'.format(request.form['uuid']), data, 'POST')
+  req = urllib.request.Request('http://localhost:2902/persons/{}'.format(request.form['uuid']), data, method='POST')
   urllib.request.urlopen(req)
 
-  return {'code': 'ok'}
+  return json.dumps({'code': 'ok'})
 
 
 @app.route('/change/plant/intervals', methods=['POST'])
@@ -96,7 +96,7 @@ def change_plant_intervals():
 def createResponsible():
   wizard = True if request.form['wizard'] == 'yes' else False
   data = urllib.parse.urlencode({'email': request.form['email'], 'name': request.form['name'], 'wizard': wizard}).encode('ascii')
-  req = urllib.request.Request('http://localhost:2902/persons', data, 'PUT')
+  req = urllib.request.Request('http://localhost:2902/persons', data, method='PUT')
   urllib.request.urlopen(req)
 
   return json.dumps({'info': 'success'})

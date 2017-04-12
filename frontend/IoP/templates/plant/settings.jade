@@ -245,12 +245,14 @@ block content
           message = $("textarea.notification_message_content").val()
           if ($(".create_message_two > .ui.form > .field > .ui.fluid.input > input").val() == '') {
             name = $(".create_message_one .selected").html()
+            uuid = $(".create_message_one .selected").attr('data-value')
           } else {
             name = $(".create_message_two > .ui.form > .field > .ui.fluid.input > input").val()
+            uuid = null
           }
 
           if (name != undefined && message != undefined && message != '') {
-            return submit_notification_message(that, message, name)
+            return submit_notification_message(that, message, name, uuid)
           }
         }
       .ui.two.buttons(style='margin-top:5%')

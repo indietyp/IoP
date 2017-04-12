@@ -13,7 +13,7 @@ from playhouse.shortcuts import model_to_dict
 from mesh_network.dedicated import MeshDedicatedDispatch
 
 
-@app.route('/discover', methods=['GET', 'PUT'])
+@app.route('/discover', methods=['GET', 'POST'])
 def discover():
   # GET: select:
   # GET: dict: Boolean
@@ -119,6 +119,7 @@ def day_night():
       day_night.display = data['display']
       day_night.generalleds = data['generalleds']
       day_night.notification = data['notification']
+      day_night.pump = data['pump']
       day_night.save()
 
     for slave in list(Plant.select().where(Plant.role != 'master')):
